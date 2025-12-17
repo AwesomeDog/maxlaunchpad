@@ -1,0 +1,161 @@
+tabs:
+  - id: '1'
+    label: Fav
+  - id: '2'
+    label: System
+  - id: '3'
+    label: Dev
+  - id: '4'
+    label: ''
+  - id: '5'
+    label: ''
+  - id: '6'
+    label: ''
+  - id: '7'
+    label: ''
+  - id: '8'
+    label: ''
+  - id: '9'
+    label: ''
+  - id: '0'
+    label: ''
+keys:
+  - tabId: F
+    id: F1
+    label: Help
+    filePath: /usr/bin/yelp
+  - tabId: F
+    id: F2
+    label: Google
+    filePath: /usr/bin/open
+    arguments: https://www.google.com
+    description: Open Google in default browser
+    iconPath: https://www.google.com/s2/favicons?sz=96&domain_url=www.google.com
+  - tabId: F
+    id: F3
+    label: Folder
+    filePath: /usr/bin/open
+    arguments: /tmp
+    description: Open home folder using open command
+    iconPath: https://unpkg.com/feather-icons@4.29.2/dist/icons/folder.svg
+  - tabId: F
+    id: F4
+    label: Terminal
+    filePath: /usr/share/applications/org.gnome.Terminal.desktop
+    description: Terminal
+  - tabId: F
+    id: F10
+    label: Monitor
+    filePath: /usr/bin/gnome-system-monitor
+  - tabId: '1'
+    id: Q
+    label: Calculator
+    filePath: /usr/share/applications/org.gnome.Calculator.desktop
+    description: Calculator
+  - tabId: '1'
+    id: W
+    label: LibreOffice Writer
+    filePath: /usr/share/applications/libreoffice-writer.desktop
+    description: LibreOffice Writer
+  - tabId: '1'
+    id: E
+    label: Editor
+    filePath: /usr/bin/gedit
+  - tabId: '1'
+    id: T
+    label: Thunderbird Mail
+    filePath: /var/lib/snapd/desktop/applications/thunderbird_thunderbird.desktop
+    description: Thunderbird Mail
+  - tabId: '1'
+    id: I
+    label: LibreOffice Impress
+    filePath: /usr/share/applications/libreoffice-impress.desktop
+    description: LibreOffice Impress
+  - tabId: '1'
+    id: O
+    label: Clocks
+    filePath: /usr/share/applications/org.gnome.clocks.desktop
+    description: Clocks
+  - tabId: '1'
+    id: P
+    label: Photos
+    filePath: /usr/bin/eog
+  - tabId: '1'
+    id: A
+    label: App Center
+    filePath: /var/lib/snapd/desktop/applications/snap-store_snap-store.desktop
+    description: App Center
+  - tabId: '1'
+    id: S
+    label: Settings
+    filePath: /usr/share/applications/org.gnome.Settings.desktop
+    description: Settings
+  - tabId: '1'
+    id: D
+    label: LibreOffice Draw
+    filePath: /usr/share/applications/libreoffice-draw.desktop
+    description: LibreOffice Draw
+  - tabId: '1'
+    id: F
+    label: Firefox
+    filePath: /usr/bin/firefox
+  - tabId: '1'
+    id: H
+    label: Htop
+    filePath: /usr/share/applications/htop.desktop
+    description: Htop
+  - tabId: '1'
+    id: K
+    label: Disk Usage
+    filePath: /usr/bin/baobab
+  - tabId: '1'
+    id: L
+    label: Logs
+    filePath: /usr/share/applications/org.gnome.Logs.desktop
+    description: Logs
+  - tabId: '1'
+    id: ;
+    label: Files
+    filePath: /usr/share/applications/org.gnome.Nautilus.desktop
+    description: Files
+  - tabId: '1'
+    id: C
+    label: LibreOffice Calc
+    filePath: /usr/share/applications/libreoffice-calc.desktop
+    description: LibreOffice Calc
+  - tabId: '1'
+    id: B
+    label: LibreOffice Base
+    filePath: /usr/share/applications/libreoffice-base.desktop
+    description: LibreOffice Base
+  - tabId: '1'
+    id: M
+    label: LibreOffice Math
+    filePath: /usr/share/applications/libreoffice-math.desktop
+    description: LibreOffice Math
+  - tabId: '1'
+    id: ','
+    label: Characters
+    filePath: /usr/share/applications/org.gnome.Characters.desktop
+    description: Characters
+  - tabId: '1'
+    id: .
+    label: Power Statistics
+    filePath: /usr/share/applications/org.gnome.PowerStats.desktop
+    description: Power Statistics
+  - tabId: '2'
+    id: D
+    label: Disks
+    filePath: /usr/bin/gnome-disks
+  - tabId: '2'
+    id: L
+    label: Logs
+    filePath: /usr/bin/gnome-logs
+  - tabId: '2'
+    id: M
+    label: Monitor
+    filePath: /usr/bin/gnome-system-monitor
+  - tabId: '3'
+    id: T
+    label: Terminal
+    filePath: /usr/bin/gnome-terminal

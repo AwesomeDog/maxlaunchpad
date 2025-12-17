@@ -1,0 +1,50 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 232 176" width="232" height="176">
+  <!-- Aligned keyboard icon - Orange color scheme, no border, second key in second row highlighted with border glow -->
+  
+  <defs>
+    <!-- Key gradient - Orange -->
+    <linearGradient id="keyGradP5" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#F97316;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#EA580C;stop-opacity:1" />
+    </linearGradient>
+    
+    <!-- Highlighted key gradient -->
+    <linearGradient id="keyGradP5Highlight" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#FB923C;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#F97316;stop-opacity:1" />
+    </linearGradient>
+    
+    <!-- Space bar gradient - Yellow -->
+    <linearGradient id="spaceGradP5" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#F59E0B;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#D97706;stop-opacity:1" />
+    </linearGradient>
+
+    <!-- Shadow -->
+    <filter id="shadowP5">
+      <feDropShadow dx="0" dy="2" stdDeviation="2" flood-opacity="0.3"/>
+    </filter>
+  </defs>
+
+  <!-- First row keys -->
+  <rect x="0" y="0" width="50" height="38" rx="6" fill="url(#keyGradP5)" filter="url(#shadowP5)"/>
+  <rect x="61" y="0" width="50" height="38" rx="6" fill="url(#keyGradP5)" filter="url(#shadowP5)"/>
+  <rect x="122" y="0" width="50" height="38" rx="6" fill="url(#keyGradP5)" filter="url(#shadowP5)"/>
+  <rect x="183" y="0" width="50" height="38" rx="6" fill="url(#keyGradP5)" filter="url(#shadowP5)"/>
+
+  <!-- Second row keys -->
+  <rect x="0" y="46" width="50" height="38" rx="6" fill="url(#keyGradP5)" filter="url(#shadowP5)"/>
+  <!-- Highlighted key - Second key in second row with glowing border -->
+  <rect x="61" y="46" width="50" height="38" rx="6" fill="url(#keyGradP5Highlight)" stroke="#FFF7ED" stroke-width="2" filter="url(#shadowP5)"/>
+  <rect x="122" y="46" width="50" height="38" rx="6" fill="url(#keyGradP5)" filter="url(#shadowP5)"/>
+  <rect x="183" y="46" width="50" height="38" rx="6" fill="url(#keyGradP5)" filter="url(#shadowP5)"/>
+
+  <!-- Third row keys -->
+  <rect x="0" y="92" width="50" height="38" rx="6" fill="url(#keyGradP5)" filter="url(#shadowP5)"/>
+  <rect x="61" y="92" width="50" height="38" rx="6" fill="url(#keyGradP5)" filter="url(#shadowP5)"/>
+  <rect x="122" y="92" width="50" height="38" rx="6" fill="url(#keyGradP5)" filter="url(#shadowP5)"/>
+  <rect x="183" y="92" width="50" height="38" rx="6" fill="url(#keyGradP5)" filter="url(#shadowP5)"/>
+
+  <!-- Space bar -->
+  <rect x="0" y="138" width="233" height="38" rx="6" fill="url(#spaceGradP5)" filter="url(#shadowP5)"/>
+</svg>

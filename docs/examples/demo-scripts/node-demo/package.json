@@ -1,0 +1,7 @@
+{
+  "name": "node-demo",
+  "version": "1.0.0",
+  "scripts": {
+    "start": "node -e \"console.log('Hello from node-demo!'); setInterval(() => {}, 1000)\""
+  }
+}

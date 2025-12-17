@@ -1,0 +1,460 @@
+/* ============================================
+   1. Theme Variables
+   ============================================ */
+:root {
+  --background-color: #fafafa;
+  --selected-background-color: #e3f2fd;
+  --text-color: #212121;
+}
+
+:root.dark-mode {
+  --background-color: #121212;
+  --selected-background-color: #1e3a5f;
+  --text-color: #e0e0e0;
+}
+
+/* ============================================
+   2. Base & Reset
+   ============================================ */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  font-family:
+    'PingFang SC',
+    -apple-system,
+    BlinkMacSystemFont,
+    'Segoe UI',
+    Roboto,
+    'Helvetica Neue',
+    Arial,
+    'Noto Sans',
+    sans-serif,
+    'Apple Color Emoji',
+    'Segoe UI Emoji',
+    'Segoe UI Symbol',
+    'Noto Color Emoji';
+  font-size: 14px;
+}
+
+/* ============================================
+   3. App Container
+   ============================================ */
+.app-container {
+  width: 100%;
+  height: 100%;
+  display: grid;
+  gap: 8px;
+  padding: 4px;
+  background: var(--background-color);
+  grid-template-rows: 40px auto;
+}
+
+/* ============================================
+   4. Menu Bar
+   ============================================ */
+.main-menu {
+  display: flex;
+  align-items: center;
+  padding: 0 10px;
+  user-select: none;
+}
+
+/* 4.1 Menu Item */
+.menu-item {
+  position: relative;
+  margin-right: 24px;
+  padding: 0 8px;
+  border-radius: 4px 4px 0 0;
+  cursor: pointer;
+  color: var(--text-color) !important;
+}
+
+.menu-item:hover {
+  background: var(--selected-background-color);
+}
+
+.menu-item.disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  pointer-events: none;
+  background-color: transparent !important;
+}
+
+.menu-check {
+  display: inline-block;
+  width: 16px;
+  margin-right: 8px;
+  text-align: center;
+}
+
+/* 4.2 Menu Search */
+.menu-search {
+  margin-left: auto;
+}
+
+.menu-search-input {
+  width: 140px;
+  padding: 3px 8px;
+  border: 1px solid var(--text-color);
+  border-radius: 3px;
+  background: var(--background-color);
+  color: var(--text-color);
+  opacity: 0.7;
+}
+
+.menu-search-input:focus {
+  opacity: 1;
+  outline: none;
+}
+
+.search-clear-btn {
+  position: absolute;
+  top: 50%;
+  right: 12px;
+  transform: translateY(-50%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  cursor: pointer;
+}
+
+.search-clear-btn:hover {
+  background: var(--selected-background-color);
+}
+
+.search-clear-icon {
+  position: absolute;
+  width: 1px;
+  height: 10px;
+  background: var(--text-color);
+  opacity: 0.6;
+  transform: rotate(45deg);
+}
+
+/* ============================================
+   5. Dropdown Menu
+   ============================================ */
+
+/* 5.1 Dropdown Container */
+.dropdown-menu {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  z-index: 1001;
+  min-width: 120px;
+  padding: 4px 0;
+  border: 1px solid var(--text-color);
+  border-top: none;
+  border-radius: 0 0 4px 4px;
+  background-color: var(--background-color);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* 5.2 Dropdown Item */
+.dropdown-item {
+  padding: 8px 12px;
+  cursor: pointer;
+  color: var(--text-color);
+  white-space: nowrap;
+}
+
+.dropdown-item:hover,
+.dropdown-item.selected {
+  background-color: var(--selected-background-color);
+}
+
+/* ============================================
+   6. Context Menu
+   ============================================ */
+
+/* 6.1 Context Menu Container */
+.context-menu {
+  position: fixed;
+  z-index: 3000;
+  min-width: 180px;
+  padding: 5px 0;
+  border: 1px solid var(--text-color);
+  border-radius: 4px;
+  background-color: var(--background-color);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+}
+
+/* 6.2 Context Menu Item */
+.context-menu-item {
+  padding: 8px 12px;
+  cursor: pointer;
+  color: var(--text-color);
+  white-space: nowrap;
+}
+
+.context-menu-item:hover {
+  background-color: var(--selected-background-color);
+}
+
+.context-menu-item.disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  pointer-events: none;
+  background-color: transparent !important;
+}
+
+/* 6.3 Context Menu Separator */
+.context-menu-separator {
+  height: 1px;
+  background-color: var(--text-color);
+  opacity: 0.2;
+  margin: 5px 0;
+}
+
+/* ============================================
+   7. Keyboard Layout
+   ============================================ */
+.keyboard-zone {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  padding: 0 20px 20px;
+}
+
+/* 7.1 Keyboard Rows */
+.keyboard-row {
+  display: grid;
+  grid-template-columns: repeat(10, 1fr);
+  gap: 8px;
+}
+
+.f-keys-row {
+  height: 20%;
+}
+
+.num-keys-row {
+  height: 20%;
+  gap: 0;
+}
+
+.letter-keys-row {
+  height: 60%;
+  grid-template-rows: repeat(3, 1fr);
+  padding: 12px;
+  border: 1px solid var(--text-color);
+  border-top: none;
+  background-color: var(--selected-background-color);
+}
+
+/* 7.2 Key Button Base */
+.key-btn {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-width: 48px;
+  min-height: 48px;
+  margin: 3px;
+  padding: 1px 8px;
+  border: 1px solid var(--text-color);
+  border-radius: 4px;
+  background: var(--background-color);
+  overflow: hidden;
+  transition: transform 0.1s ease-in-out;
+}
+
+.key-btn > * {
+  pointer-events: none;
+}
+
+.key-btn:hover {
+  background: var(--text-color);
+  color: var(--background-color);
+}
+
+.key-btn.drag-over {
+  border-style: dashed;
+  border-color: #fff;
+  background-color: var(--selected-background-color);
+  transform: scale(1.05);
+}
+
+.key-btn.hidden {
+  visibility: hidden;
+}
+
+/* 7.3 Key Button Content */
+.key-btn-key {
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  margin: 0;
+  font-weight: bold;
+  color: var(--text-color);
+}
+
+.key-btn-text {
+  width: 100%;
+  padding: 0 2px;
+  text-align: center;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-size: 0.8em;
+  color: var(--text-color);
+}
+
+.key-btn-icon {
+  width: 32px;
+  height: 32px;
+  object-fit: contain;
+  margin-bottom: 2px;
+}
+
+.key-btn:hover .key-btn-key,
+.key-btn:hover .key-btn-text {
+  color: var(--background-color);
+}
+
+/* 7.4 Number Key (Tab Selector) */
+.num-key-btn {
+  height: 50%;
+  margin: 0;
+  align-self: end;
+  border-left: none;
+  border-radius: 12px 12px 0 0;
+}
+
+.num-key-btn:first-child {
+  border-left: 1px solid var(--text-color);
+}
+
+.num-key-btn.selected {
+  background: var(--selected-background-color);
+  border-bottom: none;
+}
+
+/* ============================================
+   8. Modal
+   ============================================ */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 2000;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: rgba(0, 0, 0, 0.5);
+}
+
+.modal-content {
+  width: 400px;
+  padding: 20px 30px;
+  border: 1px solid var(--text-color);
+  border-radius: 8px;
+  background-color: var(--background-color);
+  color: var(--text-color);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+}
+
+.modal-content h2 {
+  margin-top: 0;
+  text-align: center;
+}
+
+/* 8.1 Modal Row */
+.modal-row {
+  display: flex;
+  align-items: center;
+  margin-bottom: 15px;
+}
+
+.modal-row > label {
+  flex-basis: 150px;
+  flex-shrink: 0;
+}
+
+.modal-row input[type='text'],
+.modal-row textarea,
+.modal-row select {
+  flex-grow: 1;
+  padding: 5px 8px;
+  border: 1px solid var(--text-color);
+  border-radius: 4px;
+  background-color: var(--background-color);
+  color: var(--text-color);
+  font-size: 14px;
+  font-family: inherit;
+}
+
+.modal-row textarea {
+  resize: vertical;
+  min-height: 60px;
+}
+
+.modal-row input[type='checkbox'] {
+  margin-left: 0;
+  margin-right: 10px;
+}
+
+.modal-row-highlight {
+  margin-top: 10px;
+  padding: 10px;
+  border-radius: 4px;
+  background-color: var(--selected-background-color);
+}
+
+/* 8.2 Modifier Keys */
+.modifier-keys {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px 15px;
+}
+
+.modifier-keys label {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  cursor: pointer;
+}
+
+/* 8.3 Modal Actions */
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 25px;
+}
+
+.modal-actions button {
+  border: 1px solid var(--text-color);
+  border-radius: 4px;
+  padding: 8px 16px;
+  background-color: var(--background-color);
+  color: var(--text-color);
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.modal-actions button:hover {
+  background: var(--text-color);
+  color: var(--background-color);
+}
+
+.modal-actions button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  pointer-events: none;
+}

@@ -1,0 +1,205 @@
+tabs:
+  - id: '1'
+    label: Fav
+  - id: '2'
+    label: Work
+  - id: '3'
+    label: Media
+  - id: '4'
+    label: ''
+  - id: '5'
+    label: ''
+  - id: '6'
+    label: ''
+  - id: '7'
+    label: ''
+  - id: '8'
+    label: ''
+  - id: '9'
+    label: ''
+  - id: '0'
+    label: ''
+keys:
+  - tabId: F
+    id: F1
+    label: SnippingTool
+    filePath: explorer.exe
+    arguments: shell:appsFolder\Microsoft.ScreenSketch_8wekyb3d8bbwe!App
+    description: Open Snipping Tool for screenshots
+  - tabId: F
+    id: F2
+    label: Google
+    filePath: C:\Windows\explorer.exe
+    arguments: https://www.google.com
+    description: Open Google in default browser
+    iconPath: https://www.google.com/s2/favicons?sz=96&domain_url=www.google.com
+  - tabId: F
+    id: F3
+    label: HomeFolder
+    filePath: C:\Windows\explorer.exe
+    arguments: shell:Profile
+    description: Open user home folder
+    iconPath: https://unpkg.com/feather-icons@4.29.2/dist/icons/folder.svg
+  - tabId: F
+    id: F9
+    label: Settings
+    filePath: explorer.exe
+    arguments: 'ms-settings:'
+    description: Open Windows Settings
+    iconPath: https://unpkg.com/feather-icons@4.29.2/dist/icons/settings.svg
+  - tabId: F
+    id: F10
+    label: TaskManager
+    filePath: C:\Windows\System32\Taskmgr.exe
+    description: Open Task Manager
+  - tabId: '1'
+    id: W
+    label: Weather
+    filePath: explorer.exe
+    arguments: shell:appsFolder\Microsoft.BingWeather_8wekyb3d8bbwe!App
+    description: Open Weather app
+  - tabId: '1'
+    id: E
+    label: Explorer
+    filePath: C:\Windows\explorer.exe
+    description: Open File Explorer
+  - tabId: '1'
+    id: R
+    label: Readest
+    filePath: shell:AppsFolder\com.bilingify.readest
+    description: Open Readest
+  - tabId: '1'
+    id: T
+    label: Terminal
+    filePath: explorer.exe
+    arguments: shell:appsFolder\Microsoft.WindowsTerminal_8wekyb3d8bbwe!App
+    description: Launch Windows Terminal
+  - tabId: '1'
+    id: O
+    label: Outlook
+    filePath: explorer.exe
+    arguments: shell:appsFolder\Microsoft.OutlookForWindows_8wekyb3d8bbwe!Microsoft.OutlookforWindows
+    description: Open Outlook (Store App)
+  - tabId: '1'
+    id: P
+    label: Photos
+    filePath: explorer.exe
+    arguments: shell:appsFolder\Microsoft.Windows.Photos_8wekyb3d8bbwe!App
+    description: Open Photos app
+  - tabId: '1'
+    id: A
+    label: Alarms
+    filePath: explorer.exe
+    arguments: shell:appsFolder\Microsoft.WindowsAlarms_8wekyb3d8bbwe!App
+    description: Open Alarms & Clock
+  - tabId: '1'
+    id: S
+    label: Store
+    filePath: explorer.exe
+    arguments: shell:appsFolder\Microsoft.WindowsStore_8wekyb3d8bbwe!App
+    description: Open Microsoft Store
+  - tabId: '1'
+    id: L
+    label: LockScreen
+    filePath: C:\Windows\System32\rundll32.exe
+    arguments: user32.dll,LockWorkStation
+    description: Lock the workstation
+    iconPath: https://unpkg.com/feather-icons@4.29.2/dist/icons/lock.svg
+  - tabId: '1'
+    id: ;
+    label: SystemInfo
+    filePath: C:\Windows\System32\msinfo32.exe
+    description: Open System Information
+  - tabId: '1'
+    id: X
+    label: Xbox
+    filePath: explorer.exe
+    arguments: shell:appsFolder\Microsoft.GamingApp_8wekyb3d8bbwe!App
+    description: Open Xbox app
+  - tabId: '1'
+    id: C
+    label: Calculator
+    filePath: explorer.exe
+    arguments: shell:appsFolder\Microsoft.WindowsCalculator_8wekyb3d8bbwe!App
+    description: Open Calculator
+  - tabId: '1'
+    id: V
+    label: VoiceRecorder
+    filePath: explorer.exe
+    arguments: shell:appsFolder\Microsoft.WindowsSoundRecorder_8wekyb3d8bbwe!App
+    description: Open Voice Recorder
+  - tabId: '1'
+    id: B
+    label: Edge
+    filePath: C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe
+    description: Launch Microsoft Edge browser
+  - tabId: '1'
+    id: 'N'
+    label: Notepad(Admin)
+    filePath: C:\Windows\System32\notepad.exe
+    description: Open Notepad in Admin Mode
+    runAsAdmin: true
+  - tabId: '1'
+    id: M
+    label: Music
+    filePath: explorer.exe
+    arguments: shell:appsFolder\Microsoft.ZuneMusic_8wekyb3d8bbwe!Microsoft.ZuneMusic
+    description: Open Media Player (Music)
+  - tabId: '2'
+    id: P
+    label: PowerShell
+    filePath: C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe
+    description: Open Windows PowerShell
+  - tabId: '2'
+    id: C
+    label: CMD
+    filePath: C:\Windows\System32\cmd.exe
+    description: Open Command Prompt
+  - tabId: '2'
+    id: 'N'
+    label: Network
+    filePath: C:\Windows\explorer.exe
+    arguments: ms-settings:network
+    description: Open Network settings
+  - tabId: '2'
+    id: M
+    label: ComputerMgmt
+    filePath: C:\Windows\System32\compmgmt.msc
+    description: Open Computer Management
+  - tabId: '3'
+    id: 'Y'
+    label: YouTube
+    filePath: C:\Windows\explorer.exe
+    arguments: https://www.youtube.com
+    description: Open YouTube in default browser
+    iconPath: https://www.google.com/s2/favicons?sz=96&domain_url=www.youtube.com
+  - tabId: '3'
+    id: P
+    label: Paint
+    filePath: explorer.exe
+    arguments: shell:appsFolder\Microsoft.Paint_8wekyb3d8bbwe!App
+    description: Open Paint
+  - tabId: '3'
+    id: G
+    label: GameBar
+    filePath: explorer.exe
+    arguments: shell:appsFolder\Microsoft.XboxGamingOverlay_8wekyb3d8bbwe!App
+    description: Open Xbox Game Bar
+  - tabId: '3'
+    id: C
+    label: Camera
+    filePath: explorer.exe
+    arguments: shell:appsFolder\Microsoft.WindowsCamera_8wekyb3d8bbwe!App
+    description: Open Camera app
+  - tabId: '3'
+    id: V
+    label: ClipChamp
+    filePath: explorer.exe
+    arguments: shell:appsFolder\Clipchamp.Clipchamp_yxz26nhyzhsrt!App
+    description: Open Clipchamp video editor
+  - tabId: '3'
+    id: M
+    label: Music
+    filePath: explorer.exe
+    arguments: shell:appsFolder\Microsoft.ZuneMusic_8wekyb3d8bbwe!Microsoft.ZuneMusic
+    description: Open Media Player (Music)

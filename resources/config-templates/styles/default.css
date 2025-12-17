@@ -1,0 +1,12 @@
+:root {
+    --background-color: #FAFAFA;
+    --selected-background-color: #E3F2FD;
+    --text-color: #212121;
+}
+
+
+:root.dark-mode {
+    --background-color: #121212;
+    --selected-background-color: #1E3A5F;
+    --text-color: #E0E0E0;
+}

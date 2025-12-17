@@ -1,0 +1,9 @@
+hotkey:
+  modifiers:
+    - Alt
+  key: '`'
+activeTabOnShow: lastUsed
+lockWindowCenter: true
+launchOnStartup: true
+startInTray: false
+theme: system

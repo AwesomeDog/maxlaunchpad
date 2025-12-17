@@ -1,0 +1,763 @@
+# NOTE: Copy demo scripts from docs/examples/demo-scripts to the appropriate location before testing
+# Windows: mkdir -Force C:\Users\Public\demo-scripts; Copy-Item docs\examples\demo-scripts\* C:\Users\Public\demo-scripts\ -Recurse -Force
+# macOS/Linux: mkdir -p /tmp/demo-scripts && cp -rf ./docs/examples/demo-scripts/* /tmp/demo-scripts/
+
+# RECOMMENDATION:
+# Commands run directly without a shell wrapper (shell: false by default).
+#
+# - For simple commands: set filePath to the actual executable
+#   (e.g., python, node, /usr/bin/python3) and pass arguments directly.
+#
+# - For shell features (pipes, redirection, &&, variable expansion):
+#   wrap explicitly with a shell:
+#     Windows:     filePath: cmd        arguments: /c "your command here"
+#     macOS/Linux: filePath: /bin/bash  arguments: -c "your command here"
+#
+# This keeps argument quoting predictable and prevents scripts
+# (like osascript, python -c, etc.) from being broken by an extra shell layer.
+
+tabs:
+  - id: '1'
+    label: Windows
+  - id: '2'
+    label: macOS
+  - id: '3'
+    label: Linux
+  - id: '4'
+    label: ''
+  - id: '5'
+    label: ''
+  - id: '6'
+    label: ''
+  - id: '7'
+    label: ''
+  - id: '8'
+    label: ''
+  - id: '9'
+    label: ''
+  - id: '0'
+    label: 'Icon'
+
+keys:
+  # NOTE: workingDirectory must be an absolute existing path; '~' is not expanded and may cause ENOENT
+
+  # ============================================
+  # Windows Test Cases (Tab 1)
+  # Supported: .exe, .lnk, .bat, .cmd, .ps1, store app, shell:
+  # ============================================
+
+  # --------------------------------------------
+  # Common: Native Applications
+  # Basic executable launching (cross-platform concept)
+  # --------------------------------------------
+
+  # Q - Native application (.exe)
+  - tabId: '1'
+    id: Q
+    label: Calculator
+    filePath: C:\Windows\system32\calc.exe
+    description: Windows Calculator (.exe)
+
+  # W - Browser application
+  - tabId: '1'
+    id: W
+    label: Edge Browser
+    filePath: shell:AppsFolder\Microsoft.MicrosoftEdge.Stable_8wekyb3d8bbwe!App
+    description: Microsoft Edge browser
+
+  # E - Terminal application
+  - tabId: '1'
+    id: E
+    label: Terminal
+    filePath: C:\Windows\system32\cmd.exe
+    description: Command Prompt terminal
+
+  # --------------------------------------------
+  # Common: Script Execution
+  # Running scripts via interpreters (cross-platform concept)
+  # --------------------------------------------
+
+  # R - Shell script via interpreter
+  - tabId: '1'
+    id: R
+    label: Batch Script
+    filePath: cmd
+    arguments: /c C:\Users\Public\demo-scripts\demo.bat
+    description: Batch file executed via cmd.exe
+
+  # Y - Python script direct (opens with default handler)
+  - tabId: '1'
+    id: Y
+    label: Python Direct
+    filePath: C:\Users\Public\demo-scripts\demo.py
+    description: Python script (.py) - opens with default handler
+
+  # U - Python script via interpreter
+  - tabId: '1'
+    id: U
+    label: Python Script
+    filePath: python
+    arguments: C:\Users\Public\demo-scripts\demo.py
+    description: Python script executed via python
+
+  # I - Python script with absolute interpreter path
+  - tabId: '1'
+    id: I
+    label: Python Absolute
+    filePath: C:\Python311\python.exe
+    arguments: C:\Users\Public\demo-scripts\demo.py
+    description: Python script with absolute interpreter path
+
+  # --------------------------------------------
+  # Common: Launch Options
+  # Arguments, working directory (cross-platform concept)
+  # --------------------------------------------
+
+  # O - Program with command line arguments
+  - tabId: '1'
+    id: O
+    label: With Arguments
+    filePath: C:\Windows\system32\notepad.exe
+    arguments: C:\Users\Public\demo-scripts\demo.py
+    description: Program with command line arguments
+
+  # P - Program with specified working directory
+  - tabId: '1'
+    id: P
+    label: Working Directory
+    filePath: python
+    arguments: C:\Users\Public\demo-scripts\demo.py
+    workingDirectory: C:\Users\Public\Documents
+    description: Program with specified working directory
+
+  # --------------------------------------------
+  # Common: URLs
+  # Opening URLs in default browser (cross-platform concept)
+  # --------------------------------------------
+
+  # S - URL with https protocol
+  - tabId: '1'
+    id: S
+    label: URL (https)
+    filePath: https://support.microsoft.com/
+    description: URL opens in default browser (https)
+
+  # D - URL with http protocol
+  - tabId: '1'
+    id: D
+    label: URL (http)
+    filePath: http://localhost:3000
+    description: URL opens in default browser (http)
+
+  # --------------------------------------------
+  # Common: Project Commands
+  # Running project commands in specific directory (cross-platform concept)
+  # --------------------------------------------
+
+  # F - npm start in project directory
+  - tabId: '1'
+    id: F
+    label: npm start
+    filePath: cmd
+    arguments: /c npm start
+    workingDirectory: C:\Users\Public\demo-scripts\node-demo
+    description: Run npm start in ~/myproject directory
+
+  # --------------------------------------------
+  # Windows Specific: Script Types
+  # Windows-only script formats (.ps1)
+  # --------------------------------------------
+
+  # G - PowerShell script (.ps1)
+  - tabId: '1'
+    id: G
+    label: PowerShell Script
+    filePath: powershell
+    arguments: -ExecutionPolicy Bypass -File C:\Users\Public\demo-scripts\demo.ps1
+    description: PowerShell script (.ps1)
+
+  # --------------------------------------------
+  # Windows Specific: UWP / Store Apps
+  # Windows Store applications via shell:AppsFolder
+  # --------------------------------------------
+
+  # H - Windows Store App via shell:AppsFolder
+  - tabId: '1'
+    id: H
+    label: Store App
+    filePath: shell:AppsFolder\Microsoft.WindowsCalculator_8wekyb3d8bbwe!App
+    description: Windows Store App via shell:AppsFolder
+
+  # --------------------------------------------
+  # Windows Specific: Shell Protocol
+  # Windows shell: protocol for special folders
+  # --------------------------------------------
+
+  # J - Open shell folder via explorer.exe
+  - tabId: '1'
+    id: J
+    label: shell:startup
+    filePath: explorer.exe
+    arguments: shell:startup
+    description: Open shell folder via explorer.exe
+
+  # --------------------------------------------
+  # Windows Specific: Shortcut Files
+  # Windows .lnk shortcut files
+  # --------------------------------------------
+
+  # K - Windows shortcut file (.lnk)
+  - tabId: '1'
+    id: K
+    label: Shortcut (.lnk)
+    filePath: C:\Users\Public\demo-scripts\demo.lnk
+    description: Windows shortcut file (.lnk)
+
+  # --------------------------------------------
+  # Windows Specific: System Tools
+  # Windows management and diagnostic tools
+  # --------------------------------------------
+
+  # L - Event Viewer (eventvwr.msc)
+  - tabId: '1'
+    id: L
+    label: Event Viewer
+    filePath: C:\Windows\system32\eventvwr.msc
+    description: Windows Event Viewer (.msc)
+
+  # --------------------------------------------
+  # Windows Specific: Elevated Privileges
+  # Execute with administrator privileges (UAC)
+  # --------------------------------------------
+
+  # ; - Execute with elevated privileges
+  - tabId: '1'
+    id: ;
+    label: Run as Admin
+    filePath: C:\Windows\system32\cmd.exe
+    runAsAdmin: true
+    description: Execute with elevated privileges
+
+  # ============================================
+  # macOS Test Cases (Tab 2)
+  # Supported: .app, Unix executables, .sh, .command
+  # ============================================
+
+  # --------------------------------------------
+  # Common: Native Applications
+  # Basic application launching (cross-platform concept)
+  # --------------------------------------------
+
+  # Q - Native application (.app)
+  - tabId: '2'
+    id: Q
+    label: Calculator
+    filePath: /System/Applications/Calculator.app
+    description: macOS Calculator (.app)
+
+  # W - Browser application
+  - tabId: '2'
+    id: W
+    label: Safari Browser
+    filePath: /Applications/Safari.app
+    description: Safari browser (.app)
+
+  # E - Terminal application
+  - tabId: '2'
+    id: E
+    label: Terminal
+    filePath: /System/Applications/Utilities/Terminal.app
+    description: macOS Terminal (.app)
+
+  # --------------------------------------------
+  # Common: Script Execution
+  # Running scripts via interpreters (cross-platform concept)
+  # --------------------------------------------
+
+  # R - Shell script via bash interpreter
+  - tabId: '2'
+    id: R
+    label: Shell via bash
+    filePath: bash
+    arguments: /tmp/demo-scripts/demo.sh
+    description: Shell script executed via bash
+
+  # Y - Python script direct (opens with default handler)
+  - tabId: '2'
+    id: Y
+    label: Python Direct
+    filePath: /tmp/demo-scripts/demo.py
+    description: Python script (.py) - opens with default handler
+
+  # U - Python script via interpreter
+  - tabId: '2'
+    id: U
+    label: Python Script
+    filePath: python3
+    arguments: /tmp/demo-scripts/demo.py
+    description: Python script executed via python3
+
+  # I - Python script with absolute interpreter path
+  - tabId: '2'
+    id: I
+    label: Python Absolute
+    filePath: /usr/bin/python3
+    arguments: /tmp/demo-scripts/demo.py
+    description: Python script with absolute interpreter path
+
+  # --------------------------------------------
+  # Common: Launch Options
+  # Arguments, working directory (cross-platform concept)
+  # --------------------------------------------
+
+  # O - Program with command line arguments
+  - tabId: '2'
+    id: O
+    label: With Arguments
+    filePath: python3
+    arguments: /tmp/demo-scripts/demo.py
+    description: Program with command line arguments
+
+  # P - Program with specified working directory
+  - tabId: '2'
+    id: P
+    label: Working Directory
+    filePath: python3
+    arguments: /tmp/demo-scripts/demo.py
+    workingDirectory: /Applications
+    description: Program with specified working directory
+
+  # --------------------------------------------
+  # Common: URLs
+  # Opening URLs in default browser (cross-platform concept)
+  # --------------------------------------------
+
+  # S - URL with https protocol
+  - tabId: '2'
+    id: S
+    label: URL (https)
+    filePath: https://www.apple.com
+    description: URL opens in default browser (https)
+
+  # D - URL with http protocol
+  - tabId: '2'
+    id: D
+    label: URL (http)
+    filePath: http://localhost:3000
+    description: URL opens in default browser (http)
+
+  # --------------------------------------------
+  # Common: Project Commands
+  # Running project commands in specific directory (cross-platform concept)
+  # --------------------------------------------
+
+  # F - npm start in project directory (opens in Terminal)
+  - tabId: '2'
+    id: F
+    label: npm start
+    filePath: osascript
+    arguments: -e 'tell app "Terminal" to do script "cd /tmp/demo-scripts/node-demo && npm start"'
+    description: Run npm start in Terminal window
+
+  # --------------------------------------------
+  # macOS Specific: Shell Script Direct
+  # Running shell scripts directly (macOS can execute .sh with shebang)
+  # --------------------------------------------
+
+  # G - Shell script direct execution
+  - tabId: '2'
+    id: G
+    label: Shell Script (.sh)
+    filePath: /tmp/demo-scripts/demo.sh
+    description: Shell script (.sh) - opens with default handler
+
+  # --------------------------------------------
+  # macOS Specific: Unix Executable
+  # Running Unix binary executables directly
+  # --------------------------------------------
+
+  # H - Unix executable binary
+  - tabId: '2'
+    id: H
+    label: Unix Executable
+    filePath: /usr/bin/python3
+    arguments: -c "import webbrowser; webbrowser.open('https://www.google.com')"
+    description: Unix executable binary
+
+  # --------------------------------------------
+  # macOS Specific: AppleScript
+  # macOS automation scripting via osascript
+  # --------------------------------------------
+
+  # K - AppleScript via osascript
+  - tabId: '2'
+    id: K
+    label: AppleScript
+    filePath: osascript
+    arguments: -e 'display dialog "Hello"'
+    description: AppleScript via osascript
+
+  # ============================================
+  # Linux/Ubuntu Test Cases (Tab 3)
+  # Supported: ELF binaries, .desktop, .sh, .py, .rb
+  # ============================================
+
+  # --------------------------------------------
+  # Common: Native Applications
+  # Basic application launching (cross-platform concept)
+  # --------------------------------------------
+
+  # Q - Native application (ELF binary)
+  - tabId: '3'
+    id: Q
+    label: Calculator
+    filePath: /usr/bin/gnome-calculator
+    description: GNOME Calculator (ELF binary)
+
+  # W - Browser application
+  - tabId: '3'
+    id: W
+    label: Firefox Browser
+    filePath: /usr/bin/firefox
+    description: Firefox browser (ELF binary)
+
+  # E - Terminal application
+  - tabId: '3'
+    id: E
+    label: Terminal
+    filePath: /usr/bin/gnome-terminal
+    description: GNOME Terminal (ELF binary)
+
+  # --------------------------------------------
+  # Common: Script Execution
+  # Running scripts via interpreters (cross-platform concept)
+  # --------------------------------------------
+
+  # R - Shell script via bash interpreter
+  - tabId: '3'
+    id: R
+    label: Shell via bash
+    filePath: bash
+    arguments: /tmp/demo-scripts/demo.sh
+    description: Shell script executed via bash
+
+  # Y - Python script direct (opens with default handler)
+  - tabId: '3'
+    id: Y
+    label: Python Direct
+    filePath: /tmp/demo-scripts/demo.py
+    description: Python script (.py) - opens with default handler
+
+  # U - Python script via interpreter
+  - tabId: '3'
+    id: U
+    label: Python Script
+    filePath: python3
+    arguments: /tmp/demo-scripts/demo.py
+    description: Python script executed via python3
+
+  # I - Python script with absolute interpreter path
+  - tabId: '3'
+    id: I
+    label: Python Absolute
+    filePath: /usr/bin/python3
+    arguments: /tmp/demo-scripts/demo.py
+    description: Python script with absolute interpreter path
+
+  # --------------------------------------------
+  # Common: Launch Options
+  # Arguments, working directory (cross-platform concept)
+  # --------------------------------------------
+
+  # O - Program with command line arguments
+  - tabId: '3'
+    id: O
+    label: With Arguments
+    filePath: python3
+    arguments: /tmp/demo-scripts/demo.py
+    description: Program with command line arguments
+
+  # P - Program with specified working directory
+  - tabId: '3'
+    id: P
+    label: Working Directory
+    filePath: python3
+    arguments: /tmp/demo-scripts/demo.py
+    workingDirectory: /usr
+    description: Program with specified working directory
+
+  # --------------------------------------------
+  # Common: URLs
+  # Opening URLs in default browser (cross-platform concept)
+  # --------------------------------------------
+
+  # S - URL with https protocol
+  - tabId: '3'
+    id: S
+    label: URL (https)
+    filePath: https://www.ubuntu.com
+    description: URL opens in default browser (https)
+
+  # D - URL with http protocol
+  - tabId: '3'
+    id: D
+    label: URL (http)
+    filePath: http://localhost:5000
+    description: URL opens in default browser (http)
+
+  # --------------------------------------------
+  # Common: Project Commands
+  # Running project commands in specific directory (cross-platform concept)
+  # --------------------------------------------
+
+  # F - npm start in project directory (opens in Terminal)
+  - tabId: '3'
+    id: F
+    label: npm start
+    filePath: /usr/bin/gnome-terminal
+    arguments: -- bash -c "cd /tmp/demo-scripts/node-demo && npm start; exec bash"
+    description: Run npm start in Terminal window
+
+  # --------------------------------------------
+  # Linux Specific: Shell Script Direct
+  # Running shell scripts directly (Linux can execute .sh with shebang)
+  # --------------------------------------------
+
+  # G - Shell script direct execution
+  - tabId: '3'
+    id: G
+    label: Shell Script (.sh)
+    filePath: /tmp/demo-scripts/demo.sh
+    description: Shell script (.sh) - opens with default handler
+
+  # --------------------------------------------
+  # Linux Specific: Desktop Entry Files
+  # XDG desktop entry specification (.desktop files)
+  # --------------------------------------------
+
+  # H - System .desktop file
+  - tabId: '3'
+    id: H
+    label: Desktop Entry
+    filePath: /usr/share/applications/vim.desktop
+    description: Desktop entry file (.desktop)
+
+  # --------------------------------------------
+  # Linux Specific: Ruby Script
+  # Ruby scripting support on Linux
+  # --------------------------------------------
+
+  # K - Ruby script via interpreter
+  - tabId: '3'
+    id: K
+    label: Ruby Script
+    filePath: ruby
+    arguments: /tmp/demo-scripts/demo.rb
+    description: Ruby script executed via ruby
+
+  # ============================================
+  # Icon Extraction Test Cases (Tab 0)
+  # Purpose: Test icon extraction across all platforms and app types
+  # ============================================
+
+  # --------------------------------------------
+  # Common: URLs (Cross-Platform)
+  # HTTP/HTTPS web addresses, iconPath with URL and local file
+  # --------------------------------------------
+
+  # Q - HTTPS URL
+  - tabId: '0'
+    id: Q
+    label: URL filePath
+    filePath: https://www.google.com
+    description: URL Icon
+
+  # W - Custom icon from URL
+  - tabId: '0'
+    id: W
+    label: URL iconPath
+    filePath: whatever
+    description: Custom icon from URL
+    iconPath: https://unpkg.com/feather-icons@4.29.2/dist/icons/settings.svg
+
+  # E - Custom icon from local file
+  - tabId: '0'
+    id: E
+    label: Local iconPath
+    filePath: whatever
+    description:  Custom icon from local file
+    iconPath: C:\Windows\Web\Wallpaper\Windows\img0.jpg
+
+  # --------------------------------------------
+  # Windows: UWP / Microsoft Store Apps
+  # Format: shell:AppsFolder\{PackageFamilyName}!{AppId}
+  # --------------------------------------------
+
+  # R - UWP app with standard format (PackageFamilyName!App)
+  - tabId: '0'
+    id: R
+    label: Calculator
+    filePath: shell:AppsFolder\Microsoft.WindowsCalculator_8wekyb3d8bbwe!App
+    description: UWP app - standard format
+
+  # T - UWP system app (Microsoft Store)
+  - tabId: '0'
+    id: T
+    label: Microsoft Store
+    filePath: shell:AppsFolder\Microsoft.WindowsStore_8wekyb3d8bbwe!App
+    description: UWP app - system app
+
+  # Y - UWP app with dual app ID format (PackageFamilyName!AppName)
+  - tabId: '0'
+    id: Y
+    label: Media Player
+    filePath: shell:AppsFolder\Microsoft.ZuneMusic_8wekyb3d8bbwe!Microsoft.ZuneMusic
+    description: UWP app - dual app ID format
+
+  # --------------------------------------------
+  # Windows: shell:AppsFolder Win32 Apps
+  # Format: shell:AppsFolder\{AppId} (simple ID without !)
+  # --------------------------------------------
+
+  # U - Office application (Win32 registered in AppsFolder)
+  - tabId: '0'
+    id: U
+    label: Access
+    filePath: shell:AppsFolder\Microsoft.Office.MSACCESS.EXE.15
+    description: shell:AppsFolder - Office app
+
+  # I - Third-party app with simple vendor.product ID
+  - tabId: '0'
+    id: I
+    label: Notepad3
+    filePath: shell:AppsFolder\Rizonesoft.Notepad3
+    description: shell:AppsFolder - third-party simple ID
+
+  # O - Third-party utility with simple vendor.product ID
+  - tabId: '0'
+    id: O
+    label: AutoHotkey Window Spy
+    filePath: shell:AppsFolder\AutoHotkey.WindowSpy
+    description: shell:AppsFolder - utility simple ID
+
+  # --------------------------------------------
+  # Windows: shell:AppsFolder with Special ID Formats
+  # Various non-standard ID patterns
+  # --------------------------------------------
+
+  # P - App with com.* reverse domain ID format
+  - tabId: '0'
+    id: P
+    label: calibre 64bit - E-book management
+    filePath: shell:AppsFolder\com.calibre-ebook.main-gui
+    description: shell:AppsFolder - com.* format ID
+
+  # A - System app with auto-generated GUID ID
+  - tabId: '0'
+    id: A
+    label: Computer Management
+    filePath: >-
+      shell:AppsFolder\Microsoft.AutoGenerated.{8ABD94FB-E7D6-84A6-A997-C918EDDE0AE5}
+    description: shell:AppsFolder - auto-generated GUID ID
+
+  # --------------------------------------------
+  # Windows: shell:AppsFolder with CLSID/GUID Paths
+  # Format: shell:AppsFolder\{CLSID}\path\to\exe
+  # --------------------------------------------
+
+  # S - System tool with CLSID prefix path
+  - tabId: '0'
+    id: S
+    label: Magnifier
+    filePath: shell:AppsFolder\{1AC14E77-02E7-4E5D-B744-2EB1AE5198B7}\magnify.exe
+    description: shell:AppsFolder - CLSID path
+
+  # D - Third-party app with GUID nested path
+  - tabId: '0'
+    id: D
+    label: Everything
+    filePath: >-
+      shell:AppsFolder\{6D809377-6AF0-444B-8957-A3773F02200E}\Everything\Everything.exe
+    description: shell:AppsFolder - GUID nested path
+
+  # F - Third-party app with deeply nested GUID path
+  - tabId: '0'
+    id: F
+    label: Git GUI
+    filePath: >-
+      shell:AppsFolder\{6D809377-6AF0-444B-8957-A3773F02200E}\Git\cmd\git-gui.exe
+    description: shell:AppsFolder - GUID deep nested path
+
+  # --------------------------------------------
+  # Windows: Native Executable Files (.exe)
+  # Direct path to executable binaries
+  # --------------------------------------------
+
+  # G - System executable in system32 directory
+  - tabId: '0'
+    id: G
+    label: Notepad
+    filePath: C:\Windows\system32\notepad.exe
+    description: .exe - system32 path
+
+  # --------------------------------------------
+  # Windows: Shortcut Files (.lnk)
+  # Windows shell link files
+  # --------------------------------------------
+
+  # H - Windows shortcut file
+  - tabId: '0'
+    id: H
+    label: .lnk file
+    filePath: C:\Users\Public\demo-scripts\demo.lnk
+    description: .lnk shortcut
+
+  # --------------------------------------------
+  # macOS: Application Bundles (.app)
+  # Format: /path/to/Application.app
+  # --------------------------------------------
+
+  # J - macOS system utility application
+  - tabId: '0'
+    id: J
+    label: Activity Monitor
+    filePath: /System/Applications/Utilities/Activity Monitor.app
+    description: macOS system utility (.app)
+
+  # --------------------------------------------
+  # Linux: ELF Binary Executables
+  # Direct path to compiled binaries
+  # --------------------------------------------
+
+  # K - System ELF binary (Help viewer)
+  - tabId: '0'
+    id: K
+    label: Help
+    filePath: /usr/bin/yelp
+    description: Ubuntu Help (ELF binary)
+
+  # L - Application ELF binary (Browser)
+  - tabId: '0'
+    id: L
+    label: Firefox
+    filePath: /usr/bin/firefox
+    description: Firefox browser (ELF binary)
+
+  # --------------------------------------------
+  # Linux: Desktop Entry Files (.desktop)
+  # XDG desktop entry specification
+  # --------------------------------------------
+
+  # Z - System .desktop file in /usr/share/applications
+  - tabId: '0'
+    id: Z
+    label: Terminal
+    filePath: /usr/share/applications/org.gnome.Terminal.desktop
+    description: GNOME Terminal (.desktop)
+
+  # X - Snap package .desktop file
+  - tabId: '0'
+    id: X
+    label: App Center
+    filePath: /var/lib/snapd/desktop/applications/snap-store_snap-store.desktop
+    description: Snap Store (.desktop)

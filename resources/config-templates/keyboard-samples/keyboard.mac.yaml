@@ -1,0 +1,264 @@
+tabs:
+  - id: '1'
+    label: Fav
+  - id: '2'
+    label: Work
+  - id: '3'
+    label: Media
+  - id: '4'
+    label: ''
+  - id: '5'
+    label: ''
+  - id: '6'
+    label: ''
+  - id: '7'
+    label: ''
+  - id: '8'
+    label: ''
+  - id: '9'
+    label: ''
+  - id: '0'
+    label: ''
+keys:
+  - tabId: F
+    id: F1
+    label: ScreenShot
+    filePath: /System/Applications/Utilities/Screenshot.app
+    description: Open Screenshot tool
+  - tabId: F
+    id: F2
+    label: Google
+    filePath: /usr/bin/open
+    arguments: https://www.google.com
+    description: Open Google in default browser
+    iconPath: https://www.google.com/s2/favicons?sz=96&domain_url=www.google.com
+  - tabId: F
+    id: F3
+    label: Folder
+    filePath: /usr/bin/open
+    arguments: /tmp
+    description: Open home folder using open command
+    iconPath: https://unpkg.com/feather-icons@4.29.2/dist/icons/folder.svg
+  - tabId: F
+    id: F6
+    label: Xcode
+    filePath: /Applications/Xcode.app
+    description: Open Xcode
+  - tabId: F
+    id: F9
+    label: SystemSettings
+    filePath: /System/Applications/System Settings.app
+    description: Open System Settings
+  - tabId: F
+    id: F10
+    label: ActivityMonitor
+    filePath: /System/Applications/Utilities/Activity Monitor.app
+    description: Open Activity Monitor
+  - tabId: '1'
+    id: Q
+    label: QuickTime
+    filePath: /System/Applications/QuickTime Player.app
+    description: Open QuickTime Player
+  - tabId: '1'
+    id: W
+    label: Weather
+    filePath: /System/Applications/Weather.app
+    description: Open Weather
+  - tabId: '1'
+    id: E
+    label: Email
+    filePath: /System/Applications/Mail.app
+    description: Open Mail (Email)
+  - tabId: '1'
+    id: R
+    label: Reminders
+    filePath: /System/Applications/Reminders.app
+    description: Open Reminders
+  - tabId: '1'
+    id: T
+    label: Terminal
+    filePath: /System/Applications/Utilities/Terminal.app
+    description: Launch Terminal
+  - tabId: '1'
+    id: I
+    label: ImageCapture
+    filePath: /System/Applications/Image Capture.app
+    description: Open Image Capture
+  - tabId: '1'
+    id: P
+    label: Photos
+    filePath: /System/Applications/Photos.app
+    description: Open Photos
+  - tabId: '1'
+    id: A
+    label: AppStore
+    filePath: /System/Applications/App Store.app
+    description: Open App Store
+  - tabId: '1'
+    id: S
+    label: Safari
+    filePath: /Applications/Safari.app
+    description: Launch Safari web browser
+  - tabId: '1'
+    id: D
+    label: Dictionary
+    filePath: /System/Applications/Dictionary.app
+    description: Open Dictionary
+  - tabId: '1'
+    id: F
+    label: Finder
+    filePath: /System/Library/CoreServices/Finder.app
+    description: Open Finder
+  - tabId: '1'
+    id: H
+    label: Home
+    filePath: /System/Applications/Home.app
+    description: Open Home
+  - tabId: '1'
+    id: J
+    label: Journal
+    filePath: /System/Applications/Journal.app
+    description: Open Journal
+  - tabId: '1'
+    id: K
+    label: Keynote
+    filePath: /Applications/Keynote.app
+    description: Open Keynote
+  - tabId: '1'
+    id: L
+    label: LockScreen
+    filePath: /System/Library/CoreServices/ScreenSaverEngine.app
+    description: >-
+      Start screen saver to lock screen. Requires 'Require password after screen
+      saver begins' enabled in System Settings > Lock Screen
+  - tabId: '1'
+    id: ;
+    label: SystemInfo
+    filePath: /System/Applications/Utilities/System Information.app
+    description: Open System Information
+  - tabId: '1'
+    id: C
+    label: Contacts
+    filePath: /System/Applications/Contacts.app
+    description: Open Contacts
+  - tabId: '1'
+    id: B
+    label: Books
+    filePath: /System/Applications/Books.app
+    description: Open Books
+  - tabId: '1'
+    id: 'N'
+    label: Notes
+    filePath: /System/Applications/Notes.app
+    description: Open Notes
+  - tabId: '1'
+    id: M
+    label: Music
+    filePath: /System/Applications/Music.app
+    description: Open Music
+  - tabId: '1'
+    id: ','
+    label: Messages
+    filePath: /System/Applications/Messages.app
+    description: Open Messages
+  - tabId: '1'
+    id: .
+    label: Maps
+    filePath: /System/Applications/Maps.app
+    description: Open Maps
+  - tabId: '2'
+    id: O
+    label: Obsidian
+    filePath: /Applications/Obsidian.app
+    description: Launch Obsidian notes
+  - tabId: '2'
+    id: C
+    label: Chrome
+    filePath: /Applications/Google Chrome.app
+    description: Launch Google Chrome web browser
+  - tabId: '2'
+    id: V
+    label: VSCode
+    filePath: /Applications/Visual Studio Code.app
+    description: Launch Visual Studio Code
+  - tabId: '2'
+    id: 'N'
+    label: News
+    filePath: /System/Applications/News.app
+    description: Open News
+  - tabId: '3'
+    id: Q
+    label: Music
+    filePath: /System/Applications/Music.app
+    description: Open Music
+  - tabId: '3'
+    id: W
+    label: TV
+    filePath: /System/Applications/TV.app
+    description: Open TV
+  - tabId: '3'
+    id: E
+    label: Podcasts
+    filePath: /System/Applications/Podcasts.app
+    description: Open Podcasts
+  - tabId: '3'
+    id: R
+    label: Radio
+    filePath: /usr/bin/open
+    arguments: https://music.apple.com/radio
+    description: Open Apple Music Radio in browser
+    iconPath: https://www.google.com/s2/favicons?sz=96&domain_url=music.apple.com
+  - tabId: '3'
+    id: T
+    label: QuickTime
+    filePath: /System/Applications/QuickTime Player.app
+    description: Open QuickTime Player
+  - tabId: '3'
+    id: 'Y'
+    label: YouTube
+    filePath: /usr/bin/open
+    arguments: https://www.youtube.com
+    description: Open YouTube in default browser
+    iconPath: https://www.google.com/s2/favicons?sz=96&domain_url=www.youtube.com
+  - tabId: '3'
+    id: U
+    label: Spotify
+    filePath: /Applications/Spotify.app
+    description: Launch Spotify
+  - tabId: '3'
+    id: O
+    label: OBS
+    filePath: /Applications/OBS.app
+    description: Launch OBS Studio
+  - tabId: '3'
+    id: P
+    label: Photos
+    filePath: /System/Applications/Photos.app
+    description: Open Photos
+  - tabId: '3'
+    id: F
+    label: FaceTime
+    filePath: /System/Applications/FaceTime.app
+    description: Open FaceTime
+  - tabId: '3'
+    id: H
+    label: Apple Music
+    filePath: /usr/bin/open
+    arguments: https://music.apple.com
+    description: Open Apple Music in browser
+    iconPath: https://www.google.com/s2/favicons?sz=96&domain_url=music.apple.com
+  - tabId: '3'
+    id: J
+    label: VLC
+    filePath: /Applications/VLC.app
+    description: Launch VLC media player
+  - tabId: '3'
+    id: C
+    label: Camera
+    filePath: /System/Applications/Photo Booth.app
+    description: Open Photo Booth
+  - tabId: '3'
+    id: V
+    label: iMovie
+    filePath: /Applications/iMovie.app
+    description: Launch iMovie
