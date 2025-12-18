@@ -23,6 +23,9 @@ const config: ForgeConfig = {
       './out/icons/iconTemplate.png',
       './resources/config-templates',
     ],
+    extendInfo: {
+      LSUIElement: true,
+    },
   },
   rebuildConfig: {},
   hooks: {
