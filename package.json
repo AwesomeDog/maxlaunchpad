@@ -1,7 +1,7 @@
 {
   "name": "MaxLaunchpad",
   "productName": "MaxLaunchpad",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "A simple, reliable launcher that makes your most-used applications instantly accessible from the keyboard",
   "main": ".webpack/main",
   "scripts": {
