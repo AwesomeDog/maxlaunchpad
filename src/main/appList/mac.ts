@@ -5,12 +5,17 @@ import { basename, join } from 'path';
 import type { InstalledApp } from '../../shared/types';
 
 export async function listMacApps(): Promise<InstalledApp[]> {
-  const appsDir = '/Applications';
-  const userAppsDir = join(os.homedir(), 'Applications');
+  const appDirs = [
+    '/Applications',
+    '/System/Applications',
+    '/System/Applications/Utilities',
+    '/System/Library/CoreServices',
+    join(os.homedir(), 'Applications'),
+  ];
 
   const results: InstalledApp[] = [];
 
-  for (const dir of [appsDir, userAppsDir]) {
+  for (const dir of appDirs) {
     try {
       const entries = await readdir(dir);
       for (const entry of entries) {
