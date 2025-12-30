@@ -14,6 +14,17 @@ interface.
 
 ## Installation
 
+Via Package Manager
+
+```shell
+# on Windows
+winget install AwesomeDog.MaxLaunchpad
+# on macOS
+brew install --cask AwesomeDog/tap/maxlaunchpad
+```
+
+Or
+
 Download the installer from [Releases](https://github.com/AwesomeDog/maxlaunchpad/releases).
 
 - **Windows** — Windows 10 or later. Works out of the box.
