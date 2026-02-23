@@ -60,6 +60,7 @@ const mockSettings: AppSettings = {
   startInTray: false,
   theme: 'system',
   customStyle: 'default',
+  windowSize: { width: 1000, height: 600 },
 };
 
 const mockProfile: KeyboardProfile = {

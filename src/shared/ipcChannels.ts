@@ -39,4 +39,5 @@ export const IPC_CHANNELS = {
 
   // Window events (main -> renderer)
   WINDOW_SHOWN: 'window:shown',
+  WINDOW_RESIZED: 'window:resized',
 } as const;

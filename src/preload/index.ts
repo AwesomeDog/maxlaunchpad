@@ -45,6 +45,14 @@ const api = {
       ipcRenderer.removeListener(IPC_CHANNELS.WINDOW_SHOWN, listener);
     };
   },
+  onWindowResized: (callback: (width: number, height: number) => void): (() => void) => {
+    const listener = (_event: Electron.IpcRendererEvent, width: number, height: number) =>
+      callback(width, height);
+    ipcRenderer.on(IPC_CHANNELS.WINDOW_RESIZED, listener);
+    return () => {
+      ipcRenderer.removeListener(IPC_CHANNELS.WINDOW_RESIZED, listener);
+    };
+  },
 
   // Tools
   openPath: (path: string, options?: { showInFolder?: boolean }) =>

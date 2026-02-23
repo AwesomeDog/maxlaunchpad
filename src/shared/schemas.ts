@@ -39,6 +39,14 @@ export const HotkeyConfigSchema = z
   })
   .strip();
 
+// Window size schema
+export const WindowSizeSchema = z
+  .object({
+    width: z.number(),
+    height: z.number(),
+  })
+  .strip();
+
 // App settings schema
 export const AppSettingsSchema = z
   .object({
@@ -50,6 +58,7 @@ export const AppSettingsSchema = z
     startInTray: z.boolean(),
     theme: z.enum(['light', 'dark', 'system']),
     customStyle: z.string(),
+    windowSize: WindowSizeSchema,
   })
   .strip();
 

@@ -2,12 +2,10 @@ import { app, BrowserWindow, screen } from 'electron';
 
 import { APP_NAME } from '../shared/constants';
 import { IPC_CHANNELS } from '../shared/ipcChannels';
+import { loadSettings } from './configStore';
 
 declare const MAIN_WINDOW_WEBPACK_ENTRY: string;
 declare const MAIN_WINDOW_PRELOAD_WEBPACK_ENTRY: string;
-
-const WINDOW_WIDTH = 1000;
-const WINDOW_HEIGHT = 600;
 
 let mainWindow: BrowserWindow | null = null;
 let isLockWindowCenter = false;
@@ -25,10 +23,14 @@ export function createMainWindow(): BrowserWindow {
   // Initialize screen listeners on first window creation (after app is ready)
   initScreenListeners();
 
+  // Load saved window size from settings
+  const settings = loadSettings();
+  const { width, height } = settings.windowSize;
+
   mainWindow = new BrowserWindow({
-    width: WINDOW_WIDTH,
-    height: WINDOW_HEIGHT,
-    resizable: false,
+    width,
+    height,
+    resizable: true,
     frame: true,
     alwaysOnTop: true,
     show: false,
@@ -59,6 +61,14 @@ export function createMainWindow(): BrowserWindow {
 
   mainWindow.on('closed', () => {
     mainWindow = null;
+  });
+
+  // Notify renderer when window is resized (saving handled by useConfigSync with debounce)
+  mainWindow.on('resize', () => {
+    if (mainWindow && !mainWindow.isDestroyed()) {
+      const [width, height] = mainWindow.getSize();
+      mainWindow.webContents.send(IPC_CHANNELS.WINDOW_RESIZED, width, height);
+    }
   });
 
   return mainWindow;

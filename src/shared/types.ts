@@ -35,6 +35,12 @@ export interface HotkeyConfig {
   key: string; // Main key
 }
 
+// Window size configuration
+export interface WindowSize {
+  width: number;
+  height: number;
+}
+
 // App settings (stored in settings.yaml)
 export interface AppSettings {
   hotkey: HotkeyConfig;
@@ -45,4 +51,5 @@ export interface AppSettings {
   startInTray: boolean;
   theme: 'light' | 'dark' | 'system';
   customStyle: string; // Style name without ".css", default 'default'
+  windowSize: WindowSize; // User-customized window size
 }

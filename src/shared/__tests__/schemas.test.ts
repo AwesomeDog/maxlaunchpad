@@ -235,6 +235,7 @@ describe('AppSettingsSchema', () => {
     startInTray: true,
     theme: 'dark' as const,
     customStyle: '.key { color: red; }',
+    windowSize: { width: 1000, height: 600 },
   };
 
   it('should validate complete settings', () => {
@@ -270,6 +271,7 @@ describe('AppSettingsSchema', () => {
       'startInTray',
       'theme',
       'customStyle',
+      'windowSize',
     ];
 
     requiredFields.forEach((field) => {
