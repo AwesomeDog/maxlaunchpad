@@ -90,6 +90,7 @@ Download the installer from [Releases](https://github.com/AwesomeDog/maxlaunchpa
 
 **Stays Out of Your Way — Smart Window Behavior**
 
+- **Resizable window** — Drag window edges to resize; size persists across sessions
 - **Always on top** — Never buried under other windows when summoned
 - **Auto-hide on blur** — Disappears when you click away
 - **Lock window center** — Pin to screen center, no accidental dragging
@@ -122,6 +123,8 @@ Download the installer from [Releases](https://github.com/AwesomeDog/maxlaunchpa
 
 **Make It Yours — Full Customization**
 
+- **Hide UI elements** — Declutter the interface by hiding menu, button icons/text, empty buttons, or entire keyboard rows
+- **Press Alt to show menu** — Hidden menu bar temporarily appears when Alt key is pressed
 - **Customizable hotkey** — Change modifier keys and trigger key to your preference
 - **Light/Dark/System theme** — Follows your OS preference or override manually
 - **Custom CSS styles** — Full visual customization via CSS files

@@ -143,6 +143,22 @@ interface HotkeyConfig {
     key: string;
 }
 
+interface HideElements {
+    menu: boolean;          // Hide menu bar (press Alt to show)
+    buttonIcons: boolean;   // Hide button icons
+    buttonText: boolean;    // Hide button text
+    emptyButtons: boolean;  // Hide empty buttons
+    rowF: boolean;          // Hide F-keys row
+    row1: boolean;          // Hide letter keys row 1 (Q-P)
+    row2: boolean;          // Hide letter keys row 2 (A-;)
+    row3: boolean;          // Hide letter keys row 3 (Z-/)
+}
+
+interface WindowSize {
+    width: number;
+    height: number;
+}
+
 interface AppSettings {
     hotkey: HotkeyConfig;
     activeTabOnShow: 'lastUsed' | string;  // 'lastUsed' or tab ID '1'-'0'
@@ -152,6 +168,8 @@ interface AppSettings {
     startInTray: boolean;                  // "Start in Tray (Minimized)", default: false
     theme: 'light' | 'dark' | 'system';    // "Theme", default: 'system'
     customStyle: string;                   // "Custom Style", style name without ".css", default: 'default'
+    windowSize: WindowSize;                // User-customized window size
+    hideElements: HideElements;            // Hide UI elements configuration
 }
 ```
 
@@ -168,6 +186,18 @@ launchOnStartup: true
 startInTray: true
 theme: system
 customStyle: default
+windowSize:
+  width: 1000
+  height: 600
+hideElements:
+  menu: false
+  buttonIcons: false
+  buttonText: false
+  emptyButtons: false
+  rowF: false
+  row1: false
+  row2: false
+  row3: false
 ```
 
 ### 3.5 Auto-Save and Backup
@@ -182,7 +212,7 @@ customStyle: default
 
 ### 4.1 Properties
 
-- **Size**: 1000 × 600 pixels (fixed)
+- **Size**: 1000 × 600 pixels (default, resizable and persisted)
 - **Title**: `MaxLaunchpad - ${activeProfilePath}` (adds a `*` suffix when there are unsaved changes)
 - **Always on Top**: Yes
 - **Menu Bar**: Custom in-window menu (not native OS menu)
@@ -240,6 +270,22 @@ The menu bar implements **Sticky Menu** behavior.
 |--------------------|----------------------------------------------------------------------------------|
 | Drag & Drop Mode   | See section 14, "Drag & Drop Configuration"                                      |
 | Lock Window Center | Toggle: when enabled, window centers and can't be dragged. Show this as tooltip. |
+| Hide Elements      | Submenu to hide UI elements (see below)                                          |
+
+**Hide Elements Submenu**:
+
+| Item                      | Action                                                        |
+|---------------------------|---------------------------------------------------------------|
+| Menu (press Alt to show)  | Hide menu bar; press Alt to show temporarily                  |
+| Button Icons              | Hide shortcut icons on keys                                   |
+| Button Text               | Hide shortcut labels on keys                                  |
+| Empty Buttons             | Hide keys without configured shortcuts                        |
+| Row F                     | Hide function keys row (F1-F10)                               |
+| Row 1                     | Hide letter keys row 1 (Q-P)                                  |
+| Row 2                     | Hide letter keys row 2 (A-;)                                  |
+| Row 3                     | Hide letter keys row 3 (Z-/)                                  |
+
+Note: All hide settings are disabled in Drag & Drop mode to ensure all keys remain visible for configuration.
 
 ### Tools (Platform-specific)
 
