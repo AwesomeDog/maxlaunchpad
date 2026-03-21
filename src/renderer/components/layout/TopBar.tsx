@@ -2,7 +2,7 @@ import type { ReactElement } from 'react';
 import { useCallback, useRef, useState } from 'react';
 
 import { APP_NAME, DOCUMENTATION_URL } from '../../../shared/constants';
-import type { KeyboardProfile } from '../../../shared/types';
+import type { HideElements, KeyboardProfile } from '../../../shared/types';
 import { useClickOutside } from '../../hooks/useClickOutside';
 import { useCloseOnWindowHide } from '../../hooks/useCloseOnWindowHide';
 import { IS_MAC, IS_WINDOWS } from '../../platform';
@@ -15,9 +15,21 @@ export function TopBar(): ReactElement {
   const state = useAppState();
   const dispatch = useDispatch();
   const [openMenu, setOpenMenu] = useState<MenuId>(null);
+  const [hideSubmenuOpen, setHideSubmenuOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
 
-  const closeMenu = useCallback(() => setOpenMenu(null), []);
+  // After loading, settings is guaranteed to be non-null
+  const settings = state.settings!;
+  const hideElements = settings.hideElements;
+
+  // Determine if menu should be visible (drag-drop mode disables all hide settings)
+  const isMenuHidden = !state.ui.isDragDropMode && hideElements.menu;
+  const shouldShowMenu = !isMenuHidden || state.ui.isAltPressed || openMenu !== null;
+
+  const closeMenu = useCallback(() => {
+    setOpenMenu(null);
+    setHideSubmenuOpen(false);
+  }, []);
   useClickOutside(menuRef, closeMenu);
   useCloseOnWindowHide(closeMenu);
 
@@ -221,6 +233,23 @@ export function TopBar(): ReactElement {
     dispatch({ type: 'OPEN_ABOUT_MODAL' });
   };
 
+  const handleToggleHideElement = (key: keyof HideElements) => {
+    dispatch({
+      type: 'UPDATE_SETTINGS',
+      settings: {
+        hideElements: {
+          ...hideElements,
+          [key]: !hideElements[key],
+        },
+      },
+    });
+  };
+
+  // Don't render if menu is hidden and not showing
+  if (!shouldShowMenu) {
+    return <div className="main-menu menu-hidden" ref={menuRef} />;
+  }
+
   return (
     <div className="main-menu" ref={menuRef}>
       {/* File menu */}
@@ -273,6 +302,86 @@ export function TopBar(): ReactElement {
             >
               <span className="menu-check">{state.settings?.lockWindowCenter ? '✓' : ''}</span>
               Lock Window Center
+            </div>
+            <div className="context-menu-separator" />
+            {/* Hide Elements submenu */}
+            <div
+              className="dropdown-item dropdown-submenu"
+              onMouseEnter={() => setHideSubmenuOpen(true)}
+              onMouseLeave={() => setHideSubmenuOpen(false)}
+            >
+              <span className="menu-check"></span>
+              Hide Elements
+              <span className="submenu-arrow">▸</span>
+              {hideSubmenuOpen && (
+                <div className="dropdown-menu submenu">
+                  <div
+                    className="dropdown-item"
+                    onClick={() => handleToggleHideElement('menu')}
+                    title="Hide menu bar (press Alt to show temporarily)"
+                  >
+                    <span className="menu-check">{hideElements.menu ? '✓' : ''}</span>
+                    Menu (press Alt to show)
+                  </div>
+                  <div
+                    className="dropdown-item"
+                    onClick={() => handleToggleHideElement('buttonIcons')}
+                    title="Hide button icons"
+                  >
+                    <span className="menu-check">{hideElements.buttonIcons ? '✓' : ''}</span>
+                    Button Icons
+                  </div>
+                  <div
+                    className="dropdown-item"
+                    onClick={() => handleToggleHideElement('buttonText')}
+                    title="Hide button text labels"
+                  >
+                    <span className="menu-check">{hideElements.buttonText ? '✓' : ''}</span>
+                    Button Text
+                  </div>
+                  <div
+                    className="dropdown-item"
+                    onClick={() => handleToggleHideElement('emptyButtons')}
+                    title="Hide buttons without configured programs"
+                  >
+                    <span className="menu-check">{hideElements.emptyButtons ? '✓' : ''}</span>
+                    Empty Buttons
+                  </div>
+                  <div className="context-menu-separator" />
+                  <div
+                    className="dropdown-item"
+                    onClick={() => handleToggleHideElement('rowF')}
+                    title="Hide function keys row (F1-F10)"
+                  >
+                    <span className="menu-check">{hideElements.rowF ? '✓' : ''}</span>
+                    Row F
+                  </div>
+                  <div
+                    className="dropdown-item"
+                    onClick={() => handleToggleHideElement('row1')}
+                    title="Hide letter keys row 1 (Q-P)"
+                  >
+                    <span className="menu-check">{hideElements.row1 ? '✓' : ''}</span>
+                    Row 1
+                  </div>
+                  <div
+                    className="dropdown-item"
+                    onClick={() => handleToggleHideElement('row2')}
+                    title="Hide letter keys row 2 (A-;)"
+                  >
+                    <span className="menu-check">{hideElements.row2 ? '✓' : ''}</span>
+                    Row 2
+                  </div>
+                  <div
+                    className="dropdown-item"
+                    onClick={() => handleToggleHideElement('row3')}
+                    title="Hide letter keys row 3 (Z-/)"
+                  >
+                    <span className="menu-check">{hideElements.row3 ? '✓' : ''}</span>
+                    Row 3
+                  </div>
+                </div>
+              )}
             </div>
           </div>
         )}

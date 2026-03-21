@@ -23,6 +23,7 @@ export interface AppState {
     activeTabId: string;
     searchQuery: string;
     isDragDropMode: boolean; // Runtime only, resets on restart
+    isAltPressed: boolean; // Alt key pressed (for showing hidden menu)
     isConfigDirty: boolean;
     isLoading: boolean;
     error: string | null;
@@ -44,6 +45,7 @@ export type Action =
   | { type: 'SET_ACTIVE_TAB'; tabId: string }
   | { type: 'SET_SEARCH_QUERY'; query: string }
   | { type: 'SET_DRAG_DROP_MODE'; enabled: boolean }
+  | { type: 'SET_ALT_PRESSED'; pressed: boolean }
   | { type: 'SET_CONFIG_DIRTY'; dirty: boolean }
   | { type: 'SET_ERROR'; error: string | null }
   | { type: 'OPEN_EDIT_KEY_MODAL'; key: KeyConfig }
@@ -64,6 +66,7 @@ const initialState: AppState = {
     activeTabId: '1',
     searchQuery: '',
     isDragDropMode: false,
+    isAltPressed: false,
     isConfigDirty: false,
     isLoading: true,
     error: null,
@@ -140,6 +143,9 @@ function reducer(state: AppState, action: Action): AppState {
 
     case 'SET_DRAG_DROP_MODE':
       return { ...state, ui: { ...state.ui, isDragDropMode: action.enabled } };
+
+    case 'SET_ALT_PRESSED':
+      return { ...state, ui: { ...state.ui, isAltPressed: action.pressed } };
 
     case 'SET_CONFIG_DIRTY':
       return { ...state, ui: { ...state.ui, isConfigDirty: action.dirty } };

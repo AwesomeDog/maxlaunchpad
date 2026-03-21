@@ -47,6 +47,20 @@ export const WindowSizeSchema = z
   })
   .strip();
 
+// Hide elements schema
+export const HideElementsSchema = z
+  .object({
+    menu: z.boolean(),
+    buttonIcons: z.boolean(),
+    buttonText: z.boolean(),
+    emptyButtons: z.boolean(),
+    rowF: z.boolean(),
+    row1: z.boolean(),
+    row2: z.boolean(),
+    row3: z.boolean(),
+  })
+  .strip();
+
 // App settings schema
 export const AppSettingsSchema = z
   .object({
@@ -59,6 +73,7 @@ export const AppSettingsSchema = z
     theme: z.enum(['light', 'dark', 'system']),
     customStyle: z.string(),
     windowSize: WindowSizeSchema,
+    hideElements: HideElementsSchema,
   })
   .strip();
 

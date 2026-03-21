@@ -13,6 +13,8 @@ interface KeyButtonProps {
   onClick: () => void;
   onContextMenu: (e: React.MouseEvent) => void;
   isHidden?: boolean;
+  hideIcon?: boolean;
+  hideText?: boolean;
 }
 
 export function KeyButton({
@@ -22,6 +24,8 @@ export function KeyButton({
   onClick,
   onContextMenu,
   isHidden,
+  hideIcon,
+  hideText,
 }: KeyButtonProps): ReactElement {
   const dispatch = useDispatch();
   const [isDragOver, setIsDragOver] = useState(false);
@@ -101,8 +105,8 @@ export function KeyButton({
       <span className="key-btn-key">{keyId}</span>
       {filePath && (
         <>
-          {icon && <img className="key-btn-icon" src={icon} alt="" />}
-          <span className="key-btn-text">{label}</span>
+          {icon && !hideIcon && <img className="key-btn-icon" src={icon} alt="" />}
+          {!hideText && <span className="key-btn-text">{label}</span>}
         </>
       )}
     </button>

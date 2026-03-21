@@ -167,3 +167,15 @@ export const IGNORED_KEYS = new Set([
   'NumLock',
   'ScrollLock',
 ]);
+
+// Default hide elements configuration
+export const DEFAULT_HIDE_ELEMENTS = {
+  menu: false,
+  buttonIcons: false,
+  buttonText: false,
+  emptyButtons: false,
+  rowF: false,
+  row1: false,
+  row2: false,
+  row3: false,
+} as const;

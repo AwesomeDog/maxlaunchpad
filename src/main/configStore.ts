@@ -3,7 +3,7 @@ import fs from 'fs';
 import { dump, JSON_SCHEMA, load } from 'js-yaml';
 import path from 'path';
 
-import { DEFAULT_MODIFIER } from '../shared/constants';
+import { DEFAULT_HIDE_ELEMENTS, DEFAULT_MODIFIER } from '../shared/constants';
 import { PartialAppSettingsSchema, PartialKeyboardProfileSchema } from '../shared/schemas';
 import { AppSettings, KeyboardProfile } from '../shared/types';
 import { formatTimestamp, normalizeProfile } from '../shared/utils';
@@ -83,6 +83,7 @@ export function loadSettings(): AppSettings {
     theme: 'system',
     customStyle: 'default',
     windowSize: { width: 1000, height: 600 },
+    hideElements: { ...DEFAULT_HIDE_ELEMENTS },
   };
 
   try {
@@ -91,7 +92,17 @@ export function loadSettings(): AppSettings {
         schema: JSON_SCHEMA,
       });
       const data = PartialAppSettingsSchema.parse(raw);
-      const merged = { ...defaults, ...data };
+      // Deep merge for nested objects
+      const merged: AppSettings = {
+        ...defaults,
+        ...data,
+        // Deep merge hotkey
+        hotkey: { ...defaults.hotkey, ...data.hotkey },
+        // Deep merge windowSize
+        windowSize: { ...defaults.windowSize, ...data.windowSize },
+        // Deep merge hideElements
+        hideElements: { ...defaults.hideElements, ...data.hideElements },
+      };
       log.debug('Settings loaded', { scope: 'configStore', path: SETTINGS_FILE_PATH });
       return merged;
     }

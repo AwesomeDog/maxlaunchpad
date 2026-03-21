@@ -41,6 +41,18 @@ export interface WindowSize {
   height: number;
 }
 
+// Hide elements configuration
+export interface HideElements {
+  menu: boolean; // Hide menu bar (press Alt to show)
+  buttonIcons: boolean; // Hide button icons
+  buttonText: boolean; // Hide button text
+  emptyButtons: boolean; // Hide empty buttons (no file path configured)
+  rowF: boolean; // Hide F-keys row
+  row1: boolean; // Hide letter keys row 1 (Q-P)
+  row2: boolean; // Hide letter keys row 2 (A-;)
+  row3: boolean; // Hide letter keys row 3 (Z-/)
+}
+
 // App settings (stored in settings.yaml)
 export interface AppSettings {
   hotkey: HotkeyConfig;
@@ -52,4 +64,5 @@ export interface AppSettings {
   theme: 'light' | 'dark' | 'system';
   customStyle: string; // Style name without ".css", default 'default'
   windowSize: WindowSize; // User-customized window size
+  hideElements: HideElements; // Hide elements configuration
 }

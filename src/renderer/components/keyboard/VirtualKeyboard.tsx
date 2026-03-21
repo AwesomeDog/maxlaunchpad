@@ -1,6 +1,6 @@
 import type { ReactElement } from 'react';
 
-import { FUNCTION_KEYS, LETTER_KEYS, NUM_KEYS } from '../../../shared/constants';
+import { FUNCTION_KEYS, LETTER_KEYS_LAYOUT, NUM_KEYS } from '../../../shared/constants';
 import type { KeyConfig } from '../../../shared/types';
 import { useContextMenu } from '../../hooks/useContextMenu';
 import { useLaunchProgram } from '../../hooks/useLaunchProgram';
@@ -10,11 +10,22 @@ import { ContextMenu } from '../common/ContextMenu';
 import { KeyButton } from './KeyButton';
 import { NumButton } from './NumButton';
 
+// Letter keys rows derived from layout
+const [LETTER_KEYS_ROW1, LETTER_KEYS_ROW2, LETTER_KEYS_ROW3] = LETTER_KEYS_LAYOUT;
+
 export function VirtualKeyboard(): ReactElement {
   const state = useAppState();
   const dispatch = useDispatch();
   const { menuState, closeMenu, openKeyContextMenu, openTabContextMenu } = useContextMenu();
   const launchProgram = useLaunchProgram({ hideWindowOnSuccess: true });
+
+  // After loading, settings is guaranteed to be non-null
+  const settings = state.settings!;
+
+  // Get hideElements (drag-drop mode disables all hide settings)
+  const hideElements = state.ui.isDragDropMode
+    ? { buttonIcons: false, buttonText: false, emptyButtons: false, rowF: false, row1: false, row2: false, row3: false }
+    : settings.hideElements;
 
   const hasSearchQuery = state.ui.searchQuery.trim().length > 0;
   const matchingKeys = selectMatchingKeys(state);
@@ -30,6 +41,12 @@ export function VirtualKeyboard(): ReactElement {
     return matchingKeys.some((k) => k.tabId === tabId);
   };
 
+  // Check if a key should be hidden due to being empty
+  const isEmptyButtonHidden = (keyConfig: KeyConfig | undefined): boolean => {
+    if (!hideElements.emptyButtons) return false;
+    return !keyConfig?.filePath;
+  };
+
   const handleKeyClick = (keyConfig: KeyConfig | undefined) => {
     if (keyConfig?.filePath) {
       void launchProgram(keyConfig);
@@ -40,25 +57,53 @@ export function VirtualKeyboard(): ReactElement {
     dispatch({ type: 'SET_ACTIVE_TAB', tabId });
   };
 
+  // Calculate visible row count for grid styling
+  const visibleRowCount = [!hideElements.row1, !hideElements.row2, !hideElements.row3].filter(
+    Boolean
+  ).length;
+
+  // Helper to render letter keys for a row
+  const renderLetterRow = (keys: readonly string[]) =>
+    keys.map((keyId) => {
+      const keyConfig = selectKeyConfig(state, state.ui.activeTabId, keyId);
+      return (
+        <KeyButton
+          key={keyId}
+          keyId={keyId}
+          tabId={state.ui.activeTabId}
+          keyConfig={keyConfig}
+          isHidden={!isKeyVisible(keyConfig) || isEmptyButtonHidden(keyConfig)}
+          hideIcon={hideElements.buttonIcons}
+          hideText={hideElements.buttonText}
+          onClick={() => handleKeyClick(keyConfig)}
+          onContextMenu={(e) => openKeyContextMenu(e, state.ui.activeTabId, keyId, keyConfig)}
+        />
+      );
+    });
+
   return (
-    <div className="keyboard-zone">
+    <div className={`keyboard-zone${hideElements.rowF ? ' f-row-hidden' : ''}`}>
       {/* F1-F10 function keys (global) */}
-      <div className="keyboard-row f-keys-row">
-        {FUNCTION_KEYS.map((keyId) => {
-          const keyConfig = selectKeyConfig(state, 'F', keyId);
-          return (
-            <KeyButton
-              key={keyId}
-              keyId={keyId}
-              tabId="F"
-              keyConfig={keyConfig}
-              isHidden={!isKeyVisible(keyConfig)}
-              onClick={() => handleKeyClick(keyConfig)}
-              onContextMenu={(e) => openKeyContextMenu(e, 'F', keyId, keyConfig)}
-            />
-          );
-        })}
-      </div>
+      {!hideElements.rowF && (
+        <div className="keyboard-row f-keys-row">
+          {FUNCTION_KEYS.map((keyId) => {
+            const keyConfig = selectKeyConfig(state, 'F', keyId);
+            return (
+              <KeyButton
+                key={keyId}
+                keyId={keyId}
+                tabId="F"
+                keyConfig={keyConfig}
+                isHidden={!isKeyVisible(keyConfig) || isEmptyButtonHidden(keyConfig)}
+                hideIcon={hideElements.buttonIcons}
+                hideText={hideElements.buttonText}
+                onClick={() => handleKeyClick(keyConfig)}
+                onContextMenu={(e) => openKeyContextMenu(e, 'F', keyId, keyConfig)}
+              />
+            );
+          })}
+        </div>
+      )}
 
       {/* 1-0 tab selector row */}
       <div className="keyboard-row num-keys-row">
@@ -78,22 +123,18 @@ export function VirtualKeyboard(): ReactElement {
         })}
       </div>
 
-      {/* Letter/symbol keys (30 keys per tab, in single container with grid layout) */}
-      <div className="keyboard-row letter-keys-row">
-        {LETTER_KEYS.map((keyId) => {
-          const keyConfig = selectKeyConfig(state, state.ui.activeTabId, keyId);
-          return (
-            <KeyButton
-              key={keyId}
-              keyId={keyId}
-              tabId={state.ui.activeTabId}
-              keyConfig={keyConfig}
-              isHidden={!isKeyVisible(keyConfig)}
-              onClick={() => handleKeyClick(keyConfig)}
-              onContextMenu={(e) => openKeyContextMenu(e, state.ui.activeTabId, keyId, keyConfig)}
-            />
-          );
-        })}
+      {/* Letter/symbol keys (30 keys per tab, split into 3 rows) */}
+      <div
+        className="keyboard-row letter-keys-row"
+        style={
+          visibleRowCount < 3
+            ? { gridTemplateRows: `repeat(${visibleRowCount || 1}, 1fr)` }
+            : undefined
+        }
+      >
+        {!hideElements.row1 && renderLetterRow(LETTER_KEYS_ROW1)}
+        {!hideElements.row2 && renderLetterRow(LETTER_KEYS_ROW2)}
+        {!hideElements.row3 && renderLetterRow(LETTER_KEYS_ROW3)}
       </div>
 
       {/* Context Menu */}

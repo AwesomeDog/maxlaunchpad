@@ -57,6 +57,11 @@ body,
   padding: 4px;
   background: var(--background-color);
   grid-template-rows: 40px auto;
+  transition: grid-template-rows 0.15s;
+}
+
+.app-container.menu-hidden {
+  grid-template-rows: 0px auto;
 }
 
 /* ============================================
@@ -67,6 +72,14 @@ body,
   align-items: center;
   padding: 0 10px;
   user-select: none;
+  transition: height 0.15s, opacity 0.15s, padding 0.15s;
+}
+
+.main-menu.menu-hidden {
+  height: 0;
+  overflow: hidden;
+  padding: 0;
+  opacity: 0;
 }
 
 /* 4.1 Menu Item */
@@ -176,6 +189,31 @@ body,
   background-color: var(--selected-background-color);
 }
 
+/* 5.3 Dropdown Submenu */
+.dropdown-submenu {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.dropdown-submenu > .menu-check {
+  flex-shrink: 0;
+}
+
+.dropdown-submenu > .submenu-arrow {
+  margin-left: auto;
+  padding-left: 12px;
+}
+
+.dropdown-submenu > .dropdown-menu.submenu {
+  position: absolute;
+  top: 0;
+  left: 100%;
+  margin-left: -1px;
+  border-radius: 4px;
+  border-top: 1px solid var(--text-color);
+}
+
 /* ============================================
    6. Context Menu
    ============================================ */
@@ -237,21 +275,31 @@ body,
 }
 
 .f-keys-row {
-  height: 20%;
+  flex: 2;
 }
 
 .num-keys-row {
-  height: 20%;
+  flex: 2;
   gap: 0;
 }
 
 .letter-keys-row {
-  height: 60%;
+  flex: 6;
   grid-template-rows: repeat(3, 1fr);
   padding: 12px;
   border: 1px solid var(--text-color);
   border-top: none;
   background-color: var(--selected-background-color);
+}
+
+/* 7.1.1 F-row hidden state */
+.keyboard-zone.f-row-hidden .num-keys-row {
+  flex: 1;
+}
+
+.keyboard-zone.f-row-hidden .num-key-btn {
+  height: 100%;
+  align-self: stretch;
 }
 
 /* 7.2 Key Button Base */

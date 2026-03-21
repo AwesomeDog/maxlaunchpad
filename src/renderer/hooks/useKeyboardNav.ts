@@ -13,11 +13,17 @@ import { useLaunchProgram } from './useLaunchProgram';
  * - F1-F10: Launch function keys
  * - Letter keys: Launch current tab keys
  * - Mouse wheel over keyboard: Tab navigation
+ * - Alt key: Temporarily show hidden menu
  */
 export function useKeyboardNav() {
   const state = useAppState();
   const dispatch = useDispatch();
   const launchProgram = useLaunchProgram({ hideWindowOnSuccess: true });
+
+  // Check if menu is hidden (need Alt key to show)
+  // Note: settings may be null during loading, but this hook runs after loading completes
+  const isMenuHidden =
+    !state.ui.isDragDropMode && state.settings?.hideElements.menu === true;
 
   const navigateTab = useCallback(
     (delta: 1 | -1) => {
@@ -107,4 +113,35 @@ export function useKeyboardNav() {
     window.addEventListener('wheel', handleWheel, { passive: false });
     return () => window.removeEventListener('wheel', handleWheel);
   }, [state.ui.modal.type, navigateTab]);
+
+  // Alt key handling for showing hidden menu
+  useEffect(() => {
+    if (!isMenuHidden) {
+      // Reset alt pressed state when menu is not hidden
+      if (state.ui.isAltPressed) {
+        dispatch({ type: 'SET_ALT_PRESSED', pressed: false });
+      }
+      return;
+    }
+
+    function handleKeyDown(e: KeyboardEvent) {
+      if (e.key === 'Alt') {
+        dispatch({ type: 'SET_ALT_PRESSED', pressed: true });
+      }
+    }
+
+    function handleKeyUp(e: KeyboardEvent) {
+      if (e.key === 'Alt') {
+        dispatch({ type: 'SET_ALT_PRESSED', pressed: false });
+      }
+    }
+
+    window.addEventListener('keydown', handleKeyDown);
+    window.addEventListener('keyup', handleKeyUp);
+
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+      window.removeEventListener('keyup', handleKeyUp);
+    };
+  }, [isMenuHidden, state.ui.isAltPressed, dispatch]);
 }
