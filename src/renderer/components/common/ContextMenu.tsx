@@ -24,7 +24,7 @@ export function ContextMenu({ items, position, onClose }: ContextMenuProps) {
     middleware: [
       offset(4),
       flip({ fallbackPlacements: ['top-start', 'bottom-end', 'top-end'] }),
-      shift({ padding: 8 }),
+      shift({ padding: 8, crossAxis: true }),
     ],
     whileElementsMounted: autoUpdate,
   });
