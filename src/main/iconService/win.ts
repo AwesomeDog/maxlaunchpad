@@ -198,7 +198,6 @@ using System.IO;
 using System.Runtime.InteropServices;
 
 public class JumboIcon {
-    // Core API: extract icons of a specific size directly from a file
     [DllImport("user32.dll", CharSet = CharSet.Unicode)]
     static extern uint PrivateExtractIcons(string lpszFile, int nIconIndex, int cxIcon, int cyIcon, IntPtr[] phicon, uint[] piconid, uint nIcons, uint flags);
 
@@ -207,40 +206,67 @@ public class JumboIcon {
 
     [DllImport("kernel32.dll", SetLastError = true, CharSet = CharSet.Unicode)]
     static extern IntPtr LoadLibraryEx(string lpFileName, IntPtr hFile, uint dwFlags);
+    
     [DllImport("kernel32.dll")]
     static extern bool FreeLibrary(IntPtr hModule);
+    
     [DllImport("kernel32.dll", CharSet = CharSet.Unicode)]
     static extern IntPtr FindResourceW(IntPtr hModule, IntPtr lpName, IntPtr lpType);
+    
     [DllImport("kernel32.dll")]
     static extern IntPtr LoadResource(IntPtr hModule, IntPtr hResInfo);
+    
     [DllImport("kernel32.dll")]
     static extern IntPtr LockResource(IntPtr hResData);
+    
     [DllImport("kernel32.dll", CharSet = CharSet.Unicode)]
     static extern bool EnumResourceNamesW(IntPtr hModule, IntPtr lpType, EnumResNameProc lpEnumFunc, IntPtr lParam);
+
+    // Delegate definition for resource enumeration
     delegate bool EnumResNameProc(IntPtr hModule, IntPtr lpType, IntPtr lpName, IntPtr lParam);
 
-    // Returns true only if the EXE contains a native 256px icon (enumerates all RT_GROUP_ICON resources)
+    // Static reference to prevent Garbage Collector from reclaiming the delegate during P/Invoke
+    private static EnumResNameProc _enumProc;
+
     private static bool HasRealJumboIcon(string path) {
-        IntPtr hModule = LoadLibraryEx(path, IntPtr.Zero, 0x00000002); // LOAD_LIBRARY_AS_DATAFILE
+        // LOAD_LIBRARY_AS_DATAFILE (0x02) to avoid executing code
+        IntPtr hModule = LoadLibraryEx(path, IntPtr.Zero, 0x00000002);
         if (hModule == IntPtr.Zero) return false;
-        try {
-            bool found = false;
-            EnumResourceNamesW(hModule, (IntPtr)14, (hm, type, name, lp) => { // RT_GROUP_ICON = 14 (integer)
-                IntPtr hResInfo = FindResourceW(hm, name, type);
-                if (hResInfo == IntPtr.Zero) return true;
-                IntPtr pData = LockResource(LoadResource(hm, hResInfo));
-                if (pData == IntPtr.Zero) return true;
-                short cnt = Marshal.ReadInt16(pData, 4);
-                for (int i = 0; i < cnt; i++) {
-                    if (Marshal.ReadByte(pData, 6 + i * 14) == 0) { // bWidth == 0 means 256px in ICO format
-                        found = true; return false;
-                    }
+
+        bool found = false;
+        
+        // Assigning to a static variable to ensure it stays in memory during the call
+        _enumProc = (hm, type, name, lp) => {
+            IntPtr hResInfo = FindResourceW(hm, name, type);
+            if (hResInfo == IntPtr.Zero) return true;
+
+            IntPtr hResData = LoadResource(hm, hResInfo);
+            IntPtr pData = LockResource(hResData);
+            if (pData == IntPtr.Zero) return true;
+
+            // Header: 6 bytes. Number of icons: at offset 4 (Int16)
+            short count = Marshal.ReadInt16(pData, 4);
+            for (int i = 0; i < count; i++) {
+                // Each GRPICONDIRENTRY is 14 bytes. Width is at offset 6 + (i * 14)
+                // A width value of 0 indicates 256px
+                if (Marshal.ReadByte(pData, 6 + i * 14) == 0) {
+                    found = true;
+                    return false; // Stop enumerating
                 }
-                return true;
-            }, IntPtr.Zero);
+            }
+            return true;
+        };
+
+        try {
+            // RT_GROUP_ICON = 14
+            EnumResourceNamesW(hModule, (IntPtr)14, _enumProc, IntPtr.Zero);
             return found;
-        } catch { return false; }
-        finally { FreeLibrary(hModule); }
+        } catch { 
+            return false; 
+        } finally {
+            FreeLibrary(hModule);
+            _enumProc = null; // Clear reference
+        }
     }
 
     public static string Extract(string path) {
@@ -249,16 +275,15 @@ public class JumboIcon {
         IntPtr[] phicon = new IntPtr[1];
         uint[] piconid = new uint[1];
 
-        // Request 256x256 directly
+        // Request 256x256 icon directly from the first index
         uint count = PrivateExtractIcons(path, 0, 256, 256, phicon, piconid, 1, 0);
         
         if (count > 0 && phicon[0] != IntPtr.Zero) {
             try {
-                // Use Icon.FromHandle for better alpha/transparency handling
                 using (Icon icon = Icon.FromHandle(phicon[0]))
                 using (Bitmap bmp = icon.ToBitmap()) {
-                    // Guard against the API returning an upscaled smaller icon anyway
-                    if (bmp.Width != 256) return null;
+                    // Check if the OS actually returned a 256px image or just a stretched smaller one
+                    if (bmp.Width < 256) return null;
 
                     using (MemoryStream ms = new MemoryStream()) {
                         bmp.Save(ms, ImageFormat.Png);
@@ -273,6 +298,7 @@ public class JumboIcon {
     }
 }
 "@ -ReferencedAssemblies $sdPath
+
 [JumboIcon]::Extract($filePath)
 `;
 
