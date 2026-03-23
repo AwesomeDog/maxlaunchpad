@@ -22,8 +22,8 @@ export function TopBar(): ReactElement {
   const settings = state.settings!;
   const hideElements = settings.hideElements;
 
-  // Determine if menu should be visible (drag-drop mode disables all hide settings)
-  const isMenuHidden = !state.ui.isDragDropMode && hideElements.menu;
+  // Determine if menu should be visible
+  const isMenuHidden = hideElements.menu;
   const shouldShowMenu = !isMenuHidden || state.ui.isAltPressed || openMenu !== null;
 
   const closeMenu = useCallback(() => {

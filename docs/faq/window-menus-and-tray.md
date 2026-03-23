@@ -21,8 +21,6 @@ The **View > Hide Elements** submenu allows you to hide:
 - **Row F** — Hide the function keys row (F1-F10)
 - **Row 1/2/3** — Hide specific letter key rows
 
-Note: These settings are disabled in Drag & Drop mode to ensure all keys remain visible for configuration.
-
 ## Are hide settings saved?
 
 Yes, all hide element settings are saved to `settings.yaml` and persist across sessions.

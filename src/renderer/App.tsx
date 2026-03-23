@@ -70,8 +70,8 @@ function AppContent() {
   // After loading, settings is guaranteed to be non-null
   const settings = state.settings!;
 
-  // Determine if menu should be hidden (drag-drop mode disables all hide settings)
-  const isMenuHidden = !state.ui.isDragDropMode && settings.hideElements.menu;
+  // Determine if menu should be hidden
+  const isMenuHidden = settings.hideElements.menu;
 
   // Container class based on menu visibility (isAltPressed is managed by useKeyboardNav)
   const containerClass =

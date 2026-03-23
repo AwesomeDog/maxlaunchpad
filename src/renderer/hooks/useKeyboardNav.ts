@@ -22,8 +22,7 @@ export function useKeyboardNav() {
 
   // Check if menu is hidden (need Alt key to show)
   // Note: settings may be null during loading, but this hook runs after loading completes
-  const isMenuHidden =
-    !state.ui.isDragDropMode && state.settings?.hideElements.menu === true;
+  const isMenuHidden = state.settings?.hideElements.menu === true;
 
   const navigateTab = useCallback(
     (delta: 1 | -1) => {

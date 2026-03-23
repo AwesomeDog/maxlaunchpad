@@ -285,8 +285,6 @@ The menu bar implements **Sticky Menu** behavior.
 | Row 2                     | Hide letter keys row 2 (A-;)                                  |
 | Row 3                     | Hide letter keys row 3 (Z-/)                                  |
 
-Note: All hide settings are disabled in Drag & Drop mode to ensure all keys remain visible for configuration.
-
 ### Tools (Platform-specific)
 
 **Windows**:
