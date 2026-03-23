@@ -59,7 +59,11 @@ function getExtractionStrategies(keyConfig: KeyConfig): Array<() => Promise<Nati
 
   switch (source.type) {
     case 'clsid-exe':
-      return [() => extractExeIcon(source.path), () => getSystemIcon(source.path, 'large')];
+      return [
+        () => extractJumboIcon(source.path),
+        () => extractExeIcon(source.path),
+        () => getSystemIcon(source.path, 'large'),
+      ];
 
     case 'uwp-app':
       return [
@@ -74,13 +78,21 @@ function getExtractionStrategies(keyConfig: KeyConfig): Array<() => Promise<Nati
       ];
 
     case 'exe-file':
-      return [() => extractExeIcon(source.path), () => getSystemIcon(source.path, 'large')];
+      return [
+        () => extractJumboIcon(source.path),
+        () => extractExeIcon(source.path),
+        () => getSystemIcon(source.path, 'large'),
+      ];
 
     case 'lnk-file':
-      return [() => extractLnkIcon(source.path), () => getSystemIcon(source.path, 'large')];
+      return [
+        () => extractJumboIcon(source.path),
+        () => extractLnkIcon(source.path),
+        () => getSystemIcon(source.path, 'large'),
+      ];
 
     case 'generic-file':
-      return [() => getSystemIcon(source.path, 'normal')];
+      return [() => extractJumboIcon(source.path), () => getSystemIcon(source.path, 'normal')];
 
     case 'none':
       return [];
@@ -170,6 +182,80 @@ if ($icon) {
   [Convert]::ToBase64String($ms.ToArray())
   $ms.Close(); $bitmap.Dispose(); $icon.Dispose()
 }`;
+  return runPowerShellForIcon(script);
+}
+
+// PowerShell script that extracts a 256×256 (SHIL_JUMBO) shell icon for any file path.
+// The compiled assembly is cached to a temp DLL so C# compilation only happens once.
+const PS_EXTRACT_JUMBO_ICON = `
+Add-Type -AssemblyName System.Drawing
+$sdPath = [System.Reflection.Assembly]::GetAssembly([System.Drawing.Bitmap]).Location
+$dllPath = [IO.Path]::Combine([IO.Path]::GetTempPath(), 'MxLpJumboIcons.dll')
+if (-not (Test-Path $dllPath)) {
+  try {
+    Add-Type -TypeDefinition @"
+using System;
+using System.Drawing;
+using System.Drawing.Imaging;
+using System.IO;
+using System.Runtime.InteropServices;
+public class JumboIcon {
+  [DllImport(\"shell32.dll\", CharSet = CharSet.Unicode)]
+  static extern IntPtr SHGetFileInfo(string p, uint attr, ref SHFI shfi, uint sz, uint flags);
+  [DllImport(\"shell32.dll\")]
+  static extern int SHGetImageList(int iImageList, ref Guid riid, out IImageList ppv);
+  [DllImport(\"user32.dll\")]
+  static extern bool DestroyIcon(IntPtr h);
+  [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Unicode)]
+  struct SHFI {
+    public IntPtr hIcon; public int iIcon; public uint dwAttr;
+    [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 260)] public string szDisplayName;
+    [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 80)] public string szTypeName;
+  }
+  [StructLayout(LayoutKind.Sequential)]
+  struct ILDP {
+    public int cbSize; public IntPtr himl; public int i; public IntPtr hdcDst;
+    public int x, y, cx, cy, xBitmap, yBitmap, rgbBk, rgbFg, fStyle, dwRop, fState, Frame, crEffect;
+  }
+  [ComImport, Guid(\"46EB5926-582E-4017-9FDF-E8998DAA0950\"), InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
+  interface IImageList {
+    [PreserveSig] int Add(IntPtr a, IntPtr b, out int c);
+    [PreserveSig] int ReplaceIcon(int a, IntPtr b, out int c);
+    [PreserveSig] int SetOverlayImage(int a, int b);
+    [PreserveSig] int Replace(int a, IntPtr b, IntPtr c);
+    [PreserveSig] int AddMasked(IntPtr a, int b, out int c);
+    [PreserveSig] int Draw(ref ILDP p);
+    [PreserveSig] int Remove(int i);
+    [PreserveSig] int GetIcon(int i, int flags, out IntPtr picon);
+  }
+  public static string Extract(string path) {
+    var shfi = new SHFI();
+    SHGetFileInfo(path, 0, ref shfi, (uint)Marshal.SizeOf(shfi), 0x4000);
+    var iid = new Guid(\"46EB5926-582E-4017-9FDF-E8998DAA0950\");
+    IImageList imgList;
+    if (SHGetImageList(4, ref iid, out imgList) != 0 || imgList == null) return null;
+    IntPtr hIcon = IntPtr.Zero;
+    imgList.GetIcon(shfi.iIcon, 0, out hIcon);
+    if (hIcon == IntPtr.Zero) return null;
+    try {
+      using (var bmp = Icon.FromHandle(hIcon).ToBitmap())
+      using (var ms = new MemoryStream()) {
+        bmp.Save(ms, ImageFormat.Png);
+        return Convert.ToBase64String(ms.ToArray());
+      }
+    } finally { DestroyIcon(hIcon); }
+  }
+}
+"@ -ReferencedAssemblies $sdPath -OutputAssembly $dllPath
+  } catch {}
+}
+if (Test-Path $dllPath) { Add-Type -Path $dllPath } else { return }
+[JumboIcon]::Extract($filePath)
+`;
+
+async function extractJumboIcon(filePath: string | null): Promise<NativeImage | null> {
+  if (!filePath) return null;
+  const script = `$filePath = '${escapePS(filePath)}'\n${PS_EXTRACT_JUMBO_ICON}`;
   return runPowerShellForIcon(script);
 }
 
@@ -278,7 +364,10 @@ async function extractWin32AppIconByAppId(appUserModelId: string): Promise<Nativ
   const targetPath = await findWin32AppExePath(appUserModelId);
   if (!targetPath) return null;
 
-  // For .exe files, extract icon directly; for others (.msc, etc.), use system icon
+  // Prefer 256×256 jumbo icon; fall back to exe extraction or system icon
+  const jumbo = await extractJumboIcon(targetPath);
+  if (jumbo) return jumbo;
+
   if (targetPath.toLowerCase().endsWith('.exe')) {
     return extractExeIcon(targetPath);
   }
