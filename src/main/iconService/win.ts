@@ -186,70 +186,93 @@ if ($icon) {
 }
 
 // PowerShell script that extracts a 256×256 (SHIL_JUMBO) shell icon for any file path.
-// The compiled assembly is cached to a temp DLL so C# compilation only happens once.
 const PS_EXTRACT_JUMBO_ICON = `
 Add-Type -AssemblyName System.Drawing
 $sdPath = [System.Reflection.Assembly]::GetAssembly([System.Drawing.Bitmap]).Location
-$dllPath = [IO.Path]::Combine([IO.Path]::GetTempPath(), 'MxLpJumboIcons.dll')
-if (-not (Test-Path $dllPath)) {
-  try {
-    Add-Type -TypeDefinition @"
+
+Add-Type -TypeDefinition @"
 using System;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
 using System.Runtime.InteropServices;
+
 public class JumboIcon {
-  [DllImport(\"shell32.dll\", CharSet = CharSet.Unicode)]
-  static extern IntPtr SHGetFileInfo(string p, uint attr, ref SHFI shfi, uint sz, uint flags);
-  [DllImport(\"shell32.dll\")]
-  static extern int SHGetImageList(int iImageList, ref Guid riid, out IImageList ppv);
-  [DllImport(\"user32.dll\")]
-  static extern bool DestroyIcon(IntPtr h);
-  [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Unicode)]
-  struct SHFI {
-    public IntPtr hIcon; public int iIcon; public uint dwAttr;
-    [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 260)] public string szDisplayName;
-    [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 80)] public string szTypeName;
-  }
-  [StructLayout(LayoutKind.Sequential)]
-  struct ILDP {
-    public int cbSize; public IntPtr himl; public int i; public IntPtr hdcDst;
-    public int x, y, cx, cy, xBitmap, yBitmap, rgbBk, rgbFg, fStyle, dwRop, fState, Frame, crEffect;
-  }
-  [ComImport, Guid(\"46EB5926-582E-4017-9FDF-E8998DAA0950\"), InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
-  interface IImageList {
-    [PreserveSig] int Add(IntPtr a, IntPtr b, out int c);
-    [PreserveSig] int ReplaceIcon(int a, IntPtr b, out int c);
-    [PreserveSig] int SetOverlayImage(int a, int b);
-    [PreserveSig] int Replace(int a, IntPtr b, IntPtr c);
-    [PreserveSig] int AddMasked(IntPtr a, int b, out int c);
-    [PreserveSig] int Draw(ref ILDP p);
-    [PreserveSig] int Remove(int i);
-    [PreserveSig] int GetIcon(int i, int flags, out IntPtr picon);
-  }
-  public static string Extract(string path) {
-    var shfi = new SHFI();
-    SHGetFileInfo(path, 0, ref shfi, (uint)Marshal.SizeOf(shfi), 0x4000);
-    var iid = new Guid(\"46EB5926-582E-4017-9FDF-E8998DAA0950\");
-    IImageList imgList;
-    if (SHGetImageList(4, ref iid, out imgList) != 0 || imgList == null) return null;
-    IntPtr hIcon = IntPtr.Zero;
-    imgList.GetIcon(shfi.iIcon, 0, out hIcon);
-    if (hIcon == IntPtr.Zero) return null;
-    try {
-      using (var bmp = Icon.FromHandle(hIcon).ToBitmap())
-      using (var ms = new MemoryStream()) {
-        bmp.Save(ms, ImageFormat.Png);
-        return Convert.ToBase64String(ms.ToArray());
-      }
-    } finally { DestroyIcon(hIcon); }
-  }
+    // Core API: extract icons of a specific size directly from a file
+    [DllImport("user32.dll", CharSet = CharSet.Unicode)]
+    static extern uint PrivateExtractIcons(string lpszFile, int nIconIndex, int cxIcon, int cyIcon, IntPtr[] phicon, uint[] piconid, uint nIcons, uint flags);
+
+    [DllImport("user32.dll")]
+    static extern bool DestroyIcon(IntPtr h);
+
+    [DllImport("kernel32.dll", SetLastError = true, CharSet = CharSet.Unicode)]
+    static extern IntPtr LoadLibraryEx(string lpFileName, IntPtr hFile, uint dwFlags);
+    [DllImport("kernel32.dll")]
+    static extern bool FreeLibrary(IntPtr hModule);
+    [DllImport("kernel32.dll", CharSet = CharSet.Unicode)]
+    static extern IntPtr FindResourceW(IntPtr hModule, IntPtr lpName, IntPtr lpType);
+    [DllImport("kernel32.dll")]
+    static extern IntPtr LoadResource(IntPtr hModule, IntPtr hResInfo);
+    [DllImport("kernel32.dll")]
+    static extern IntPtr LockResource(IntPtr hResData);
+    [DllImport("kernel32.dll", CharSet = CharSet.Unicode)]
+    static extern bool EnumResourceNamesW(IntPtr hModule, IntPtr lpType, EnumResNameProc lpEnumFunc, IntPtr lParam);
+    delegate bool EnumResNameProc(IntPtr hModule, IntPtr lpType, IntPtr lpName, IntPtr lParam);
+
+    // Returns true only if the EXE contains a native 256px icon (enumerates all RT_GROUP_ICON resources)
+    private static bool HasRealJumboIcon(string path) {
+        IntPtr hModule = LoadLibraryEx(path, IntPtr.Zero, 0x00000002); // LOAD_LIBRARY_AS_DATAFILE
+        if (hModule == IntPtr.Zero) return false;
+        try {
+            bool found = false;
+            EnumResourceNamesW(hModule, (IntPtr)14, (hm, type, name, lp) => { // RT_GROUP_ICON = 14 (integer)
+                IntPtr hResInfo = FindResourceW(hm, name, type);
+                if (hResInfo == IntPtr.Zero) return true;
+                IntPtr pData = LockResource(LoadResource(hm, hResInfo));
+                if (pData == IntPtr.Zero) return true;
+                short cnt = Marshal.ReadInt16(pData, 4);
+                for (int i = 0; i < cnt; i++) {
+                    if (Marshal.ReadByte(pData, 6 + i * 14) == 0) { // bWidth == 0 means 256px in ICO format
+                        found = true; return false;
+                    }
+                }
+                return true;
+            }, IntPtr.Zero);
+            return found;
+        } catch { return false; }
+        finally { FreeLibrary(hModule); }
+    }
+
+    public static string Extract(string path) {
+        if (!File.Exists(path) || !HasRealJumboIcon(path)) return null;
+
+        IntPtr[] phicon = new IntPtr[1];
+        uint[] piconid = new uint[1];
+
+        // Request 256x256 directly
+        uint count = PrivateExtractIcons(path, 0, 256, 256, phicon, piconid, 1, 0);
+        
+        if (count > 0 && phicon[0] != IntPtr.Zero) {
+            try {
+                // Use Icon.FromHandle for better alpha/transparency handling
+                using (Icon icon = Icon.FromHandle(phicon[0]))
+                using (Bitmap bmp = icon.ToBitmap()) {
+                    // Guard against the API returning an upscaled smaller icon anyway
+                    if (bmp.Width != 256) return null;
+
+                    using (MemoryStream ms = new MemoryStream()) {
+                        bmp.Save(ms, ImageFormat.Png);
+                        return Convert.ToBase64String(ms.ToArray());
+                    }
+                }
+            } finally {
+                DestroyIcon(phicon[0]);
+            }
+        }
+        return null;
+    }
 }
-"@ -ReferencedAssemblies $sdPath -OutputAssembly $dllPath
-  } catch {}
-}
-if (Test-Path $dllPath) { Add-Type -Path $dllPath } else { return }
+"@ -ReferencedAssemblies $sdPath
 [JumboIcon]::Extract($filePath)
 `;
 
