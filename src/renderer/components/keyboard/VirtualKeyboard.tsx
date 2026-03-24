@@ -22,7 +22,10 @@ export function VirtualKeyboard(): ReactElement {
   // After loading, settings is guaranteed to be non-null
   const settings = state.settings!;
 
-  const hideElements = settings.hideElements;
+  // In drag-drop mode, force emptyButtons visible for editing
+  const hideElements = state.ui.isDragDropMode
+    ? { ...settings.hideElements, emptyButtons: false }
+    : settings.hideElements;
 
   const hasSearchQuery = state.ui.searchQuery.trim().length > 0;
   const matchingKeys = selectMatchingKeys(state);
