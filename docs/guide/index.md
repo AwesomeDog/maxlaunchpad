@@ -136,4 +136,4 @@ Download the installer from [Releases](https://github.com/AwesomeDog/maxlaunchpa
 
 ## Need Help?
 
-Check the [FAQ](./faq/) for answers to common questions and troubleshooting tips.
+Check the [FAQ](../faq/) for answers to common questions and troubleshooting tips.
