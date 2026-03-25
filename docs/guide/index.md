@@ -2,7 +2,7 @@
 
 **Launch apps with muscle memory, not mental effort**
 
-![Screenshot](./assets/screenshot.png)
+![Screenshot](../assets/screenshot.png)
 
 ## What is MaxLaunchpad?
 
