@@ -126,12 +126,35 @@
   .stat-card .lbl{font-size:.75rem;color:var(--dim);margin-top:.2rem}
 
   /* INSTALL STRIP */
-  .install-strip{background:linear-gradient(135deg,#f0fdf4 0%,#ecfeff 50%,#f0f9ff 100%);padding:4rem 2rem;display:flex;justify-content:center;gap:2rem;flex-wrap:wrap}
-  .install-box{background:#1e293b;border:1px solid #334155;border-radius:10px;padding:1.5rem 2rem;min-width:300px;box-shadow:0 4px 20px rgba(0,0,0,.15)}
-  .install-box h3{color:#888;font-size:.8rem;margin-bottom:.75rem;display:flex;align-items:center;gap:.5rem}
-  .install-box code{display:block;color:#e5e5e5;font-family:'SF Mono',monospace;font-size:.85rem}
-  .install-box code .hl{color:#7db4ff}
-  .install-box code .gr{color:#4ade80}
+  .install-strip{background:linear-gradient(135deg,#f0fdf4 0%,#ecfeff 50%,#f0f9ff 100%);padding:4rem 2rem}
+  .install-strip .section-header{text-align:center;margin-bottom:2.5rem}
+  .install-strip .section-header h2{font-size:2rem;font-weight:800;letter-spacing:-.02em}
+  .install-strip .section-header p{color:var(--dim);margin-top:.5rem;font-size:.95rem}
+  .install-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.5rem;max-width:1100px;margin:0 auto}
+  .install-card{background:#fff;border:1px solid var(--border);border-radius:14px;padding:1.75rem;box-shadow:0 4px 20px rgba(0,0,0,.06);display:flex;flex-direction:column}
+  .install-card .os-header{display:flex;align-items:center;gap:.6rem;margin-bottom:1.25rem;padding-bottom:1rem;border-bottom:1px solid var(--border)}
+  .install-card .os-header .os-name{font-weight:700;font-size:1rem}
+  .install-card .os-header .os-icon{flex-shrink:0}
+  .install-method{margin-bottom:1rem}
+  .install-method:last-child{margin-bottom:0}
+  .install-method .method-label{font-size:.7rem;text-transform:uppercase;letter-spacing:.1em;font-weight:700;margin-bottom:.5rem;display:flex;align-items:center;gap:.4rem}
+  .install-method .method-label.pkg{color:#10b981}
+  .install-method .method-label.dl{color:var(--accent)}
+  .install-method .method-label .dot{width:6px;height:6px;border-radius:50%;display:inline-block}
+  .method-label.pkg .dot{background:#10b981}
+  .method-label.dl .dot{background:var(--accent)}
+  .install-cmd{background:#1e293b;border:1px solid #334155;border-radius:8px;padding:.75rem 1rem;font-family:'SF Mono',Monaco,monospace;font-size:.82rem;color:#e5e5e5;overflow-x:auto}
+  .install-cmd .hl{color:#7db4ff}
+  .install-cmd .gr{color:#4ade80}
+  .dl-btn{display:inline-flex;align-items:center;gap:.5rem;padding:.6rem 1.2rem;border-radius:8px;font-size:.82rem;font-weight:600;text-decoration:none;transition:all .2s;border:1.5px solid var(--accent);color:var(--accent);background:var(--accent-light)}
+  .dl-btn:hover{background:var(--accent);color:#fff;transform:translateY(-1px);box-shadow:0 4px 12px rgba(0,87,255,.25)}
+  .dl-btn svg{flex-shrink:0}
+  .install-or{text-align:center;font-size:.72rem;color:#999;margin:.6rem 0;font-weight:500}
+  .install-note{margin-top:.75rem;padding:.6rem .8rem;background:#fffbeb;border:1px solid #fde68a;border-radius:7px;font-size:.75rem;color:#92400e;line-height:1.5}
+  .install-note code{background:#fef3c7;padding:.1rem .35rem;border-radius:4px;font-family:'SF Mono',Monaco,monospace;font-size:.72rem;word-break:break-all}
+  @media(max-width:900px){
+    .install-grid{grid-template-columns:1fr}
+  }
 
   /* CTA SPLIT */
   .cta-split{display:grid;grid-template-columns:1fr 1fr;min-height:380px}
@@ -351,17 +374,73 @@
 
 <!-- ===== INSTALL ===== -->
 <div class="install-strip" id="install">
-  <div class="install-box">
-    <h3><svg width="16" height="16" viewBox="0 0 24 24" fill="#00adef" style="vertical-align:-2px;margin-right:6px"><path d="M0 3.449L9.75 2.1v9.451H0m10.949-9.602L24 0v11.4H10.949M0 12.6h9.75v9.451L0 20.699M10.949 12.6H24V24l-12.9-1.801"/></svg>Windows — Winget</h3>
-    <code><span class="hl">winget install</span> <span class="gr">AwesomeDog.MaxLaunchpad</span></code>
+  <div class="section-header">
+    <h2>Install MaxLaunchpad</h2>
+    <p>Choose your platform and preferred method — package manager or direct download.</p>
   </div>
-  <div class="install-box">
-    <h3><svg width="16" height="16" viewBox="0 0 24 24" fill="#999" style="vertical-align:-2px;margin-right:6px"><path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.81-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/></svg>macOS — Homebrew</h3>
-    <code><span class="hl">brew install --cask</span> <span class="gr">AwesomeDog/tap/maxlaunchpad</span></code>
-  </div>
-  <div class="install-box">
-    <h3><svg width="16" height="16" viewBox="0 0 24 24" fill="#E95420" style="vertical-align:-2px;margin-right:6px"><path d="M12 2a10 10 0 1010 10A10 10 0 0012 2zm0 2.5A2.5 2.5 0 119.5 7 2.5 2.5 0 0112 4.5zm5.5 10a2.5 2.5 0 11-2.5 2.5 2.5 2.5 0 012.5-2.5zm-11 0a2.5 2.5 0 11-2.5 2.5 2.5 2.5 0 012.5-2.5z"/><circle cx="12" cy="12" r="3.5" fill="none" stroke="#E95420" stroke-width="1.5"/><path d="M12 7v1.5m4.33 2.5l1.3-.75M7.67 11l-1.3-.75m0 3.5l1.3-.75m9.63.75l-1.3-.75M12 15.5V17" stroke="#E95420" stroke-width="1.2"/></svg>Ubuntu — Download</h3>
-    <code><a href="https://github.com/AwesomeDog/maxlaunchpad/releases" target="_blank" style="color:#e5e5e5;text-decoration:none">Download <span class="gr">.deb</span> from <span class="hl">GitHub Releases</span> →</a></code>
+  <div class="install-grid">
+
+    <!-- Windows -->
+    <div class="install-card">
+      <div class="os-header">
+        <svg class="os-icon" width="20" height="20" viewBox="0 0 24 24" fill="#00adef"><path d="M0 3.449L9.75 2.1v9.451H0m10.949-9.602L24 0v11.4H10.949M0 12.6h9.75v9.451L0 20.699M10.949 12.6H24V24l-12.9-1.801"/></svg>
+        <span class="os-name">Windows</span>
+      </div>
+      <div class="install-method">
+        <div class="method-label pkg"><span class="dot"></span> Package Manager</div>
+        <div class="install-cmd"><span class="hl">winget install</span> <span class="gr">AwesomeDog.MaxLaunchpad</span></div>
+      </div>
+      <div class="install-or">— or —</div>
+      <div class="install-method">
+        <div class="method-label dl"><span class="dot"></span> Direct Download</div>
+        <a id="dl-win" href="https://github.com/AwesomeDog/maxlaunchpad/releases/latest" target="_blank" class="dl-btn">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          <span>Download .exe Installer</span>
+        </a>
+      </div>
+    </div>
+
+    <!-- macOS -->
+    <div class="install-card">
+      <div class="os-header">
+        <svg class="os-icon" width="20" height="20" viewBox="0 0 24 24" fill="#999"><path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.81-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/></svg>
+        <span class="os-name">macOS</span>
+      </div>
+      <div class="install-method">
+        <div class="method-label pkg"><span class="dot"></span> Package Manager</div>
+        <div class="install-cmd"><span class="hl">brew install --cask</span> <span class="gr">AwesomeDog/tap/maxlaunchpad</span></div>
+      </div>
+      <div class="install-or">— or —</div>
+      <div class="install-method">
+        <div class="method-label dl"><span class="dot"></span> Direct Download</div>
+        <a id="dl-mac" href="https://github.com/AwesomeDog/maxlaunchpad/releases/latest/download/MaxLaunchpad.dmg" class="dl-btn">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          <span>Download .dmg Installer</span>
+        </a>
+        <div class="install-note">⚠️ After installing, run <code>xattr -cr /Applications/MaxLaunchpad.app</code> to remove quarantine.</div>
+      </div>
+    </div>
+
+    <!-- Linux / Ubuntu -->
+    <div class="install-card">
+      <div class="os-header">
+        <svg class="os-icon" width="20" height="20" viewBox="0 0 16 16" fill="#E95420"><path d="M2.273 9.53a2.273 2.273 0 1 0 0-4.546 2.273 2.273 0 0 0 0 4.547Zm9.467-4.984a2.273 2.273 0 1 0 0-4.546 2.273 2.273 0 0 0 0 4.546ZM7.4 13.108a5.535 5.535 0 0 1-3.775-2.88 3.273 3.273 0 0 1-1.944.24 7.4 7.4 0 0 0 5.328 4.465c.53.113 1.072.169 1.614.166a3.253 3.253 0 0 1-.666-1.9 5.639 5.639 0 0 1-.557-.091Zm3.828 2.285a2.273 2.273 0 1 0 0-4.546 2.273 2.273 0 0 0 0 4.546Zm3.163-3.108a7.436 7.436 0 0 0 .373-8.726 3.276 3.276 0 0 1-1.278 1.498 5.573 5.573 0 0 1-.183 5.535 3.26 3.26 0 0 1 1.088 1.693ZM2.098 3.998a3.28 3.28 0 0 1 1.897.486 5.544 5.544 0 0 1 4.464-2.388c.037-.67.277-1.313.69-1.843a7.472 7.472 0 0 0-7.051 3.745Z"/></svg>
+        <span class="os-name">Ubuntu / Linux</span>
+      </div>
+      <div class="install-method">
+        <div class="method-label dl"><span class="dot"></span> Direct Download</div>
+        <a id="dl-linux" href="https://github.com/AwesomeDog/maxlaunchpad/releases/latest" target="_blank" class="dl-btn">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          <span>Download .deb Package</span>
+        </a>
+      </div>
+      <div class="install-or" style="margin-top:1.2rem">— then install with —</div>
+      <div class="install-method">
+        <div class="method-label pkg"><span class="dot"></span> Terminal</div>
+        <div class="install-cmd"><span class="hl">sudo dpkg -i</span> <span class="gr">maxlaunchpad_*_amd64.deb</span></div>
+      </div>
+    </div>
+
   </div>
 </div>
 
@@ -426,6 +505,36 @@
       this.classList.add('active');
     });
   });
+
+  // Fetch latest release and set download links
+  (function() {
+    const API = 'https://api.github.com/repos/AwesomeDog/maxlaunchpad/releases/latest';
+    const fallback = 'https://github.com/AwesomeDog/maxlaunchpad/releases/latest';
+    fetch(API).then(r => r.json()).then(data => {
+      const assets = data.assets || [];
+      const win = assets.find(a => a.name.endsWith('.exe'));
+      const deb = assets.find(a => a.name.endsWith('.deb'));
+      const dmg = assets.find(a => a.name.endsWith('.dmg'));
+      const ver = (data.tag_name || '').replace(/^v/, '');
+      const dlWin = document.getElementById('dl-win');
+      const dlMac = document.getElementById('dl-mac');
+      const dlLinux = document.getElementById('dl-linux');
+      if (win && dlWin) {
+        dlWin.href = win.browser_download_url;
+        dlWin.querySelector('span').textContent = 'Download .exe (' + ver + ')';
+      }
+      if (dmg && dlMac) {
+        dlMac.href = dmg.browser_download_url;
+        dlMac.querySelector('span').textContent = 'Download .dmg (' + ver + ')';
+      }
+      if (deb && dlLinux) {
+        dlLinux.href = deb.browser_download_url;
+        dlLinux.querySelector('span').textContent = 'Download .deb (' + ver + ')';
+      }
+    }).catch(function() {
+      // On error, links already fallback to releases/latest page
+    });
+  })();
 
   // Keyboard input support
   document.addEventListener('keydown', function(e) {
