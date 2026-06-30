@@ -1,10 +1,12 @@
 import type { ChangeEvent, ReactElement } from 'react';
 import { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { useAppState, useDispatch } from '../../state/store';
 import { Modal } from '../common/Modal';
 
 export function OptionsModal(): ReactElement {
+  const { i18n, t } = useTranslation();
   const state = useAppState();
   const dispatch = useDispatch();
 
@@ -39,13 +41,13 @@ export function OptionsModal(): ReactElement {
       } catch (error) {
         const message =
           error instanceof Error
-            ? `Failed to load styles: ${error.message}`
-            : 'Failed to load styles';
+            ? t('errors.failedToLoadStylesWithMessage', { message: error.message })
+            : t('errors.failedToLoadStyles');
         dispatch({ type: 'SET_ERROR', error: message });
       }
     }
     void loadStyles();
-  }, [dispatch]);
+  }, [dispatch, t]);
 
   const handleLaunchOnStartupChange = (e: ChangeEvent<HTMLInputElement>) => {
     const checked = e.target.checked;
@@ -83,8 +85,14 @@ export function OptionsModal(): ReactElement {
     });
   };
 
+  const handleLanguageChange = (e: ChangeEvent<HTMLSelectElement>) => {
+    void i18n.changeLanguage(e.target.value);
+  };
+
+  const currentLanguage = i18n.resolvedLanguage?.startsWith('zh') ? 'zh-CN' : 'en';
+
   return (
-    <Modal title="Options">
+    <Modal title={t('modals.options.title')}>
       <div className="modal-row">
         <div className="modifier-keys">
           <label>
@@ -93,7 +101,7 @@ export function OptionsModal(): ReactElement {
               checked={launchOnStartup}
               onChange={handleLaunchOnStartupChange}
             />
-            Launch on Startup
+            {t('modals.options.launchOnStartup')}
           </label>
         </div>
       </div>
@@ -102,22 +110,22 @@ export function OptionsModal(): ReactElement {
         <div className="modifier-keys">
           <label>
             <input type="checkbox" checked={startInTray} onChange={handleStartInTrayChange} />
-            Start in Tray (Minimized)
+            {t('modals.options.startInTray')}
           </label>
         </div>
       </div>
 
       <div className="modal-row">
-        <label>Theme:</label>
+        <label>{t('modals.options.theme')}:</label>
         <select value={theme} onChange={handleThemeChange}>
-          <option value="system">system</option>
-          <option value="light">light</option>
-          <option value="dark">dark</option>
+          <option value="system">{t('modals.options.themeSystem')}</option>
+          <option value="light">{t('modals.options.themeLight')}</option>
+          <option value="dark">{t('modals.options.themeDark')}</option>
         </select>
       </div>
 
       <div className="modal-row">
-        <label>Custom Style:</label>
+        <label>{t('modals.options.customStyle')}:</label>
         <select value={customStyle} onChange={handleCustomStyleChange}>
           {availableStyles.map((style) => (
             <option key={style} value={style}>
@@ -127,8 +135,18 @@ export function OptionsModal(): ReactElement {
         </select>
       </div>
 
+      <div className="modal-row">
+        <label>{t('modals.options.language')}:</label>
+        <select value={currentLanguage} onChange={handleLanguageChange}>
+          <option value="en">{t('modals.options.languageEnglish')}</option>
+          <option value="zh-CN">{t('modals.options.languageChineseSimplified')}</option>
+        </select>
+      </div>
+
       <div className="modal-actions">
-        <button onClick={() => dispatch({ type: 'CLOSE_MODAL' })}>Close</button>
+        <button onClick={() => dispatch({ type: 'CLOSE_MODAL' })}>
+          {t('modals.common.close')}
+        </button>
       </div>
     </Modal>
   );

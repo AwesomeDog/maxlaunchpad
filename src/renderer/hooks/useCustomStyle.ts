@@ -1,10 +1,12 @@
 import { useEffect, useRef } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { useAppState, useDispatch } from '../state/store';
 
 const CUSTOM_STYLE_ID = 'custom-style';
 
 export function useCustomStyle() {
+  const { t } = useTranslation();
   const state = useAppState();
   const dispatch = useDispatch();
   const customStyle = state.settings?.customStyle;
@@ -37,8 +39,8 @@ export function useCustomStyle() {
       } catch (error) {
         const message =
           error instanceof Error
-            ? `Failed to load custom style: ${error.message}`
-            : 'Failed to load custom style';
+            ? t('errors.failedToLoadCustomStyleWithMessage', { message: error.message })
+            : t('errors.failedToLoadCustomStyle');
         dispatch({ type: 'SET_ERROR', error: message });
       }
     }
@@ -51,5 +53,5 @@ export function useCustomStyle() {
         styleElement.remove();
       }
     };
-  }, [customStyle, dispatch]);
+  }, [customStyle, dispatch, t]);
 }

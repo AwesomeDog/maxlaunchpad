@@ -1,3 +1,4 @@
+import { DEFAULT_HIDE_ELEMENTS } from '../constants';
 import {
   AppSettingsSchema,
   HotkeyConfigSchema,
@@ -236,6 +237,7 @@ describe('AppSettingsSchema', () => {
     theme: 'dark' as const,
     customStyle: '.key { color: red; }',
     windowSize: { width: 1000, height: 600 },
+    hideElements: { ...DEFAULT_HIDE_ELEMENTS },
   };
 
   it('should validate complete settings', () => {
@@ -272,6 +274,7 @@ describe('AppSettingsSchema', () => {
       'theme',
       'customStyle',
       'windowSize',
+      'hideElements',
     ];
 
     requiredFields.forEach((field) => {

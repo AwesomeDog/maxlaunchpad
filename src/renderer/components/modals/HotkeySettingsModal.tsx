@@ -1,5 +1,6 @@
 import type { ChangeEvent, KeyboardEvent, ReactElement } from 'react';
 import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import {
   CODE_TO_ACCELERATOR,
@@ -14,6 +15,7 @@ import { useAppState, useDispatch } from '../../state/store';
 import { Modal } from '../common/Modal';
 
 export function HotkeySettingsModal(): ReactElement {
+  const { t } = useTranslation();
   const state = useAppState();
   const dispatch = useDispatch();
 
@@ -104,9 +106,9 @@ export function HotkeySettingsModal(): ReactElement {
   };
 
   return (
-    <Modal title="Hotkey Settings">
+    <Modal title={t('modals.hotkeySettings.title')}>
       <div className="modal-row">
-        <label>Modifier Keys:</label>
+        <label>{t('modals.hotkeySettings.modifierKeys')}:</label>
         <div className="modifier-keys">
           {modifierKeysWithLabels.map((mod) => (
             <label key={mod.id}>
@@ -122,15 +124,15 @@ export function HotkeySettingsModal(): ReactElement {
       </div>
 
       <div className="modal-row">
-        <label>Key:</label>
+        <label>{t('modals.hotkeySettings.key')}:</label>
         <input
           type="text"
-          value={isRecording ? 'Press a key...' : mainKey}
+          value={isRecording ? t('modals.hotkeySettings.pressAKey') : mainKey}
           onFocus={() => setIsRecording(true)}
           onBlur={() => setIsRecording(false)}
           onKeyDown={handleKeyDown}
           readOnly
-          placeholder="Click to record"
+          placeholder={t('modals.hotkeySettings.clickToRecord')}
           style={
             isRecording
               ? {
@@ -144,19 +146,19 @@ export function HotkeySettingsModal(): ReactElement {
       </div>
 
       <div className="modal-row">
-        <label>Active Tab on Show:</label>
+        <label>{t('modals.hotkeySettings.activeTab')}:</label>
         <select value={activeTabOnShow} onChange={handleActiveTabOnShowChange}>
-          <option value="lastUsed">Last Used</option>
+          <option value="lastUsed">{t('modals.hotkeySettings.lastUsed')}</option>
           {NUM_KEYS.map((key) => (
             <option key={key} value={key}>
-              Tab {key}
+              {t('modals.hotkeySettings.tabOption', { tabId: key })}
             </option>
           ))}
         </select>
       </div>
 
       <div className="modal-row modal-row-highlight">
-        <span style={{ fontWeight: 'bold' }}>Current Hotkey:</span>
+        <span style={{ fontWeight: 'bold' }}>{t('modals.hotkeySettings.currentHotkey')}</span>
         <span style={{ fontFamily: 'monospace', fontSize: '1.1em' }}>
           {modifiers.length > 0
             ? modifiers
@@ -175,18 +177,19 @@ export function HotkeySettingsModal(): ReactElement {
         style={{ marginTop: '1em', fontSize: '0.85em', lineHeight: '1.5' }}
       >
         <p style={{ margin: 0 }}>
-          💡 We recommend trying the hotkey before customizing.
+          {t('modals.hotkeySettings.recommendation')}
           {IS_LINUX && (
             <span style={{ display: 'block', marginTop: '0.5em' }}>
-              🐧 On Linux, global hotkeys may require additional setup due to system restrictions.
-              Please refer to your desktop environment's manual for keyboard shortcut configuration.
+              {t('modals.hotkeySettings.linuxGlobalHotkeyNote')}
             </span>
           )}
         </p>
       </div>
 
       <div className="modal-actions">
-        <button onClick={() => dispatch({ type: 'CLOSE_MODAL' })}>Close</button>
+        <button onClick={() => dispatch({ type: 'CLOSE_MODAL' })}>
+          {t('modals.common.close')}
+        </button>
       </div>
     </Modal>
   );

@@ -1,6 +1,7 @@
 import './styles/global.css';
 
 import { useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { VirtualKeyboard } from './components/keyboard/VirtualKeyboard';
 import { TopBar } from './components/layout/TopBar';
@@ -19,6 +20,7 @@ import { useWindowTitle } from './hooks/useWindowTitle';
 import { AppStateProvider, useAppState, useDispatch } from './state/store';
 
 function AppContent() {
+  const { t } = useTranslation();
   const state = useAppState();
   const dispatch = useDispatch();
 
@@ -42,11 +44,11 @@ function AppContent() {
         const { settings, profile } = await window.electronAPI.loadConfig();
         dispatch({ type: 'SET_CONFIG', settings, profile });
       } catch {
-        dispatch({ type: 'SET_ERROR', error: 'Failed to load configuration' });
+        dispatch({ type: 'SET_ERROR', error: t('errors.failedToLoadConfiguration') });
       }
     }
     void load();
-  }, [dispatch]);
+  }, [dispatch, t]);
 
   if (state.ui.isLoading) {
     return (
@@ -61,7 +63,7 @@ function AppContent() {
             color: 'var(--text-color)',
           }}
         >
-          Loading...
+          {t('app.loading')}
         </div>
       </div>
     );

@@ -1,6 +1,7 @@
 import { act, renderHook, waitFor } from '@testing-library/react';
 import React from 'react';
 
+import { DEFAULT_HIDE_ELEMENTS } from '../../../shared/constants';
 import type { AppSettings, KeyboardProfile } from '../../../shared/types';
 import { AppStateProvider, useAppState, useDispatch } from '../../state/store';
 import { useConfigSync } from '../useConfigSync';
@@ -61,6 +62,7 @@ const mockSettings: AppSettings = {
   theme: 'system',
   customStyle: 'default',
   windowSize: { width: 1000, height: 600 },
+  hideElements: { ...DEFAULT_HIDE_ELEMENTS },
 };
 
 const mockProfile: KeyboardProfile = {

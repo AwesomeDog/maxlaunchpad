@@ -1,5 +1,7 @@
 import '@testing-library/jest-dom';
 
+import './src/renderer/i18n';
+
 // Mock window.electronAPI
 Object.defineProperty(window, 'electronAPI', {
   value: {

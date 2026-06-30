@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import type { InstalledApp, KeyConfig } from '../../../shared/types';
 import { IS_WINDOWS } from '../../platform';
@@ -10,6 +11,7 @@ interface EditKeyModalProps {
 }
 
 export function EditKeyModal({ keyConfig }: EditKeyModalProps) {
+  const { t } = useTranslation();
   const dispatch = useDispatch();
 
   const [label, setLabel] = useState(keyConfig.label);
@@ -103,7 +105,13 @@ export function EditKeyModal({ keyConfig }: EditKeyModalProps) {
   };
 
   return (
-    <Modal title={`Edit Key: ${keyConfig.tabId} / ${keyConfig.id}`} width={550}>
+    <Modal
+      title={t('modals.editKey.titleWithKey', {
+        tabId: keyConfig.tabId,
+        keyId: keyConfig.id,
+      })}
+      width={550}
+    >
       <div
         style={{
           padding: '12px',
@@ -113,7 +121,7 @@ export function EditKeyModal({ keyConfig }: EditKeyModalProps) {
         }}
       >
         <div className="modal-row" style={{ marginBottom: 0 }}>
-          <label>Quick Select</label>
+          <label>{t('modals.editKey.quickSelect')}</label>
           <div style={{ position: 'relative', flexGrow: 1 }}>
             <input
               type="text"
@@ -125,7 +133,7 @@ export function EditKeyModal({ keyConfig }: EditKeyModalProps) {
               onFocus={() => setShowAppDropdown(true)}
               onBlur={() => setTimeout(() => setShowAppDropdown(false), 200)}
               onKeyDown={handleKeyDown}
-              placeholder="(Optional) Search to auto-fill below..."
+              placeholder={t('modals.editKey.quickSelectPlaceholder')}
               style={{ width: '100%' }}
             />
             {showAppDropdown && filteredApps.length > 0 && (
@@ -158,77 +166,77 @@ export function EditKeyModal({ keyConfig }: EditKeyModalProps) {
       <div className="context-menu-separator" style={{ margin: '16px 0' }} />
 
       <div className="modal-row">
-        <label>Label *</label>
+        <label>{t('modals.editKey.labelRequired')}</label>
         <input
           type="text"
           value={label}
           onChange={(e) => setLabel(e.target.value)}
-          placeholder="Display name"
+          placeholder={t('modals.editKey.labelPlaceholder')}
           autoFocus
         />
       </div>
 
       <div className="modal-row">
-        <label>File Path *</label>
+        <label>{t('modals.editKey.filePathRequired')}</label>
         <input
           type="text"
           value={filePath}
           onChange={(e) => setFilePath(e.target.value)}
-          placeholder="Program path"
+          placeholder={t('modals.editKey.filePathPlaceholder')}
         />
       </div>
 
       <div className="modal-row">
-        <label>Arguments</label>
+        <label>{t('modals.editKey.arguments')}</label>
         <input
           type="text"
           value={args}
           onChange={(e) => setArgs(e.target.value)}
-          placeholder="Commandline arguments"
+          placeholder={t('modals.editKey.argumentsPlaceholder')}
         />
       </div>
 
       <div className="modal-row">
-        <label>Working Directory</label>
+        <label>{t('modals.editKey.workingDirectory')}</label>
         <input
           type="text"
           value={workingDirectory}
           onChange={(e) => setWorkingDirectory(e.target.value)}
-          placeholder="Working directory"
+          placeholder={t('modals.editKey.workingDirectoryPlaceholder')}
         />
       </div>
 
       <div className="modal-row">
-        <label>Description</label>
+        <label>{t('modals.editKey.description')}</label>
         <textarea
           value={description}
           onChange={(e) => setDescription(e.target.value)}
-          placeholder="Tooltip text"
+          placeholder={t('modals.editKey.descriptionPlaceholder')}
         />
       </div>
 
       {IS_WINDOWS && (
         <div className="modal-row">
-          <label>Run as Admin</label>
+          <label>{t('modals.editKey.runAsAdmin')}</label>
           <input
             type="checkbox"
             checked={runAsAdmin}
             onChange={(e) => setRunAsAdmin(e.target.checked)}
           />
           <span style={{ opacity: 0.5, fontSize: '12px', marginLeft: '8px' }}>
-            Only enable if you understand the consequences
+            {t('modals.editKey.runAsAdminWarning')}
           </span>
         </div>
       )}
 
       <div className="modal-row">
-        <label>Icon Path</label>
+        <label>{t('modals.editKey.iconPath')}</label>
         <div style={{ display: 'flex', gap: '8px', flexGrow: 1 }}>
           <input
             type="text"
             value={iconPath}
             onChange={(e) => setIconPath(e.target.value)}
-            placeholder="Custom icon path (file/url)"
+            placeholder={t('modals.editKey.iconPathPlaceholder')}
             style={{ flexGrow: 1 }}
           />
           <input
@@ -245,16 +253,18 @@ export function EditKeyModal({ keyConfig }: EditKeyModalProps) {
             }}
           />
           <button type="button" onClick={() => iconInputRef.current?.click()}>
-            Browse
+            {t('modals.editKey.browse')}
           </button>
         </div>
       </div>
 
       <div className="modal-actions">
         <button onClick={handleSave} disabled={!label.trim() || !filePath.trim()}>
-          Save
+          {t('modals.common.save')}
         </button>
-        <button onClick={() => dispatch({ type: 'CLOSE_MODAL' })}>Cancel</button>
+        <button onClick={() => dispatch({ type: 'CLOSE_MODAL' })}>
+          {t('modals.common.cancel')}
+        </button>
       </div>
     </Modal>
   );
