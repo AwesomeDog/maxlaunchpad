@@ -5,6 +5,9 @@
   --background-color: #fafafa;
   --selected-background-color: #e3f2fd;
   --text-color: #212121;
+  --keyboard-gap: 8px;
+  --key-button-label-font-size: clamp(11px, 11.5cqw, 15px);
+  --tab-button-label-font-size: clamp(12px, 12cqw, 16px);
 }
 
 :root.dark-mode {
@@ -53,8 +56,8 @@ body,
   width: 100%;
   height: 100%;
   display: grid;
-  gap: 8px;
-  padding: 4px;
+  gap: var(--keyboard-gap);
+  padding: var(--keyboard-gap);
   background: var(--background-color);
   grid-template-rows: 40px auto;
   transition: grid-template-rows 0.15s;
@@ -72,7 +75,10 @@ body,
   align-items: center;
   padding: 0 10px;
   user-select: none;
-  transition: height 0.15s, opacity 0.15s, padding 0.15s;
+  transition:
+    height 0.15s,
+    opacity 0.15s,
+    padding 0.15s;
 }
 
 .main-menu.menu-hidden {
@@ -80,6 +86,23 @@ body,
   overflow: hidden;
   padding: 0;
   opacity: 0;
+}
+
+.app-title {
+  flex: 0 0 auto;
+  max-width: 160px;
+  margin-right: 12px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: var(--text-color);
+  font-weight: 600;
+}
+
+.topbar-menu-items {
+  display: flex;
+  align-items: center;
+  min-width: 0;
 }
 
 /* 4.1 Menu Item */
@@ -261,40 +284,56 @@ body,
    7. Keyboard Layout
    ============================================ */
 .keyboard-zone {
-  display: flex;
-  flex-direction: column;
+  display: grid;
+  grid-template-rows: minmax(48px, 0.6fr) minmax(0, 3fr);
+  gap: var(--keyboard-gap);
   height: 100%;
-  padding: 0 20px 20px;
+  padding: 0;
+  min-height: 0;
 }
 
 /* 7.1 Keyboard Rows */
 .keyboard-row {
   display: grid;
   grid-template-columns: repeat(10, 1fr);
-  gap: 8px;
+  gap: var(--keyboard-gap);
+  min-height: 0;
 }
 
 .f-keys-row {
-  flex: 2;
+  min-height: 0;
+}
+
+.f-keys-row .key-btn {
+  height: 100%;
+  min-height: 0;
+}
+
+.tabbed-keyboard-panel {
+  display: grid;
+  grid-template-rows: 40px minmax(0, 1fr);
+  min-height: 0;
+  position: relative;
 }
 
 .num-keys-row {
-  flex: 2;
-  gap: 0;
+  height: 40px;
+  gap: var(--keyboard-gap);
+  min-height: 0;
 }
 
 .letter-keys-row {
-  flex: 6;
   grid-template-rows: repeat(3, 1fr);
-  padding: 12px;
+  padding: var(--keyboard-gap) 0 0;
   border: 1px solid var(--text-color);
   border-top: none;
   background-color: var(--selected-background-color);
+  min-height: 0;
 }
 
 /* 7.1.1 F-row hidden state */
-.keyboard-zone.f-row-hidden .num-keys-row {
-  flex: 1;
+.keyboard-zone.f-row-hidden {
+  grid-template-rows: minmax(0, 1fr);
 }
 
 .keyboard-zone.f-row-hidden .num-key-btn {
@@ -305,13 +344,11 @@ body,
 /* 7.2 Key Button Base */
 .key-btn {
   position: relative;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
+  container-type: inline-size;
+  display: block;
   min-width: 48px;
   min-height: 48px;
-  margin: 3px;
+  margin: 0;
   padding: 1px 8px;
   border: 1px solid var(--text-color);
   border-radius: 4px;
@@ -336,6 +373,40 @@ body,
   transform: scale(1.05);
 }
 
+body.key-move-active {
+  cursor: grabbing;
+  user-select: none;
+}
+
+.key-btn.move-source {
+  cursor: grabbing;
+  opacity: 0.72;
+  transform: scale(0.97);
+}
+
+.key-btn.move-target {
+  outline: 2px solid #0078d4;
+  outline-offset: 2px;
+  transform: scale(1.03);
+}
+
+.num-key-btn.tab-move-source {
+  cursor: grabbing;
+  opacity: 0.72;
+  transform: scale(0.97);
+}
+
+.num-key-btn.tab-move-target {
+  outline: 2px solid #0078d4;
+  outline-offset: 2px;
+  transform: scale(1.03);
+}
+
+body.tab-move-active {
+  cursor: grabbing;
+  user-select: none;
+}
+
 .key-btn.hidden {
   visibility: hidden;
 }
@@ -351,21 +422,61 @@ body,
 }
 
 .key-btn-text {
+  display: block;
   width: 100%;
-  padding: 0 2px;
   text-align: center;
-  white-space: nowrap;
+  white-space: normal;
   overflow: hidden;
-  text-overflow: ellipsis;
-  font-size: 0.8em;
+  text-overflow: clip;
+  overflow-wrap: anywhere;
+  font-size: var(--key-button-label-font-size);
+  line-height: 1.12;
   color: var(--text-color);
 }
 
+.key-btn-text-slot {
+  position: absolute;
+  right: 8px;
+  top: calc(68% + 4px);
+  bottom: auto;
+  left: 8px;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  max-height: calc(32% - 10px);
+  min-height: 0;
+}
+
+.f-keys-row .key-btn-text-slot {
+  top: calc(66% + 3px);
+  bottom: auto;
+  max-height: calc(34% - 9px);
+}
+
+.key-btn-icon-slot {
+  position: absolute;
+  top: 47%;
+  right: 8px;
+  left: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 48%;
+  min-height: 0;
+  transform: translateY(-50%);
+}
+
+.f-keys-row .key-btn-icon-slot {
+  top: 47%;
+  height: 44%;
+}
+
 .key-btn-icon {
-  width: 32px;
-  height: 32px;
+  width: clamp(34px, 46cqw, 44px);
+  height: clamp(34px, 46cqw, 44px);
+  max-height: 100%;
   object-fit: contain;
-  margin-bottom: 2px;
+  margin: 0;
 }
 
 .key-btn:hover .key-btn-key,
@@ -375,11 +486,20 @@ body,
 
 /* 7.4 Number Key (Tab Selector) */
 .num-key-btn {
-  height: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  height: 100%;
+  min-height: 0;
   margin: 0;
   align-self: end;
   border-left: none;
+  border-bottom-color: transparent;
   border-radius: 12px 12px 0 0;
+  position: relative;
+  overflow: visible;
+  transform: none;
 }
 
 .num-key-btn:first-child {
@@ -388,7 +508,48 @@ body,
 
 .num-key-btn.selected {
   background: var(--selected-background-color);
-  border-bottom: none;
+  border-bottom-color: transparent;
+  z-index: 2;
+}
+
+.num-key-btn.selected::after {
+  content: '';
+  position: absolute;
+  right: 0;
+  bottom: -1px;
+  left: 0;
+  height: 2px;
+  background: var(--selected-background-color);
+  pointer-events: none;
+}
+
+.num-key-btn:hover {
+  transform: none;
+}
+
+.num-key-number,
+.num-key-label {
+  color: var(--text-color);
+}
+
+.num-key-number {
+  position: absolute;
+  top: 50%;
+  left: 3px;
+  flex: 0 0 auto;
+  font-weight: bold;
+  transform: translateY(-50%);
+}
+
+.num-key-label {
+  flex: 0 1 auto;
+  min-width: 0;
+  max-width: calc(100% - 32px);
+  max-height: 1.2em;
+  overflow: hidden;
+  text-align: center;
+  white-space: nowrap;
+  font-size: var(--tab-button-label-font-size);
 }
 
 /* ============================================
@@ -431,9 +592,33 @@ body,
   margin-bottom: 15px;
 }
 
-.modal-row > label {
+.modal-row-quick-select {
+  margin-bottom: 0;
+}
+
+.modal-row-file-actions {
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.modal-row-path {
+  align-items: flex-start;
+}
+
+.modal-row-path > label {
+  padding-top: 7px;
+}
+
+.modal-row > label,
+.modal-row-label-spacer {
   flex-basis: 150px;
   flex-shrink: 0;
+}
+
+.modal-field {
+  position: relative;
+  flex-grow: 1;
+  min-width: 0;
 }
 
 .modal-row input[type='text'],
@@ -452,6 +637,56 @@ body,
 .modal-row textarea {
   resize: vertical;
   min-height: 60px;
+}
+
+.path-picker {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  flex-grow: 1;
+  min-width: 0;
+  gap: 8px;
+}
+
+.path-picker input {
+  width: 100%;
+  min-width: 0;
+}
+
+.file-picker-actions,
+.path-picker-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  min-width: 0;
+}
+
+.file-picker-actions {
+  justify-content: flex-start;
+}
+
+.path-picker-actions {
+  justify-content: flex-end;
+}
+
+.file-picker-actions button,
+.path-picker-actions button,
+.path-picker button {
+  flex: 0 0 auto;
+  white-space: nowrap;
+}
+
+.icon-path-picker {
+  flex-grow: 1;
+}
+
+.app-picker-field input {
+  width: 100%;
+}
+
+.app-picker-dropdown {
+  left: 0;
+  right: 0;
 }
 
 .modal-row input[type='checkbox'] {
@@ -488,6 +723,8 @@ body,
   margin-top: 25px;
 }
 
+.file-picker-actions button,
+.path-picker button,
 .modal-actions button {
   border: 1px solid var(--text-color);
   border-radius: 4px;
@@ -498,11 +735,15 @@ body,
   cursor: pointer;
 }
 
+.file-picker-actions button:hover,
+.path-picker button:hover,
 .modal-actions button:hover {
   background: var(--text-color);
   color: var(--background-color);
 }
 
+.file-picker-actions button:disabled,
+.path-picker button:disabled,
 .modal-actions button:disabled {
   opacity: 0.5;
   cursor: not-allowed;

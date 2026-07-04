@@ -57,9 +57,32 @@ export function VirtualKeyboard(): ReactElement {
     dispatch({ type: 'SET_ACTIVE_TAB', tabId });
   };
 
+  const handleMoveKey = (
+    source: { tabId: string; keyId: string },
+    target: { tabId: string; keyId: string },
+  ) => {
+    dispatch({ type: 'MOVE_KEY', source, target });
+  };
+
+  const handleMoveTab = (sourceTabId: string, targetTabId: string) => {
+    dispatch({ type: 'MOVE_TAB', sourceTabId, targetTabId });
+  };
+
+  const handleEditKey = (tabId: string, keyId: string, keyConfig: KeyConfig | undefined) => {
+    dispatch({
+      type: 'OPEN_EDIT_KEY_MODAL',
+      key: keyConfig ?? {
+        tabId,
+        id: keyId,
+        label: '',
+        filePath: '',
+      },
+    });
+  };
+
   // Calculate visible row count for grid styling
   const visibleRowCount = [!hideElements.row1, !hideElements.row2, !hideElements.row3].filter(
-    Boolean
+    Boolean,
   ).length;
 
   // Helper to render letter keys for a row
@@ -76,7 +99,9 @@ export function VirtualKeyboard(): ReactElement {
           hideIcon={hideElements.buttonIcons}
           hideText={hideElements.buttonText}
           onClick={() => handleKeyClick(keyConfig)}
+          onEdit={() => handleEditKey(state.ui.activeTabId, keyId, keyConfig)}
           onContextMenu={(e) => openKeyContextMenu(e, state.ui.activeTabId, keyId, keyConfig)}
+          onMoveKey={handleMoveKey}
         />
       );
     });
@@ -98,43 +123,48 @@ export function VirtualKeyboard(): ReactElement {
                 hideIcon={hideElements.buttonIcons}
                 hideText={hideElements.buttonText}
                 onClick={() => handleKeyClick(keyConfig)}
+                onEdit={() => handleEditKey('F', keyId, keyConfig)}
                 onContextMenu={(e) => openKeyContextMenu(e, 'F', keyId, keyConfig)}
+                onMoveKey={handleMoveKey}
               />
             );
           })}
         </div>
       )}
 
-      {/* 1-0 tab selector row */}
-      <div className="keyboard-row num-keys-row">
-        {NUM_KEYS.map((keyId) => {
-          const label = selectTabLabel(state, keyId) || '';
-          return (
-            <NumButton
-              key={keyId}
-              keyId={keyId}
-              label={label}
-              isSelected={state.ui.activeTabId === keyId}
-              isHidden={!isTabVisible(keyId)}
-              onClick={() => handleTabClick(keyId)}
-              onContextMenu={(e) => openTabContextMenu(e, keyId)}
-            />
-          );
-        })}
-      </div>
+      <div className="tabbed-keyboard-panel">
+        {/* 1-0 tab selector row */}
+        <div className="keyboard-row num-keys-row">
+          {NUM_KEYS.map((keyId) => {
+            const label = selectTabLabel(state, keyId) || '';
+            return (
+              <NumButton
+                key={keyId}
+                keyId={keyId}
+                label={label}
+                isSelected={state.ui.activeTabId === keyId}
+                isHidden={!isTabVisible(keyId)}
+                onClick={() => handleTabClick(keyId)}
+                onContextMenu={(e) => openTabContextMenu(e, keyId)}
+                onMoveTab={handleMoveTab}
+              />
+            );
+          })}
+        </div>
 
-      {/* Letter/symbol keys (30 keys per tab, split into 3 rows) */}
-      <div
-        className="keyboard-row letter-keys-row"
-        style={
-          visibleRowCount < 3
-            ? { gridTemplateRows: `repeat(${visibleRowCount || 1}, 1fr)` }
-            : undefined
-        }
-      >
-        {!hideElements.row1 && renderLetterRow(LETTER_KEYS_ROW1)}
-        {!hideElements.row2 && renderLetterRow(LETTER_KEYS_ROW2)}
-        {!hideElements.row3 && renderLetterRow(LETTER_KEYS_ROW3)}
+        {/* Letter/symbol keys (30 keys per tab, split into 3 rows) */}
+        <div
+          className="keyboard-row letter-keys-row"
+          style={
+            visibleRowCount < 3
+              ? { gridTemplateRows: `repeat(${visibleRowCount || 1}, 1fr)` }
+              : undefined
+          }
+        >
+          {!hideElements.row1 && renderLetterRow(LETTER_KEYS_ROW1)}
+          {!hideElements.row2 && renderLetterRow(LETTER_KEYS_ROW2)}
+          {!hideElements.row3 && renderLetterRow(LETTER_KEYS_ROW3)}
+        </div>
       </div>
 
       {/* Context Menu */}

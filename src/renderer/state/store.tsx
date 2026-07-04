@@ -13,6 +13,11 @@ type ModalState =
   | { type: 'options' }
   | { type: 'about' };
 
+export interface KeyMoveLocation {
+  tabId: string;
+  keyId: string;
+}
+
 export interface AppState {
   // Persisted config (loaded from files)
   settings: AppSettings | null;
@@ -39,7 +44,9 @@ export type Action =
   | { type: 'SET_CONFIG'; settings: AppSettings; profile: KeyboardProfile }
   | { type: 'UPDATE_SETTINGS'; settings: Partial<AppSettings> }
   | { type: 'UPDATE_KEY'; key: KeyConfig }
+  | { type: 'MOVE_KEY'; source: KeyMoveLocation; target: KeyMoveLocation }
   | { type: 'DELETE_KEY'; tabId: string; keyId: string }
+  | { type: 'MOVE_TAB'; sourceTabId: string; targetTabId: string }
   | { type: 'UPDATE_TAB'; tabId: string; label: string }
   // UI actions
   | { type: 'SET_ACTIVE_TAB'; tabId: string }
@@ -125,6 +132,39 @@ export function reducer(state: AppState, action: Action): AppState {
       };
     }
 
+    case 'MOVE_KEY': {
+      if (!state.profile) return state;
+      const { source, target } = action;
+      if (source.tabId === target.tabId && source.keyId === target.keyId) return state;
+
+      const sourceKey = state.profile.keys.find(
+        (keyConfig) => keyConfig.tabId === source.tabId && keyConfig.id === source.keyId,
+      );
+      if (!sourceKey) return state;
+
+      const targetKey = state.profile.keys.find(
+        (keyConfig) => keyConfig.tabId === target.tabId && keyConfig.id === target.keyId,
+      );
+      const movedSource: KeyConfig = { ...sourceKey, tabId: target.tabId, id: target.keyId };
+      const movedTarget: KeyConfig | null = targetKey
+        ? { ...targetKey, tabId: source.tabId, id: source.keyId }
+        : null;
+      const keys = state.profile.keys.filter((keyConfig) => {
+        const isSource = keyConfig.tabId === source.tabId && keyConfig.id === source.keyId;
+        const isTarget = keyConfig.tabId === target.tabId && keyConfig.id === target.keyId;
+        return !isSource && !isTarget;
+      });
+
+      keys.push(movedSource);
+      if (movedTarget) keys.push(movedTarget);
+
+      return {
+        ...state,
+        profile: { ...state.profile, keys },
+        ui: { ...state.ui, isConfigDirty: true },
+      };
+    }
+
     case 'DELETE_KEY': {
       if (!state.profile) return state;
       const keys = state.profile.keys.filter(
@@ -134,6 +174,39 @@ export function reducer(state: AppState, action: Action): AppState {
         ...state,
         profile: { ...state.profile, keys },
         ui: { ...state.ui, isConfigDirty: true },
+      };
+    }
+
+    case 'MOVE_TAB': {
+      if (!state.profile) return state;
+      const { sourceTabId, targetTabId } = action;
+      if (sourceTabId === targetTabId) return state;
+
+      const sourceTab = state.profile.tabs.find((tab) => tab.id === sourceTabId);
+      const targetTab = state.profile.tabs.find((tab) => tab.id === targetTabId);
+      if (!sourceTab || !targetTab) return state;
+
+      const tabs = state.profile.tabs.map((tab) => {
+        if (tab.id === sourceTabId) return { ...tab, label: targetTab.label ?? '' };
+        if (tab.id === targetTabId) return { ...tab, label: sourceTab.label ?? '' };
+        return tab;
+      });
+      const keys = state.profile.keys.map((keyConfig) => {
+        if (keyConfig.tabId === sourceTabId) return { ...keyConfig, tabId: targetTabId };
+        if (keyConfig.tabId === targetTabId) return { ...keyConfig, tabId: sourceTabId };
+        return keyConfig;
+      });
+      const activeTabId =
+        state.ui.activeTabId === sourceTabId
+          ? targetTabId
+          : state.ui.activeTabId === targetTabId
+            ? sourceTabId
+            : state.ui.activeTabId;
+
+      return {
+        ...state,
+        profile: { ...state.profile, tabs, keys },
+        ui: { ...state.ui, activeTabId, isConfigDirty: true },
       };
     }
 
