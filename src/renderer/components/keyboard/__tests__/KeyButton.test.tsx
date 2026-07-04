@@ -1,13 +1,14 @@
 import { fireEvent, render, screen } from '@testing-library/react';
-import type { ComponentProps } from 'react';
-import { act } from 'react';
+import { act, type ComponentProps } from 'react';
 
 import type { KeyConfig } from '../../../../shared/types';
 import { AppStateProvider } from '../../../state/store';
 import { KeyButton } from '../KeyButton';
 
+let mockIconDataUrl: string | null = null;
+
 jest.mock('../../../hooks/useIcon', () => ({
-  useIcon: () => null,
+  useIcon: () => mockIconDataUrl,
 }));
 
 function renderKeyButton(overrides: Partial<ComponentProps<typeof KeyButton>> = {}) {
@@ -44,6 +45,7 @@ function renderKeyButton(overrides: Partial<ComponentProps<typeof KeyButton>> = 
 describe('KeyButton', () => {
   beforeEach(() => {
     jest.useFakeTimers();
+    mockIconDataUrl = null;
   });
 
   afterEach(() => {
@@ -77,5 +79,26 @@ describe('KeyButton', () => {
 
     expect(onEdit).toHaveBeenCalledTimes(1);
     expect(onClick).not.toHaveBeenCalled();
+  });
+
+  it('marks text-only layout when button icons are hidden', () => {
+    const { button } = renderKeyButton({ hideIcon: true });
+
+    expect(button).toHaveClass('icons-hidden');
+    expect(button).toHaveClass('text-only');
+    expect(screen.getByText('Demo').closest('.key-btn-text-slot')).not.toHaveClass(
+      'content-hidden',
+    );
+  });
+
+  it('marks icon-only layout when button text is hidden', () => {
+    mockIconDataUrl = 'data:image/png;base64,abc';
+
+    const { button } = renderKeyButton({ hideText: true });
+
+    expect(button).toHaveClass('text-hidden');
+    expect(button).toHaveClass('icon-only');
+    expect(button.querySelector('.key-btn-icon-slot')).not.toHaveClass('content-hidden');
+    expect(screen.getByText('Demo').closest('.key-btn-text-slot')).toHaveClass('content-hidden');
   });
 });
