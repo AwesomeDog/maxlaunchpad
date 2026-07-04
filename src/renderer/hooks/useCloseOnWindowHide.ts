@@ -8,6 +8,10 @@ export function useCloseOnWindowHide(close: () => void) {
       }
     }
     document.addEventListener('visibilitychange', handleVisibilityChange);
-    return () => document.removeEventListener('visibilitychange', handleVisibilityChange);
+    const unsubscribeWindowHidden = window.electronAPI.onWindowHidden(close);
+    return () => {
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+      unsubscribeWindowHidden();
+    };
   }, [close]);
 }

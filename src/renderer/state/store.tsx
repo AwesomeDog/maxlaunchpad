@@ -59,7 +59,7 @@ export type Action =
 
 // ============ Initial State ============
 
-const initialState: AppState = {
+export const initialState: AppState = {
   settings: null,
   profile: null,
   ui: {
@@ -77,22 +77,36 @@ const initialState: AppState = {
 
 // ============ Reducer ============
 
-function reducer(state: AppState, action: Action): AppState {
+export function reducer(state: AppState, action: Action): AppState {
   switch (action.type) {
     case 'SET_CONFIG':
       return {
         ...state,
         settings: action.settings,
         profile: action.profile,
-        ui: { ...state.ui, isLoading: false, isConfigDirty: false },
+        ui: {
+          ...state.ui,
+          isDragDropMode: !action.settings.lockWindowCenter,
+          isLoading: false,
+          isConfigDirty: false,
+        },
       };
 
-    case 'UPDATE_SETTINGS':
+    case 'UPDATE_SETTINGS': {
+      const nextSettings = state.settings ? { ...state.settings, ...action.settings } : null;
       return {
         ...state,
-        settings: state.settings ? { ...state.settings, ...action.settings } : null,
-        ui: { ...state.ui, isConfigDirty: true },
+        settings: nextSettings,
+        ui: {
+          ...state.ui,
+          isDragDropMode:
+            action.settings.lockWindowCenter === undefined
+              ? state.ui.isDragDropMode
+              : !action.settings.lockWindowCenter,
+          isConfigDirty: true,
+        },
       };
+    }
 
     case 'UPDATE_KEY': {
       if (!state.profile) return state;

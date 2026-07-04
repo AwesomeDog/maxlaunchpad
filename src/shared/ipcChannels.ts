@@ -15,6 +15,7 @@ export const IPC_CHANNELS = {
 
   // Window
   WINDOW_SET_DRAG_DROP_MODE: 'window:setDragDropMode',
+  WINDOW_SET_LOCK_WINDOW_CENTER: 'window:setLockWindowCenter',
   WINDOW_HIDE: 'window:hide',
 
   // Tools
@@ -39,5 +40,6 @@ export const IPC_CHANNELS = {
 
   // Window events (main -> renderer)
   WINDOW_SHOWN: 'window:shown',
+  WINDOW_HIDDEN: 'window:hidden',
   WINDOW_RESIZED: 'window:resized',
 } as const;

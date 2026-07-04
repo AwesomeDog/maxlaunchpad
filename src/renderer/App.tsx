@@ -1,6 +1,6 @@
 import './styles/global.css';
 
-import { useEffect } from 'react';
+import { useCallback, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { VirtualKeyboard } from './components/keyboard/VirtualKeyboard';
@@ -10,6 +10,7 @@ import { EditKeyModal } from './components/modals/EditKeyModal';
 import { EditTabModal } from './components/modals/EditTabModal';
 import { HotkeySettingsModal } from './components/modals/HotkeySettingsModal';
 import { OptionsModal } from './components/modals/OptionsModal';
+import { useCloseOnWindowHide } from './hooks/useCloseOnWindowHide';
 import { useConfigSync } from './hooks/useConfigSync';
 import { useCustomStyle } from './hooks/useCustomStyle';
 import { useErrorDialog } from './hooks/useErrorDialog';
@@ -23,8 +24,13 @@ function AppContent() {
   const { t } = useTranslation();
   const state = useAppState();
   const dispatch = useDispatch();
+  const closeModal = useCallback(() => {
+    dispatch({ type: 'CLOSE_MODAL' });
+  }, [dispatch]);
 
   useConfigSync();
+
+  useCloseOnWindowHide(closeModal);
 
   useErrorDialog();
 

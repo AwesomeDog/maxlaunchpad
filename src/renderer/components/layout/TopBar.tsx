@@ -161,20 +161,24 @@ export function TopBar(): ReactElement {
     void window.electronAPI.exitApp();
   };
 
-  const handleToggleDragDrop = () => {
+  const handleSelectDragDrop = () => {
     closeMenu();
-    const newValue = !state.ui.isDragDropMode;
-    dispatch({ type: 'SET_DRAG_DROP_MODE', enabled: newValue });
-    void window.electronAPI.setDragDropMode(newValue);
-  };
-
-  const handleToggleLockCenter = () => {
-    closeMenu();
-    const newValue = !state.settings?.lockWindowCenter;
+    dispatch({ type: 'SET_DRAG_DROP_MODE', enabled: true });
     dispatch({
       type: 'UPDATE_SETTINGS',
-      settings: { lockWindowCenter: newValue },
+      settings: { lockWindowCenter: false },
     });
+    void window.electronAPI.setDragDropMode(true);
+  };
+
+  const handleSelectLockCenter = () => {
+    closeMenu();
+    dispatch({ type: 'SET_DRAG_DROP_MODE', enabled: false });
+    dispatch({
+      type: 'UPDATE_SETTINGS',
+      settings: { lockWindowCenter: true },
+    });
+    void window.electronAPI.setLockWindowCenter(true);
   };
 
   const handleOpenUserApplicationsFolder = () => {
@@ -291,7 +295,7 @@ export function TopBar(): ReactElement {
           <div className="dropdown-menu">
             <div
               className="dropdown-item"
-              onClick={handleToggleDragDrop}
+              onClick={handleSelectDragDrop}
               title={t('menu.dragDropModeTooltip')}
             >
               <span className="menu-check">{state.ui.isDragDropMode ? '✓' : ''}</span>
@@ -299,7 +303,7 @@ export function TopBar(): ReactElement {
             </div>
             <div
               className="dropdown-item"
-              onClick={handleToggleLockCenter}
+              onClick={handleSelectLockCenter}
               title={t('menu.centerWindowTooltip')}
             >
               <span className="menu-check">{state.settings?.lockWindowCenter ? '✓' : ''}</span>
