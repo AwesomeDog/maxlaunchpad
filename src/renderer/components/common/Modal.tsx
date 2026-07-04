@@ -1,4 +1,4 @@
-import React, { ReactNode } from 'react';
+import React, { ReactNode, useEffect } from 'react';
 
 import { useDispatch } from '../../state/store';
 
@@ -11,6 +11,13 @@ interface ModalProps {
 
 export function Modal({ title, onClose, children, width = 400 }: ModalProps) {
   const dispatch = useDispatch();
+
+  useEffect(() => {
+    void window.electronAPI.setWindowAutoHideSuspended(true);
+    return () => {
+      void window.electronAPI.setWindowAutoHideSuspended(false);
+    };
+  }, []);
 
   const handleClose = () => {
     dispatch({ type: 'CLOSE_MODAL' });
