@@ -403,6 +403,8 @@ export function useCompactWindowHeight(): void {
             return;
           }
 
+          attempts += 1;
+
           if (pendingResizeInnerHeight !== null) {
             if (window.innerHeight === pendingResizeInnerHeight) {
               pendingWaitAttempts += 1;
@@ -420,17 +422,24 @@ export function useCompactWindowHeight(): void {
           }
 
           if (!isCustomStyleReady(customStyle)) {
+            if (attempts >= STARTUP_COMPACT_MAX_ATTEMPTS) {
+              hasRunStartupCompactionRef.current = true;
+              return;
+            }
             scheduleAttempt();
             return;
           }
 
           const delta = getCompactWindowContentDelta();
           if (delta === null) {
+            if (attempts >= STARTUP_COMPACT_MAX_ATTEMPTS) {
+              hasRunStartupCompactionRef.current = true;
+              return;
+            }
             scheduleAttempt();
             return;
           }
 
-          attempts += 1;
           if (delta <= -2) {
             pendingResizeInnerHeight = window.innerHeight;
             pendingWaitAttempts = 0;

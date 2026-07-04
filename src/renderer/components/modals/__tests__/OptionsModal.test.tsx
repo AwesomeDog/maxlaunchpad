@@ -91,6 +91,27 @@ describe('OptionsModal', () => {
     expect(screen.getByText('Language:')).toBeInTheDocument();
   });
 
+  it('uses the detected i18next language when settings omit language', async () => {
+    settings.language = undefined;
+    await act(async () => {
+      await i18n.changeLanguage('en');
+    });
+
+    render(<OptionsModal />);
+
+    const languageRow = screen.getByText('Language:').closest('.modal-row');
+    const languageSelect = languageRow?.querySelector('select') as HTMLSelectElement;
+
+    expect(languageSelect.value).toBe('en');
+
+    fireEvent.change(languageSelect, { target: { value: 'en' } });
+
+    expect(dispatchMock).not.toHaveBeenCalledWith({
+      type: 'UPDATE_SETTINGS',
+      settings: { language: 'en' },
+    });
+  });
+
   it('commits language changes from native select input/change/blur events', () => {
     jest.useFakeTimers();
     const { container } = render(<OptionsModal />);

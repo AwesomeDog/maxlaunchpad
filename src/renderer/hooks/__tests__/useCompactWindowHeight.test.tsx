@@ -123,6 +123,7 @@ describe('useCompactWindowHeight', () => {
     getComputedStyleSpy.mockRestore();
     requestAnimationFrameSpy.mockRestore();
     cancelAnimationFrameSpy.mockRestore();
+    document.getElementById('custom-style')?.remove();
     document.documentElement.style.removeProperty('--keyboard-f-row-height');
     document.documentElement.style.removeProperty('--keyboard-letter-row-height');
     document.body.innerHTML = '';
@@ -233,7 +234,7 @@ describe('useCompactWindowHeight', () => {
     jest.useRealTimers();
   });
 
-  it('waits for the keyboard panel before counting startup compaction attempts', async () => {
+  it('waits for the keyboard panel while startup attempts remain', async () => {
     jest.useFakeTimers();
     Object.defineProperty(window, 'innerHeight', { configurable: true, value: 700 });
     mockHideElements = { ...DEFAULT_HIDE_ELEMENTS, row1: true };
@@ -241,7 +242,7 @@ describe('useCompactWindowHeight', () => {
     render(<TestComponent />);
 
     act(() => {
-      jest.advanceTimersByTime(6000);
+      jest.advanceTimersByTime(STARTUP_COMPACT_TEST_DELAY_MS * 3);
     });
 
     expect(resizeWindowByHeightDelta).not.toHaveBeenCalled();
@@ -259,7 +260,23 @@ describe('useCompactWindowHeight', () => {
     jest.useRealTimers();
   });
 
-  it('waits for the selected custom style before counting startup compaction attempts', async () => {
+  it('stops startup retries when the keyboard panel never appears', () => {
+    jest.useFakeTimers();
+    Object.defineProperty(window, 'innerHeight', { configurable: true, value: 700 });
+    mockHideElements = { ...DEFAULT_HIDE_ELEMENTS, row1: true };
+
+    render(<TestComponent />);
+
+    act(() => {
+      jest.advanceTimersByTime(STARTUP_COMPACT_TEST_DELAY_MS * 50);
+    });
+
+    expect(resizeWindowByHeightDelta).not.toHaveBeenCalled();
+    expect(jest.getTimerCount()).toBe(0);
+    jest.useRealTimers();
+  });
+
+  it('waits for the selected custom style while startup attempts remain', async () => {
     jest.useFakeTimers();
     Object.defineProperty(window, 'innerHeight', { configurable: true, value: 700 });
     mockHideElements = { ...DEFAULT_HIDE_ELEMENTS, row1: true };
@@ -271,7 +288,7 @@ describe('useCompactWindowHeight', () => {
     render(<TestComponent />);
 
     act(() => {
-      jest.advanceTimersByTime(6000);
+      jest.advanceTimersByTime(STARTUP_COMPACT_TEST_DELAY_MS * 3);
     });
 
     expect(resizeWindowByHeightDelta).not.toHaveBeenCalled();
@@ -286,6 +303,26 @@ describe('useCompactWindowHeight', () => {
     await flushMicrotasks();
 
     expect(resizeWindowByHeightDelta).toHaveBeenCalledWith(-186);
+    jest.useRealTimers();
+  });
+
+  it('stops startup retries when the selected custom style never loads', () => {
+    jest.useFakeTimers();
+    Object.defineProperty(window, 'innerHeight', { configurable: true, value: 700 });
+    mockHideElements = { ...DEFAULT_HIDE_ELEMENTS, row1: true };
+    mockCustomStyle = 'modern';
+    document.body.innerHTML +=
+      '<div class="app-container"><div class="tabbed-keyboard-panel"></div></div>';
+    setRect(document.querySelector('.tabbed-keyboard-panel'), { top: 300, height: 200 });
+
+    render(<TestComponent />);
+
+    act(() => {
+      jest.advanceTimersByTime(STARTUP_COMPACT_TEST_DELAY_MS * 50);
+    });
+
+    expect(resizeWindowByHeightDelta).not.toHaveBeenCalled();
+    expect(jest.getTimerCount()).toBe(0);
     jest.useRealTimers();
   });
 

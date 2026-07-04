@@ -30,31 +30,32 @@ const profile: KeyboardProfile = {
 };
 
 describe('store reducer', () => {
-  it('derives the required drag/center mode from lockWindowCenter on config load', () => {
-    const dragState = reducer(initialState, {
+  it('keeps drag/drop runtime-only when config is loaded', () => {
+    const dragRuntimeState = {
+      ...initialState,
+      ui: { ...initialState.ui, isDragDropMode: true },
+    };
+    const loaded = reducer(dragRuntimeState, {
       type: 'SET_CONFIG',
       settings: { ...settings, lockWindowCenter: false },
       profile,
     });
-    const lockState = reducer(initialState, {
-      type: 'SET_CONFIG',
-      settings: { ...settings, lockWindowCenter: true },
-      profile,
-    });
 
-    expect(dragState.ui.isDragDropMode).toBe(true);
-    expect(lockState.ui.isDragDropMode).toBe(false);
+    expect(loaded.ui.isDragDropMode).toBe(true);
   });
 
-  it('keeps lock center and drag mode mutually exclusive when settings change', () => {
-    const loaded = reducer(initialState, { type: 'SET_CONFIG', settings, profile });
+  it('does not derive drag/drop mode from lock center setting changes', () => {
+    const loaded = reducer(
+      { ...initialState, ui: { ...initialState.ui, isDragDropMode: true } },
+      { type: 'SET_CONFIG', settings, profile },
+    );
     const locked = reducer(loaded, {
       type: 'UPDATE_SETTINGS',
       settings: { lockWindowCenter: true },
     });
 
     expect(locked.settings?.lockWindowCenter).toBe(true);
-    expect(locked.ui.isDragDropMode).toBe(false);
+    expect(locked.ui.isDragDropMode).toBe(true);
   });
 
   it('swaps configured keys when a key is moved onto another configured key', () => {

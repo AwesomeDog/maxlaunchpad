@@ -9,15 +9,17 @@ export function useConfigSync() {
   const state = useAppState();
   const dispatch = useDispatch();
   const isFirstRender = useRef(true);
-  const configuredLanguage = normalizeLanguage(state.settings?.language);
+  const configuredLanguage = state.settings?.language
+    ? normalizeLanguage(state.settings.language)
+    : null;
 
   useEffect(() => {
-    if (!state.settings || i18n.resolvedLanguage === configuredLanguage) {
+    if (!configuredLanguage || i18n.resolvedLanguage === configuredLanguage) {
       return;
     }
 
     void i18n.changeLanguage(configuredLanguage);
-  }, [configuredLanguage, i18n, state.settings]);
+  }, [configuredLanguage, i18n]);
 
   useEffect(() => {
     if (isFirstRender.current) {

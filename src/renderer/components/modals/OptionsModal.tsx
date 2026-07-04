@@ -8,34 +8,49 @@ import { LANGUAGE_OPTIONS, normalizeLanguage } from '../../i18n';
 import { useAppState, useDispatch } from '../../state/store';
 import { Modal } from '../common/Modal';
 
+function normalizeI18nLanguage(language: string | undefined): AppLanguage {
+  if (language?.toLowerCase().startsWith('zh')) {
+    return 'zh-CN';
+  }
+  return 'en';
+}
+
+function resolveActiveLanguage(
+  configuredLanguage: AppLanguage | undefined,
+  resolvedLanguage: string | undefined,
+): AppLanguage {
+  return configuredLanguage
+    ? normalizeLanguage(configuredLanguage)
+    : normalizeI18nLanguage(resolvedLanguage);
+}
+
 export function OptionsModal(): ReactElement {
   const { i18n, t } = useTranslation();
   const state = useAppState();
   const dispatch = useDispatch();
+  const activeLanguage = resolveActiveLanguage(state.settings?.language, i18n.resolvedLanguage);
 
   const [launchOnStartup, setLaunchOnStartup] = useState(state.settings?.launchOnStartup ?? false);
   const [startInTray, setStartInTray] = useState(state.settings?.startInTray ?? false);
   const [theme, setTheme] = useState<'light' | 'dark' | 'system'>(
     state.settings?.theme ?? 'system',
   );
-  const [language, setLanguage] = useState<AppLanguage>(
-    normalizeLanguage(state.settings?.language),
-  );
+  const [language, setLanguage] = useState<AppLanguage>(activeLanguage);
   const [customStyle, setCustomStyle] = useState<string>(state.settings?.customStyle ?? 'default');
   const [availableStyles, setAvailableStyles] = useState<string[]>([]);
   const cleanupLanguageSelectRef = useRef<(() => void) | null>(null);
-  const lastCommittedLanguageRef = useRef<AppLanguage>(normalizeLanguage(state.settings?.language));
+  const lastCommittedLanguageRef = useRef<AppLanguage>(activeLanguage);
 
   useEffect(() => {
     if (state.settings) {
       setLaunchOnStartup(state.settings.launchOnStartup);
       setStartInTray(state.settings.startInTray);
       setTheme(state.settings.theme);
-      setLanguage(normalizeLanguage(state.settings.language));
-      lastCommittedLanguageRef.current = normalizeLanguage(state.settings.language);
+      setLanguage(activeLanguage);
+      lastCommittedLanguageRef.current = activeLanguage;
       setCustomStyle(state.settings.customStyle);
     }
-  }, [state.settings]);
+  }, [activeLanguage, state.settings]);
 
   useEffect(() => {
     async function loadStyles() {

@@ -93,7 +93,6 @@ export function reducer(state: AppState, action: Action): AppState {
         profile: action.profile,
         ui: {
           ...state.ui,
-          isDragDropMode: !action.settings.lockWindowCenter,
           isLoading: false,
           isConfigDirty: false,
         },
@@ -106,10 +105,6 @@ export function reducer(state: AppState, action: Action): AppState {
         settings: nextSettings,
         ui: {
           ...state.ui,
-          isDragDropMode:
-            action.settings.lockWindowCenter === undefined
-              ? state.ui.isDragDropMode
-              : !action.settings.lockWindowCenter,
           isConfigDirty: true,
         },
       };

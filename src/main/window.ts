@@ -41,7 +41,7 @@ export function createMainWindow(): BrowserWindow {
   // Load saved window size from settings
   const settings = loadSettings();
   isLockWindowCenter = settings.lockWindowCenter;
-  isDragDropMode = !settings.lockWindowCenter;
+  isDragDropMode = false;
 
   const currentWorkArea = getCursorDisplayWorkArea();
   preferredWindowSize = normalizeWindowSizeToWorkArea(settings.windowSize, currentWorkArea, {
@@ -330,7 +330,6 @@ export async function keepMainWindowVisibleDuringNativeDialog<T>(
 
 export function setLockWindowCenter(enabled: boolean): void {
   isLockWindowCenter = enabled;
-  isDragDropMode = !enabled;
   const win = getMainWindow();
   if (win) {
     if (enabled) {
@@ -343,7 +342,6 @@ export function setLockWindowCenter(enabled: boolean): void {
 
 export function setDragDropMode(enabled: boolean): void {
   isDragDropMode = enabled;
-  isLockWindowCenter = !enabled;
   const win = getMainWindow();
   if (win) {
     if (isLockWindowCenter) {

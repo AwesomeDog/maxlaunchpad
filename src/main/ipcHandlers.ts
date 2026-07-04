@@ -70,6 +70,15 @@ function parseBooleanIpcArg(value: unknown): boolean {
   return value;
 }
 
+function normalizeDialogTitle(value: unknown, fallback: string): string {
+  if (typeof value !== 'string') {
+    return fallback;
+  }
+
+  const normalized = value.replace(/[\r\n\t]+/g, ' ').trim();
+  return normalized ? normalized.slice(0, 120) : fallback;
+}
+
 export function registerIpcHandlers(): void {
   ipcMain.handle(IPC_CHANNELS.CONFIG_LOAD, async () => {
     try {
@@ -130,7 +139,7 @@ export function registerIpcHandlers(): void {
 
   ipcMain.handle(IPC_CHANNELS.CONFIG_OPEN_PROFILE_DIALOG, async (_, title?: string) => {
     const result = await dialog.showOpenDialog({
-      title: title ?? 'Open Keyboard Profile',
+      title: normalizeDialogTitle(title, 'Open Keyboard Profile'),
       filters: [{ name: 'YAML', extensions: ['yaml', 'yml'] }],
       properties: ['openFile', 'showHiddenFiles'],
     });
@@ -140,7 +149,7 @@ export function registerIpcHandlers(): void {
 
   ipcMain.handle(IPC_CHANNELS.CONFIG_SAVE_AS_DIALOG, async (_, title?: string) => {
     const result = await dialog.showSaveDialog({
-      title: title ?? 'Save Keyboard Profile As',
+      title: normalizeDialogTitle(title, 'Save Keyboard Profile As'),
       filters: [{ name: 'YAML', extensions: ['yaml', 'yml'] }],
       properties: ['showHiddenFiles'],
     });
@@ -152,7 +161,7 @@ export function registerIpcHandlers(): void {
     const result = await keepMainWindowVisibleDuringNativeDialog(async () => {
       const win = getMainWindow();
       const options: Electron.OpenDialogOptions = {
-        title: title ?? 'Select File',
+        title: normalizeDialogTitle(title, 'Select File'),
         properties: ['openFile', 'showHiddenFiles'],
       };
       return win && !win.isDestroyed()
@@ -167,7 +176,7 @@ export function registerIpcHandlers(): void {
     const result = await keepMainWindowVisibleDuringNativeDialog(async () => {
       const win = getMainWindow();
       const options: Electron.OpenDialogOptions = {
-        title: title ?? 'Select Folder',
+        title: normalizeDialogTitle(title, 'Select Folder'),
         properties: ['openDirectory', 'showHiddenFiles'],
       };
       return win && !win.isDestroyed()

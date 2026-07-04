@@ -3,6 +3,7 @@ import React from 'react';
 
 import { DEFAULT_HIDE_ELEMENTS } from '../../../shared/constants';
 import type { AppSettings, KeyboardProfile } from '../../../shared/types';
+import i18n from '../../i18n';
 import { AppStateProvider, useAppState, useDispatch } from '../../state/store';
 import { useConfigSync } from '../useConfigSync';
 
@@ -28,6 +29,7 @@ beforeEach(() => {
 
 afterEach(() => {
   jest.useRealTimers();
+  jest.restoreAllMocks();
 });
 
 // Test component that allows us to control state and observe behavior
@@ -111,6 +113,34 @@ describe('useConfigSync', () => {
 
     expect(mockSaveSettings).not.toHaveBeenCalled();
     expect(mockSaveProfile).not.toHaveBeenCalled();
+  });
+
+  it('does not force i18next when loaded settings omit language', () => {
+    const settingsWithoutLanguage: AppSettings = { ...mockSettings };
+    delete settingsWithoutLanguage.language;
+    const changeLanguageSpy = jest.spyOn(i18n, 'changeLanguage');
+    let capturedDispatch: ReturnType<typeof useDispatch>;
+
+    const { rerender } = renderHook(
+      () => {
+        const dispatch = useDispatch();
+        capturedDispatch = dispatch;
+        useConfigSync();
+      },
+      { wrapper: AppStateProvider },
+    );
+
+    act(() => {
+      capturedDispatch!({
+        type: 'SET_CONFIG',
+        settings: settingsWithoutLanguage,
+        profile: mockProfile,
+      });
+    });
+
+    rerender();
+
+    expect(changeLanguageSpy).not.toHaveBeenCalled();
   });
 
   it('should not save when settings is null', () => {

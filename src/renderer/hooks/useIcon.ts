@@ -15,12 +15,16 @@ function generateFallbackIcon(filePath: string): string {
 }
 
 /**
- * Resolves the icon logic for HTTP URLs synchronously.
+ * Resolves the icon logic for direct URLs synchronously.
  * Handles the special case of fetching Google Favicons for raw URLs.
  */
-function resolveHttpIcon(keyConfig: KeyConfig): string | null {
+function resolveDirectIcon(keyConfig: KeyConfig): string | null {
   const { filePath, iconPath } = keyConfig;
   const targetPath = iconPath || filePath;
+
+  if (targetPath.startsWith('data:')) {
+    return targetPath;
+  }
 
   if (isHttpUrl(targetPath)) {
     // If no custom icon path is provided and the file path itself is a URL,
@@ -66,11 +70,11 @@ export function useIcon(keyConfig: KeyConfig | undefined): string | null {
       return;
     }
 
-    // 2. HTTP URL Handling (Synchronous)
-    const httpIcon = resolveHttpIcon(keyConfig);
-    if (httpIcon) {
-      iconCache.set(cacheKey, httpIcon);
-      setIcon(httpIcon);
+    // 2. Direct URL Handling (Synchronous)
+    const directIcon = resolveDirectIcon(keyConfig);
+    if (directIcon) {
+      iconCache.set(cacheKey, directIcon);
+      setIcon(directIcon);
       return;
     }
 
