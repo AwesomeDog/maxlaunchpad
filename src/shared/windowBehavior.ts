@@ -13,7 +13,7 @@ export interface WindowInteractionState {
   isDragDropMode: boolean;
 }
 
-const MIN_WINDOW_SIZE: WindowSize = { width: 480, height: 320 };
+const MIN_WINDOW_SIZE: WindowSize = { width: 480, height: 120 };
 const WINDOW_EDGE_MARGIN = 16;
 
 function clamp(value: number, min: number, max: number): number {

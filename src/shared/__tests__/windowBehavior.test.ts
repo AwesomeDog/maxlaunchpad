@@ -39,6 +39,12 @@ describe('windowBehavior', () => {
     ).toEqual({ width: 1248, height: 688 });
   });
 
+  it('allows compact hidden-row windows to shrink below the old launcher height', () => {
+    expect(
+      constrainWindowSizeToWorkArea({ width: 300, height: 80 }, { width: 1280, height: 720 }),
+    ).toEqual({ width: 480, height: 120 });
+  });
+
   it('resets work-area-filled locked sizes to the default window size', () => {
     expect(
       normalizeWindowSizeToWorkArea(

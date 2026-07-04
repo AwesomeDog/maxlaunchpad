@@ -20,7 +20,10 @@ export const IPC_CHANNELS = {
   // Window
   WINDOW_SET_DRAG_DROP_MODE: 'window:setDragDropMode',
   WINDOW_SET_LOCK_WINDOW_CENTER: 'window:setLockWindowCenter',
+  WINDOW_MINIMIZE: 'window:minimize',
   WINDOW_HIDE: 'window:hide',
+  WINDOW_RESIZE_BY_HEIGHT_DELTA: 'window:resizeByHeightDelta',
+  WINDOW_SET_AUTO_HIDE_SUSPENDED: 'window:setAutoHideSuspended',
 
   // Tools
   TOOLS_OPEN_PATH: 'tools:openPath', // Supports { showInFolder: true } option

@@ -41,6 +41,8 @@
     "settings": "Settings",
     "hotkeySettings": "Hotkey",
     "options": "Options",
+    "minimizeWindow": "Minimize window",
+    "closeWindow": "Close window",
     "help": "Help",
     "documentation": "Documentation",
     "about": "About",

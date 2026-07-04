@@ -53,6 +53,10 @@ describe('HotkeySettingsModal', () => {
     void i18n.changeLanguage('zh-CN');
     settings.hotkey = { modifiers: ['Alt'], key: '`' };
     settings.menuRevealKey = 'Alt';
+    window.electronAPI = {
+      ...window.electronAPI,
+      setWindowAutoHideSuspended: jest.fn(),
+    };
   });
 
   it('separates launchpad and menu reveal hotkey sections', () => {
