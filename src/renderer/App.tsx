@@ -11,6 +11,7 @@ import { EditTabModal } from './components/modals/EditTabModal';
 import { HotkeySettingsModal } from './components/modals/HotkeySettingsModal';
 import { OptionsModal } from './components/modals/OptionsModal';
 import { useCloseOnWindowHide } from './hooks/useCloseOnWindowHide';
+import { useCompactWindowHeight } from './hooks/useCompactWindowHeight';
 import { useConfigSync } from './hooks/useConfigSync';
 import { useCustomStyle } from './hooks/useCustomStyle';
 import { useErrorDialog } from './hooks/useErrorDialog';
@@ -39,6 +40,8 @@ function AppContent() {
   useTheme();
 
   useCustomStyle();
+
+  useCompactWindowHeight();
 
   useWindowBehavior();
 
