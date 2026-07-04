@@ -229,6 +229,7 @@ describe('HotkeyConfigSchema', () => {
 describe('AppSettingsSchema', () => {
   const validSettings = {
     hotkey: { modifiers: ['Command'], key: 'Space' },
+    menuRevealKey: 'Alt' as const,
     activeTabOnShow: '1',
     activeProfilePath: '/path/to/profile.yaml',
     lockWindowCenter: true,
@@ -275,6 +276,7 @@ describe('AppSettingsSchema', () => {
   it('should reject settings missing required fields', () => {
     const requiredFields = [
       'hotkey',
+      'menuRevealKey',
       'activeTabOnShow',
       'activeProfilePath',
       'lockWindowCenter',
@@ -299,6 +301,15 @@ describe('AppSettingsSchema', () => {
     const invalidSettings = {
       ...validSettings,
       hotkey: { key: 'Space' }, // missing modifiers
+    };
+    const result = AppSettingsSchema.safeParse(invalidSettings);
+    expect(result.success).toBe(false);
+  });
+
+  it('should reject settings with invalid menu reveal key', () => {
+    const invalidSettings = {
+      ...validSettings,
+      menuRevealKey: 'Space',
     };
     const result = AppSettingsSchema.safeParse(invalidSettings);
     expect(result.success).toBe(false);
@@ -338,6 +349,11 @@ describe('PartialAppSettingsSchema', () => {
       hotkey: { modifiers: ['Control'], key: 'Space' },
     };
     const result = PartialAppSettingsSchema.safeParse(partial);
+    expect(result.success).toBe(true);
+  });
+
+  it('should validate settings with only menu reveal key', () => {
+    const result = PartialAppSettingsSchema.safeParse({ menuRevealKey: 'Win' });
     expect(result.success).toBe(true);
   });
 

@@ -4,11 +4,14 @@ import { useTranslation } from 'react-i18next';
 
 import {
   CODE_TO_ACCELERATOR,
+  DEFAULT_MENU_REVEAL_KEY,
   DEFAULT_MODIFIER,
   IGNORED_KEYS,
+  MENU_REVEAL_KEYS,
   MODIFIER_KEYS,
   NUM_KEYS,
 } from '../../../shared/constants';
+import type { MenuRevealKey } from '../../../shared/types';
 import { normalizeModifiers } from '../../../shared/utils';
 import { IS_LINUX, IS_MAC } from '../../platform';
 import { useAppState, useDispatch } from '../../state/store';
@@ -32,6 +35,9 @@ export function HotkeySettingsModal(): ReactElement {
     normalizeModifiers(state.settings?.hotkey.modifiers ?? [DEFAULT_MODIFIER]),
   );
   const [mainKey, setMainKey] = useState<string>(state.settings?.hotkey.key ?? '`');
+  const [menuRevealKey, setMenuRevealKey] = useState<MenuRevealKey>(
+    state.settings?.menuRevealKey ?? DEFAULT_MENU_REVEAL_KEY,
+  );
   const [activeTabOnShow, setActiveTabOnShow] = useState<string>(
     state.settings?.activeTabOnShow ?? 'lastUsed',
   );
@@ -42,6 +48,7 @@ export function HotkeySettingsModal(): ReactElement {
       const normalized = normalizeModifiers(state.settings.hotkey.modifiers);
       setModifiers(normalized);
       setMainKey(state.settings.hotkey.key);
+      setMenuRevealKey(state.settings.menuRevealKey);
       setActiveTabOnShow(state.settings.activeTabOnShow);
 
       const original = state.settings.hotkey.modifiers;
@@ -105,8 +112,29 @@ export function HotkeySettingsModal(): ReactElement {
     });
   };
 
+  const handleMenuRevealKeyChange = (nextKey: MenuRevealKey) => {
+    setMenuRevealKey(nextKey);
+
+    dispatch({
+      type: 'UPDATE_SETTINGS',
+      settings: { menuRevealKey: nextKey },
+    });
+  };
+
+  const formatModifierLabel = (modifierId: string): string => {
+    const def = modifierKeysWithLabels.find((mod) => mod.id === modifierId);
+    return def ? def.label : modifierId;
+  };
+
+  const launchpadHotkeyText = `${
+    modifiers.length > 0 ? `${modifiers.map(formatModifierLabel).join('+')}+` : ''
+  }${mainKey}`;
+
   return (
     <Modal title={t('modals.hotkeySettings.title')}>
+      <div className="modal-section">
+        <h3>{t('modals.hotkeySettings.launchpadSectionTitle')}</h3>
+      </div>
       <div className="modal-row">
         <label>{t('modals.hotkeySettings.modifierKeys')}:</label>
         <div className="modifier-keys">
@@ -158,17 +186,42 @@ export function HotkeySettingsModal(): ReactElement {
       </div>
 
       <div className="modal-row modal-row-highlight">
-        <span style={{ fontWeight: 'bold' }}>{t('modals.hotkeySettings.currentHotkey')}</span>
+        <span style={{ fontWeight: 'bold' }}>
+          {t('modals.hotkeySettings.currentLaunchpadHotkey')}
+        </span>
         <span style={{ fontFamily: 'monospace', fontSize: '1.1em' }}>
-          {modifiers.length > 0
-            ? modifiers
-                .map((m) => {
-                  const def = modifierKeysWithLabels.find((mod) => mod.id === m);
-                  return def ? def.label : m;
-                })
-                .join('+') + '+'
-            : ''}
-          {mainKey}
+          {launchpadHotkeyText}
+        </span>
+      </div>
+
+      <div className="modal-section">
+        <h3>{t('modals.hotkeySettings.menuRevealSectionTitle')}</h3>
+      </div>
+
+      <div className="modal-row">
+        <label>{t('modals.hotkeySettings.menuRevealKey')}:</label>
+        <div className="modifier-keys">
+          {MENU_REVEAL_KEYS.map((key) => (
+            <label key={key}>
+              <input
+                type="radio"
+                name="menuRevealKey"
+                value={key}
+                checked={menuRevealKey === key}
+                onChange={() => handleMenuRevealKeyChange(key)}
+              />
+              {formatModifierLabel(key)}
+            </label>
+          ))}
+        </div>
+      </div>
+
+      <div className="modal-row modal-row-highlight">
+        <span style={{ fontWeight: 'bold' }}>
+          {t('modals.hotkeySettings.currentMenuRevealKey')}
+        </span>
+        <span style={{ fontFamily: 'monospace', fontSize: '1.1em' }}>
+          {formatModifierLabel(menuRevealKey)}
         </span>
       </div>
 

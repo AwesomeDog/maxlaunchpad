@@ -4,6 +4,7 @@ import { initialState, reducer } from '../store';
 
 const settings: AppSettings = {
   hotkey: { modifiers: ['Alt'], key: '`' },
+  menuRevealKey: 'Alt',
   activeTabOnShow: 'lastUsed',
   activeProfilePath: 'C:\\tmp\\keyboard.yaml',
   lockWindowCenter: false,

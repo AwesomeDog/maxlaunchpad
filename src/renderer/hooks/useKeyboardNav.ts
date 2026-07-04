@@ -1,6 +1,12 @@
 import { useCallback, useEffect } from 'react';
 
-import { FUNCTION_KEYS, LETTER_KEYS, NUM_KEYS } from '../../shared/constants';
+import {
+  DEFAULT_MENU_REVEAL_KEY,
+  FUNCTION_KEYS,
+  LETTER_KEYS,
+  NUM_KEYS,
+} from '../../shared/constants';
+import type { MenuRevealKey } from '../../shared/types';
 import { useAppState, useDispatch } from '../state/store';
 import { useLaunchProgram } from './useLaunchProgram';
 
@@ -13,16 +19,17 @@ import { useLaunchProgram } from './useLaunchProgram';
  * - F1-F10: Launch function keys
  * - Letter keys: Launch current tab keys
  * - Mouse wheel over keyboard: Tab navigation
- * - Alt key: Temporarily show hidden menu
+ * - Configured reveal key: Temporarily show hidden menu
  */
 export function useKeyboardNav() {
   const state = useAppState();
   const dispatch = useDispatch();
   const launchProgram = useLaunchProgram({ hideWindowOnSuccess: true });
 
-  // Check if menu is hidden (need Alt key to show)
+  // Check if menu is hidden (needs the configured reveal key to show)
   // Note: settings may be null during loading, but this hook runs after loading completes
   const isMenuHidden = state.settings?.hideElements.menu === true;
+  const menuRevealKey = state.settings?.menuRevealKey ?? DEFAULT_MENU_REVEAL_KEY;
 
   const navigateTab = useCallback(
     (delta: 1 | -1) => {
@@ -113,25 +120,27 @@ export function useKeyboardNav() {
     return () => window.removeEventListener('wheel', handleWheel);
   }, [state.ui.modal.type, navigateTab]);
 
-  // Alt key handling for showing hidden menu
+  // Configured modifier key handling for showing hidden menu
   useEffect(() => {
     if (!isMenuHidden) {
-      // Reset alt pressed state when menu is not hidden
-      if (state.ui.isAltPressed) {
-        dispatch({ type: 'SET_ALT_PRESSED', pressed: false });
+      if (state.ui.isMenuRevealKeyPressed) {
+        dispatch({ type: 'SET_MENU_REVEAL_KEY_PRESSED', pressed: false });
       }
       return;
     }
 
+    const matchesMenuRevealKey = (event: KeyboardEvent) =>
+      getMenuRevealKeyFromKeyboardEvent(event) === menuRevealKey;
+
     function handleKeyDown(e: KeyboardEvent) {
-      if (e.key === 'Alt') {
-        dispatch({ type: 'SET_ALT_PRESSED', pressed: true });
+      if (matchesMenuRevealKey(e)) {
+        dispatch({ type: 'SET_MENU_REVEAL_KEY_PRESSED', pressed: true });
       }
     }
 
     function handleKeyUp(e: KeyboardEvent) {
-      if (e.key === 'Alt') {
-        dispatch({ type: 'SET_ALT_PRESSED', pressed: false });
+      if (matchesMenuRevealKey(e)) {
+        dispatch({ type: 'SET_MENU_REVEAL_KEY_PRESSED', pressed: false });
       }
     }
 
@@ -142,5 +151,26 @@ export function useKeyboardNav() {
       window.removeEventListener('keydown', handleKeyDown);
       window.removeEventListener('keyup', handleKeyUp);
     };
-  }, [isMenuHidden, state.ui.isAltPressed, dispatch]);
+  }, [isMenuHidden, menuRevealKey, state.ui.isMenuRevealKeyPressed, dispatch]);
+}
+
+function getMenuRevealKeyFromKeyboardEvent(event: KeyboardEvent): MenuRevealKey | null {
+  if (event.key === 'Control' || event.code === 'ControlLeft' || event.code === 'ControlRight') {
+    return 'Ctrl';
+  }
+  if (event.key === 'Shift' || event.code === 'ShiftLeft' || event.code === 'ShiftRight') {
+    return 'Shift';
+  }
+  if (event.key === 'Alt' || event.code === 'AltLeft' || event.code === 'AltRight') {
+    return 'Alt';
+  }
+  if (
+    event.key === 'Meta' ||
+    event.key === 'OS' ||
+    event.code === 'MetaLeft' ||
+    event.code === 'MetaRight'
+  ) {
+    return 'Win';
+  }
+  return null;
 }

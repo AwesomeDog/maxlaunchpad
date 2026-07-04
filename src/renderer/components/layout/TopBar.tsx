@@ -26,7 +26,7 @@ export function TopBar(): ReactElement {
 
   // Determine if menu should be visible
   const isMenuHidden = hideElements.menu;
-  const shouldShowMenu = !isMenuHidden || state.ui.isAltPressed || openMenu !== null;
+  const shouldShowMenu = !isMenuHidden || state.ui.isMenuRevealKeyPressed || openMenu !== null;
 
   const closeMenu = useCallback(() => {
     setOpenMenu(null);
@@ -324,10 +324,10 @@ export function TopBar(): ReactElement {
                   <div
                     className="dropdown-item"
                     onClick={() => handleToggleHideElement('menu')}
-                    title={t('menu.hideMenuBarTooltip')}
+                    title={t('menu.hideMenuBarTooltip', { key: settings.menuRevealKey })}
                   >
                     <span className="menu-check">{hideElements.menu ? '✓' : ''}</span>
-                    {t('menu.hideMenuBar')}
+                    {t('menu.hideMenuBar', { key: settings.menuRevealKey })}
                   </div>
                   <div
                     className="dropdown-item"

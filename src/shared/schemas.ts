@@ -31,6 +31,8 @@ export const KeyboardProfileSchema = z
   })
   .strip();
 
+export const MenuRevealKeySchema = z.enum(['Ctrl', 'Shift', 'Alt', 'Win']);
+
 // Hotkey configuration schema
 export const HotkeyConfigSchema = z
   .object({
@@ -69,6 +71,7 @@ export const AppLanguageSchema = z
 export const AppSettingsSchema = z
   .object({
     hotkey: HotkeyConfigSchema,
+    menuRevealKey: MenuRevealKeySchema,
     activeTabOnShow: z.string(),
     activeProfilePath: z.string(),
     lockWindowCenter: z.boolean(),
