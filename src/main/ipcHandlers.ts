@@ -4,6 +4,7 @@ import path from 'path';
 
 import { IPC_CHANNELS } from '../shared/ipcChannels';
 import { AppSettingsSchema, KeyboardProfileSchema } from '../shared/schemas';
+import type { AppSettings } from '../shared/types';
 import { listInstalledApps } from './appList';
 import { configureAutoLaunch } from './autoLaunch';
 import {
@@ -84,7 +85,7 @@ export function registerIpcHandlers(): void {
 
   ipcMain.handle(IPC_CHANNELS.CONFIG_SAVE_SETTINGS, async (_, settings) => {
     try {
-      const validatedSettings = AppSettingsSchema.parse(settings);
+      const validatedSettings = AppSettingsSchema.parse(settings) as AppSettings;
       const oldSettings = loadSettings();
 
       saveSettings(validatedSettings);

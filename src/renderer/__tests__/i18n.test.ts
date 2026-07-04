@@ -1,5 +1,5 @@
-import en from '../i18n/en.json';
 import { LANGUAGE_OPTIONS, normalizeLanguage } from '../i18n';
+import en from '../i18n/en.json';
 import zhCN from '../i18n/zh-CN.json';
 
 describe('i18n', () => {
