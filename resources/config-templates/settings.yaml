@@ -7,6 +7,7 @@ lockWindowCenter: true
 launchOnStartup: true
 startInTray: false
 theme: system
+language: zh-CN
 hideElements:
   menu: false
   buttonIcons: false

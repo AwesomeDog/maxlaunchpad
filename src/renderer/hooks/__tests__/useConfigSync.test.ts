@@ -60,6 +60,7 @@ const mockSettings: AppSettings = {
   launchOnStartup: false,
   startInTray: false,
   theme: 'system',
+  language: 'zh-CN',
   customStyle: 'default',
   windowSize: { width: 1000, height: 600 },
   hideElements: { ...DEFAULT_HIDE_ELEMENTS },
@@ -289,7 +290,7 @@ describe('useConfigSync', () => {
     rerender();
 
     await waitFor(() => {
-      expect(capturedState!.ui.error).toBe('Failed to save configuration');
+      expect(capturedState!.ui.error).toBe('保存配置失败');
     });
   });
 

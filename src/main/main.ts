@@ -64,7 +64,7 @@ function initializeApp(): void {
 
       registerGlobalHotkey(settings.hotkey);
 
-      createTray();
+      createTray(settings.language);
 
       const win = createMainWindow();
 

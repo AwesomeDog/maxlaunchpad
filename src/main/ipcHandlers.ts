@@ -20,6 +20,7 @@ import { launchProgram } from './launcher';
 import log from './logger';
 import { APP_CONFIG_DIR } from './paths';
 import { IS_WINDOWS } from './platform';
+import { refreshTrayMenu } from './tray';
 import { getMainWindow, hideMainWindow, setDragDropMode, setLockWindowCenter } from './window';
 
 function resolveSpecialPath(targetPath: string): string {
@@ -91,6 +92,10 @@ export function registerIpcHandlers(): void {
         await configureAutoLaunch(validatedSettings.launchOnStartup);
       }
 
+      if (oldSettings.language !== validatedSettings.language) {
+        refreshTrayMenu(validatedSettings.language);
+      }
+
       if (oldSettings.lockWindowCenter !== validatedSettings.lockWindowCenter) {
         setLockWindowCenter(validatedSettings.lockWindowCenter);
       }
@@ -113,9 +118,9 @@ export function registerIpcHandlers(): void {
     }
   });
 
-  ipcMain.handle(IPC_CHANNELS.CONFIG_OPEN_PROFILE_DIALOG, async () => {
+  ipcMain.handle(IPC_CHANNELS.CONFIG_OPEN_PROFILE_DIALOG, async (_, title?: string) => {
     const result = await dialog.showOpenDialog({
-      title: 'Open Keyboard Profile',
+      title: title ?? 'Open Keyboard Profile',
       filters: [{ name: 'YAML', extensions: ['yaml', 'yml'] }],
       properties: ['openFile', 'showHiddenFiles'],
     });
@@ -123,9 +128,9 @@ export function registerIpcHandlers(): void {
     return { canceled: false, filePath: result.filePaths[0] };
   });
 
-  ipcMain.handle(IPC_CHANNELS.CONFIG_SAVE_AS_DIALOG, async () => {
+  ipcMain.handle(IPC_CHANNELS.CONFIG_SAVE_AS_DIALOG, async (_, title?: string) => {
     const result = await dialog.showSaveDialog({
-      title: 'Save Keyboard Profile As',
+      title: title ?? 'Save Keyboard Profile As',
       filters: [{ name: 'YAML', extensions: ['yaml', 'yml'] }],
       properties: ['showHiddenFiles'],
     });

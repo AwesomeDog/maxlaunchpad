@@ -10,6 +10,7 @@ const settings: AppSettings = {
   launchOnStartup: false,
   startInTray: false,
   theme: 'system',
+  language: 'zh-CN',
   customStyle: 'default',
   windowSize: { width: 1000, height: 600 },
   hideElements: { ...DEFAULT_HIDE_ELEMENTS },

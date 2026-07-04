@@ -1,13 +1,23 @@
 import { useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 
+import { normalizeLanguage } from '../i18n';
 import { useAppState, useDispatch } from '../state/store';
 
 export function useConfigSync() {
-  const { t } = useTranslation();
+  const { i18n, t } = useTranslation();
   const state = useAppState();
   const dispatch = useDispatch();
   const isFirstRender = useRef(true);
+  const configuredLanguage = normalizeLanguage(state.settings?.language);
+
+  useEffect(() => {
+    if (!state.settings || i18n.resolvedLanguage === configuredLanguage) {
+      return;
+    }
+
+    void i18n.changeLanguage(configuredLanguage);
+  }, [configuredLanguage, i18n, state.settings]);
 
   useEffect(() => {
     if (isFirstRender.current) {

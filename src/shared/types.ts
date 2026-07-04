@@ -53,6 +53,9 @@ export interface HideElements {
   row3: boolean; // Hide letter keys row 3 (Z-/)
 }
 
+export type AppLanguage = 'en' | 'zh-CN';
+export type LegacyAppLanguage = AppLanguage | 'zh';
+
 // App settings (stored in settings.yaml)
 export interface AppSettings {
   hotkey: HotkeyConfig;
@@ -62,6 +65,7 @@ export interface AppSettings {
   launchOnStartup: boolean;
   startInTray: boolean;
   theme: 'light' | 'dark' | 'system';
+  language: AppLanguage;
   customStyle: string; // Style name without ".css", default 'default'
   windowSize: WindowSize; // User-customized window size
   hideElements: HideElements; // Hide elements configuration

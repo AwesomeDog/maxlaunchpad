@@ -2,6 +2,8 @@ import type { ChangeEvent, ReactElement } from 'react';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
+import type { AppLanguage } from '../../../shared/types';
+import { LANGUAGE_OPTIONS, normalizeLanguage } from '../../i18n';
 import { useAppState, useDispatch } from '../../state/store';
 import { Modal } from '../common/Modal';
 
@@ -15,6 +17,9 @@ export function OptionsModal(): ReactElement {
   const [theme, setTheme] = useState<'light' | 'dark' | 'system'>(
     state.settings?.theme ?? 'system',
   );
+  const [language, setLanguage] = useState<AppLanguage>(
+    normalizeLanguage(state.settings?.language),
+  );
   const [customStyle, setCustomStyle] = useState<string>(state.settings?.customStyle ?? 'default');
   const [availableStyles, setAvailableStyles] = useState<string[]>([]);
 
@@ -23,6 +28,7 @@ export function OptionsModal(): ReactElement {
       setLaunchOnStartup(state.settings.launchOnStartup);
       setStartInTray(state.settings.startInTray);
       setTheme(state.settings.theme);
+      setLanguage(normalizeLanguage(state.settings.language));
       setCustomStyle(state.settings.customStyle);
     }
   }, [state.settings]);
@@ -86,10 +92,14 @@ export function OptionsModal(): ReactElement {
   };
 
   const handleLanguageChange = (e: ChangeEvent<HTMLSelectElement>) => {
-    void i18n.changeLanguage(e.target.value);
+    const value = normalizeLanguage(e.target.value as AppLanguage);
+    setLanguage(value);
+    dispatch({
+      type: 'UPDATE_SETTINGS',
+      settings: { language: value },
+    });
+    void i18n.changeLanguage(value);
   };
-
-  const currentLanguage = i18n.resolvedLanguage?.startsWith('zh') ? 'zh-CN' : 'en';
 
   return (
     <Modal title={t('modals.options.title')}>
@@ -137,9 +147,14 @@ export function OptionsModal(): ReactElement {
 
       <div className="modal-row">
         <label>{t('modals.options.language')}:</label>
-        <select value={currentLanguage} onChange={handleLanguageChange}>
-          <option value="en">{t('modals.options.languageEnglish')}</option>
-          <option value="zh-CN">{t('modals.options.languageChineseSimplified')}</option>
+        <select value={language} onChange={handleLanguageChange}>
+          {LANGUAGE_OPTIONS.map((option) => (
+            <option key={option.value} value={option.value}>
+              {option.value === 'zh-CN'
+                ? t('modals.options.languageChineseSimplified')
+                : t('modals.options.languageEnglish')}
+            </option>
+          ))}
         </select>
       </div>
 
