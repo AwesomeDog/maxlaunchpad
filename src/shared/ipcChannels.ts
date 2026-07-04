@@ -7,6 +7,10 @@ export const IPC_CHANNELS = {
   CONFIG_OPEN_PROFILE_DIALOG: 'config:openProfileDialog',
   CONFIG_SAVE_AS_DIALOG: 'config:saveAsDialog',
 
+  // File/folder picking for key editing
+  DIALOG_SELECT_FILE: 'dialog:selectFile',
+  DIALOG_SELECT_FOLDER: 'dialog:selectFolder',
+
   // Launcher
   LAUNCHER_RUN: 'launcher:run',
 

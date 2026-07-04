@@ -84,6 +84,8 @@
       "filePath": "File Path",
       "filePathRequired": "File Path *",
       "filePathPlaceholder": "Program path",
+      "selectFile": "Select File",
+      "selectFolder": "Select Folder",
       "arguments": "Arguments",
       "argumentsPlaceholder": "Commandline arguments",
       "workingDirectory": "Working Directory",

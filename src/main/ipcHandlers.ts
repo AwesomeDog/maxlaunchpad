@@ -21,7 +21,13 @@ import log from './logger';
 import { APP_CONFIG_DIR } from './paths';
 import { IS_WINDOWS } from './platform';
 import { refreshTrayMenu } from './tray';
-import { getMainWindow, hideMainWindow, setDragDropMode, setLockWindowCenter } from './window';
+import {
+  getMainWindow,
+  hideMainWindow,
+  keepMainWindowVisibleDuringNativeDialog,
+  setDragDropMode,
+  setLockWindowCenter,
+} from './window';
 
 function resolveSpecialPath(targetPath: string): string {
   // Handle app-specific special paths
@@ -136,6 +142,36 @@ export function registerIpcHandlers(): void {
     });
     if (result.canceled) return { canceled: true };
     return { canceled: false, filePath: result.filePath };
+  });
+
+  ipcMain.handle(IPC_CHANNELS.DIALOG_SELECT_FILE, async (_, title?: string) => {
+    const result = await keepMainWindowVisibleDuringNativeDialog(async () => {
+      const win = getMainWindow();
+      const options: Electron.OpenDialogOptions = {
+        title: title ?? 'Select File',
+        properties: ['openFile', 'showHiddenFiles'],
+      };
+      return win && !win.isDestroyed()
+        ? await dialog.showOpenDialog(win, options)
+        : await dialog.showOpenDialog(options);
+    });
+    if (result.canceled) return { canceled: true };
+    return { canceled: false, filePath: result.filePaths[0] };
+  });
+
+  ipcMain.handle(IPC_CHANNELS.DIALOG_SELECT_FOLDER, async (_, title?: string) => {
+    const result = await keepMainWindowVisibleDuringNativeDialog(async () => {
+      const win = getMainWindow();
+      const options: Electron.OpenDialogOptions = {
+        title: title ?? 'Select Folder',
+        properties: ['openDirectory', 'showHiddenFiles'],
+      };
+      return win && !win.isDestroyed()
+        ? await dialog.showOpenDialog(win, options)
+        : await dialog.showOpenDialog(options);
+    });
+    if (result.canceled) return { canceled: true };
+    return { canceled: false, filePath: result.filePaths[0] };
   });
 
   ipcMain.handle(IPC_CHANNELS.LAUNCHER_RUN, async (_, keyConfig) => {

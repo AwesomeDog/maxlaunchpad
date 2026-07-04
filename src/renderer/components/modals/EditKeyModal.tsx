@@ -1,7 +1,9 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
+import { DEFAULT_FOLDER_ICON_URL } from '../../../shared/constants';
 import type { InstalledApp, KeyConfig } from '../../../shared/types';
+import { getBasename, getParentDirectory } from '../../../shared/utils';
 import { IS_WINDOWS } from '../../platform';
 import { useDispatch } from '../../state/store';
 import { Modal } from '../common/Modal';
@@ -79,10 +81,55 @@ export function EditKeyModal({ keyConfig }: EditKeyModalProps) {
   const handleSelectApp = (app: InstalledApp) => {
     setLabel(app.label);
     setFilePath(app.filePath);
+    setWorkingDirectory(getParentDirectory(app.filePath));
     setDescription(app.label);
+    setIconPath((current) => (current === DEFAULT_FOLDER_ICON_URL ? '' : current));
     setAppSearch('');
     setShowAppDropdown(false);
     setSelectedIndex(-1);
+  };
+
+  const applyPathSelection = async (selectedPath: string, kind: 'file' | 'folder' = 'file') => {
+    if (IS_WINDOWS && selectedPath.toLowerCase().endsWith('.lnk')) {
+      const shortcutInfo = await window.electronAPI.parseShortcut(selectedPath);
+      if (shortcutInfo?.filePath) {
+        setLabel(getBasename(shortcutInfo.filePath));
+        setFilePath(shortcutInfo.filePath);
+        setArgs(shortcutInfo.arguments ?? '');
+        setWorkingDirectory(
+          shortcutInfo.workingDirectory || getParentDirectory(shortcutInfo.filePath),
+        );
+        setDescription(shortcutInfo.description ?? selectedPath);
+        setIconPath((current) => (current === DEFAULT_FOLDER_ICON_URL ? '' : current));
+        return;
+      }
+    }
+
+    setLabel(getBasename(selectedPath));
+    setFilePath(selectedPath);
+    setWorkingDirectory(kind === 'folder' ? selectedPath : getParentDirectory(selectedPath));
+    setDescription(selectedPath);
+    setIconPath((current) =>
+      kind === 'folder'
+        ? DEFAULT_FOLDER_ICON_URL
+        : current === DEFAULT_FOLDER_ICON_URL
+          ? ''
+          : current,
+    );
+  };
+
+  const handleSelectFile = async () => {
+    const result = await window.electronAPI.selectFile(t('modals.editKey.selectFile'));
+    if (!result.canceled && result.filePath) {
+      await applyPathSelection(result.filePath);
+    }
+  };
+
+  const handleSelectFolder = async () => {
+    const result = await window.electronAPI.selectFolder(t('modals.editKey.selectFolder'));
+    if (!result.canceled && result.filePath) {
+      await applyPathSelection(result.filePath, 'folder');
+    }
   };
 
   const handleSave = () => {
@@ -110,60 +157,62 @@ export function EditKeyModal({ keyConfig }: EditKeyModalProps) {
         tabId: keyConfig.tabId,
         keyId: keyConfig.id,
       })}
-      width={550}
+      width={620}
     >
-      <div
-        style={{
-          padding: '12px',
-          backgroundColor: 'var(--selected-background-color)',
-          borderRadius: '6px',
-          opacity: 0.9,
-        }}
-      >
-        <div className="modal-row" style={{ marginBottom: 0 }}>
-          <label>{t('modals.editKey.quickSelect')}</label>
-          <div style={{ position: 'relative', flexGrow: 1 }}>
-            <input
-              type="text"
-              value={appSearch}
-              onChange={(e) => {
-                setAppSearch(e.target.value);
-                setShowAppDropdown(true);
+      <div className="modal-row modal-row-quick-select">
+        <label>{t('modals.editKey.quickSelect')}</label>
+        <div className="modal-field app-picker-field">
+          <input
+            type="text"
+            value={appSearch}
+            onChange={(e) => {
+              setAppSearch(e.target.value);
+              setShowAppDropdown(true);
+            }}
+            onFocus={() => setShowAppDropdown(true)}
+            onBlur={() => setTimeout(() => setShowAppDropdown(false), 200)}
+            onKeyDown={handleKeyDown}
+            placeholder={t('modals.editKey.quickSelectPlaceholder')}
+          />
+          {showAppDropdown && filteredApps.length > 0 && (
+            <div
+              className="dropdown-menu app-picker-dropdown"
+              style={{
+                left: 0,
+                right: 0,
+                maxHeight: '200px',
+                overflowY: 'auto',
               }}
-              onFocus={() => setShowAppDropdown(true)}
-              onBlur={() => setTimeout(() => setShowAppDropdown(false), 200)}
-              onKeyDown={handleKeyDown}
-              placeholder={t('modals.editKey.quickSelectPlaceholder')}
-              style={{ width: '100%' }}
-            />
-            {showAppDropdown && filteredApps.length > 0 && (
-              <div
-                className="dropdown-menu"
-                style={{
-                  left: 0,
-                  right: 0,
-                  maxHeight: '200px',
-                  overflowY: 'auto',
-                }}
-              >
-                {filteredApps.map((app, index) => (
-                  <div
-                    key={`${app.filePath}-${index}`}
-                    ref={index === selectedIndex ? selectedItemRef : null}
-                    className={`dropdown-item${index === selectedIndex ? ' selected' : ''}`}
-                    onMouseDown={() => handleSelectApp(app)}
-                    onMouseEnter={() => setSelectedIndex(index)}
-                  >
-                    {app.label}
-                  </div>
-                ))}
-              </div>
-            )}
-          </div>
+            >
+              {filteredApps.map((app, index) => (
+                <div
+                  key={`${app.filePath}-${index}`}
+                  ref={index === selectedIndex ? selectedItemRef : null}
+                  className={`dropdown-item${index === selectedIndex ? ' selected' : ''}`}
+                  onMouseDown={() => handleSelectApp(app)}
+                  onMouseEnter={() => setSelectedIndex(index)}
+                >
+                  {app.label}
+                </div>
+              ))}
+            </div>
+          )}
         </div>
       </div>
 
       <div className="context-menu-separator" style={{ margin: '16px 0' }} />
+
+      <div className="modal-row modal-row-file-actions">
+        <span className="modal-row-label-spacer" aria-hidden="true" />
+        <div className="file-picker-actions">
+          <button type="button" onClick={() => void handleSelectFile()}>
+            {t('modals.editKey.selectFile')}
+          </button>
+          <button type="button" onClick={() => void handleSelectFolder()}>
+            {t('modals.editKey.selectFolder')}
+          </button>
+        </div>
+      </div>
 
       <div className="modal-row">
         <label>{t('modals.editKey.labelRequired')}</label>
@@ -176,14 +225,17 @@ export function EditKeyModal({ keyConfig }: EditKeyModalProps) {
         />
       </div>
 
-      <div className="modal-row">
+      <div className="modal-row modal-row-path">
         <label>{t('modals.editKey.filePathRequired')}</label>
-        <input
-          type="text"
-          value={filePath}
-          onChange={(e) => setFilePath(e.target.value)}
-          placeholder={t('modals.editKey.filePathPlaceholder')}
-        />
+        <div className="path-picker">
+          <input
+            className="path-picker-input"
+            type="text"
+            value={filePath}
+            onChange={(e) => setFilePath(e.target.value)}
+            placeholder={t('modals.editKey.filePathPlaceholder')}
+          />
+        </div>
       </div>
 
       <div className="modal-row">
@@ -231,13 +283,13 @@ export function EditKeyModal({ keyConfig }: EditKeyModalProps) {
 
       <div className="modal-row">
         <label>{t('modals.editKey.iconPath')}</label>
-        <div style={{ display: 'flex', gap: '8px', flexGrow: 1 }}>
+        <div className="path-picker icon-path-picker">
           <input
+            className="path-picker-input"
             type="text"
             value={iconPath}
             onChange={(e) => setIconPath(e.target.value)}
             placeholder={t('modals.editKey.iconPathPlaceholder')}
-            style={{ flexGrow: 1 }}
           />
           <input
             ref={iconInputRef}
