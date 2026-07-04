@@ -1,5 +1,6 @@
 import { act, renderHook } from '@testing-library/react';
 
+import { DEFAULT_HIDE_ELEMENTS } from '../../../shared/constants';
 import type { AppSettings, KeyboardProfile, KeyConfig } from '../../../shared/types';
 import { AppStateProvider, useAppState, useDispatch } from '../../state/store';
 import { useKeyboardNav } from '../useKeyboardNav';
@@ -35,6 +36,7 @@ const mockSettings: AppSettings = {
   theme: 'system',
   customStyle: 'default',
   windowSize: { width: 1000, height: 600 },
+  hideElements: { ...DEFAULT_HIDE_ELEMENTS },
 };
 
 const mockFunctionKey: KeyConfig = {

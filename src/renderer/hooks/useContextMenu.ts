@@ -1,4 +1,5 @@
 import React, { useCallback, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import type { KeyConfig } from '../../shared/types';
 import type { ContextMenuItem } from '../components/common/ContextMenu';
@@ -12,6 +13,7 @@ interface ContextMenuState {
 }
 
 export function useContextMenu() {
+  const { t } = useTranslation();
   const state = useAppState();
   const dispatch = useDispatch();
 
@@ -37,7 +39,7 @@ export function useContextMenu() {
 
       const items: ContextMenuItem[] = [
         {
-          label: 'Edit',
+          label: t('contextMenu.edit'),
           onClick: () => {
             const configToEdit: KeyConfig = keyConfig ?? {
               tabId,
@@ -50,7 +52,7 @@ export function useContextMenu() {
         },
         { label: '', onClick: () => {}, separator: true },
         {
-          label: 'Copy',
+          label: t('contextMenu.copy'),
           onClick: () => {
             if (keyConfig) {
               dispatch({ type: 'SET_CLIPBOARD', key: keyConfig });
@@ -59,7 +61,7 @@ export function useContextMenu() {
           disabled: !hasConfig,
         },
         {
-          label: 'Cut',
+          label: t('contextMenu.cut'),
           onClick: () => {
             if (keyConfig) {
               dispatch({ type: 'SET_CLIPBOARD', key: keyConfig });
@@ -69,7 +71,7 @@ export function useContextMenu() {
           disabled: !hasConfig,
         },
         {
-          label: 'Paste',
+          label: t('contextMenu.paste'),
           onClick: () => {
             if (state.ui.clipboardKey) {
               const pastedKey: KeyConfig = {
@@ -84,7 +86,7 @@ export function useContextMenu() {
         },
         { label: '', onClick: () => {}, separator: true },
         {
-          label: 'Delete',
+          label: t('contextMenu.delete'),
           onClick: () => {
             dispatch({ type: 'DELETE_KEY', tabId, keyId });
           },
@@ -92,7 +94,7 @@ export function useContextMenu() {
         },
         { label: '', onClick: () => {}, separator: true },
         {
-          label: 'Open File Location',
+          label: t('contextMenu.openFileLocation'),
           onClick: () => {
             if (keyConfig?.filePath) {
               void window.electronAPI.openPath(keyConfig.filePath, { showInFolder: true });
@@ -108,7 +110,7 @@ export function useContextMenu() {
         items,
       });
     },
-    [state.ui.clipboardKey, dispatch],
+    [state.ui.clipboardKey, dispatch, t],
   );
 
   const openTabContextMenu = useCallback(
@@ -118,7 +120,7 @@ export function useContextMenu() {
 
       const items: ContextMenuItem[] = [
         {
-          label: 'Edit',
+          label: t('contextMenu.edit'),
           onClick: () => {
             dispatch({ type: 'OPEN_EDIT_TAB_MODAL', tabId });
           },
@@ -131,7 +133,7 @@ export function useContextMenu() {
         items,
       });
     },
-    [dispatch],
+    [dispatch, t],
   );
 
   return {

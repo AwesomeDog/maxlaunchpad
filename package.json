@@ -89,9 +89,12 @@
     "auto-launch": "5.0.6",
     "electron-log": "5.4.3",
     "electron-squirrel-startup": "1.0.1",
+    "i18next": "26.3.3",
+    "i18next-browser-languagedetector": "8.2.1",
     "js-yaml": "4.1.1",
     "react": "19.2.0",
     "react-dom": "19.2.0",
+    "react-i18next": "17.0.8",
     "zod": "4.1.13"
   }
 }

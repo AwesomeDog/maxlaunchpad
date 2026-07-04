@@ -1,7 +1,8 @@
 import type { ReactElement } from 'react';
 import { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
-import { APP_DESCRIPTION, APP_NAME } from '../../../shared/constants';
+import { APP_NAME } from '../../../shared/constants';
 import { useDispatch } from '../../state/store';
 import { Modal } from '../common/Modal';
 
@@ -12,6 +13,7 @@ interface AppInfo {
 }
 
 export function AboutModal(): ReactElement {
+  const { t } = useTranslation();
   const dispatch = useDispatch();
   const [appInfo, setAppInfo] = useState<AppInfo | null>(null);
 
@@ -20,21 +22,21 @@ export function AboutModal(): ReactElement {
   }, []);
 
   return (
-    <Modal title={`About ${APP_NAME}`} width={350}>
+    <Modal title={t('modals.about.titleWithApp', { appName: APP_NAME })} width={350}>
       {appInfo ? (
         <div>
           <div className="modal-row">
-            <label>Application:</label>
+            <label>{t('modals.about.application')}:</label>
             <span>{appInfo.name}</span>
           </div>
 
           <div className="modal-row">
-            <label>Version:</label>
+            <label>{t('modals.about.version')}:</label>
             <span>{appInfo.version}</span>
           </div>
 
           <div className="modal-row">
-            <label>Git Commit:</label>
+            <label>{t('modals.about.gitCommit')}:</label>
             <span
               style={{
                 fontFamily: 'monospace',
@@ -59,7 +61,7 @@ export function AboutModal(): ReactElement {
             color: 'var(--text-color)',
           }}
         >
-          Loading...
+          {t('modals.common.loading')}
         </div>
       )}
 
@@ -73,11 +75,13 @@ export function AboutModal(): ReactElement {
           lineHeight: '1.5',
         }}
       >
-        <p style={{ margin: 0 }}>{APP_DESCRIPTION}</p>
+        <p style={{ margin: 0 }}>{t('modals.about.description')}</p>
       </div>
 
       <div className="modal-actions">
-        <button onClick={() => dispatch({ type: 'CLOSE_MODAL' })}>Close</button>
+        <button onClick={() => dispatch({ type: 'CLOSE_MODAL' })}>
+          {t('modals.common.close')}
+        </button>
       </div>
     </Modal>
   );

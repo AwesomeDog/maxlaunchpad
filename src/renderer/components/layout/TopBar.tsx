@@ -1,5 +1,6 @@
 import type { ReactElement } from 'react';
 import { useCallback, useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { APP_NAME, DOCUMENTATION_URL } from '../../../shared/constants';
 import type { HideElements, KeyboardProfile } from '../../../shared/types';
@@ -12,6 +13,7 @@ import { SearchBox } from './SearchBox';
 type MenuId = 'file' | 'view' | 'tools' | 'settings' | 'help' | null;
 
 export function TopBar(): ReactElement {
+  const { t } = useTranslation();
   const state = useAppState();
   const dispatch = useDispatch();
   const [openMenu, setOpenMenu] = useState<MenuId>(null);
@@ -53,7 +55,7 @@ export function TopBar(): ReactElement {
       await window.electronAPI.saveProfile(state.profile, state.settings.activeProfilePath);
       dispatch({ type: 'SET_CONFIG_DIRTY', dirty: false });
     } catch (error) {
-      dispatch({ type: 'SET_ERROR', error: 'Failed to save configuration' });
+      dispatch({ type: 'SET_ERROR', error: t('errors.failedToSaveConfiguration') });
       throw error;
     }
   };
@@ -88,7 +90,7 @@ export function TopBar(): ReactElement {
         profile,
       });
     } catch {
-      dispatch({ type: 'SET_ERROR', error: 'Failed to create new profile' });
+      dispatch({ type: 'SET_ERROR', error: t('errors.failedToCreateNewProfile') });
     }
   };
 
@@ -115,7 +117,7 @@ export function TopBar(): ReactElement {
       const { settings, profile } = await window.electronAPI.loadConfig();
       dispatch({ type: 'SET_CONFIG', settings, profile });
     } catch {
-      dispatch({ type: 'SET_ERROR', error: 'Failed to open profile' });
+      dispatch({ type: 'SET_ERROR', error: t('errors.failedToOpenProfile') });
     }
   };
 
@@ -149,7 +151,7 @@ export function TopBar(): ReactElement {
     } catch {
       dispatch({
         type: 'SET_ERROR',
-        error: 'Failed to save profile as new file',
+        error: t('errors.failedToSaveProfileAs'),
       });
     }
   };
@@ -258,21 +260,21 @@ export function TopBar(): ReactElement {
         onClick={() => handleMenuClick('file')}
         onMouseEnter={() => handleMenuHover('file')}
       >
-        File
+        {t('menu.file')}
         {openMenu === 'file' && (
           <div className="dropdown-menu">
             <div className="dropdown-item" onClick={handleNew}>
-              New
+              {t('menu.new')}
             </div>
             <div className="dropdown-item" onClick={handleOpen}>
-              Open...
+              {t('menu.open')}
             </div>
             <div className="dropdown-item" onClick={handleSaveAs}>
-              Save As...
+              {t('menu.saveAs')}
             </div>
             <div className="context-menu-separator" />
             <div className="dropdown-item" onClick={handleExit}>
-              Exit
+              {t('menu.exit')}
             </div>
           </div>
         )}
@@ -284,24 +286,24 @@ export function TopBar(): ReactElement {
         onClick={() => handleMenuClick('view')}
         onMouseEnter={() => handleMenuHover('view')}
       >
-        View
+        {t('menu.view')}
         {openMenu === 'view' && (
           <div className="dropdown-menu">
             <div
               className="dropdown-item"
               onClick={handleToggleDragDrop}
-              title="When enabled, the window stays visible and movable in this session"
+              title={t('menu.dragDropModeTooltip')}
             >
               <span className="menu-check">{state.ui.isDragDropMode ? '✓' : ''}</span>
-              Drag & Drop Mode
+              {t('menu.dragDropMode')}
             </div>
             <div
               className="dropdown-item"
               onClick={handleToggleLockCenter}
-              title="When enabled, window centers and can't be dragged"
+              title={t('menu.centerWindowTooltip')}
             >
               <span className="menu-check">{state.settings?.lockWindowCenter ? '✓' : ''}</span>
-              Lock Window Center
+              {t('menu.centerWindow')}
             </div>
             <div className="context-menu-separator" />
             {/* Hide Elements submenu */}
@@ -311,74 +313,74 @@ export function TopBar(): ReactElement {
               onMouseLeave={() => setHideSubmenuOpen(false)}
             >
               <span className="menu-check"></span>
-              Hide Elements
+              {t('menu.hideElements')}
               <span className="submenu-arrow">▸</span>
               {hideSubmenuOpen && (
                 <div className="dropdown-menu submenu">
                   <div
                     className="dropdown-item"
                     onClick={() => handleToggleHideElement('menu')}
-                    title="Hide menu bar (press Alt to show temporarily)"
+                    title={t('menu.hideMenuBarTooltip')}
                   >
                     <span className="menu-check">{hideElements.menu ? '✓' : ''}</span>
-                    Menu (press Alt to show)
+                    {t('menu.hideMenuBar')}
                   </div>
                   <div
                     className="dropdown-item"
                     onClick={() => handleToggleHideElement('buttonIcons')}
-                    title="Hide button icons"
+                    title={t('menu.hideButtonIconsTooltip')}
                   >
                     <span className="menu-check">{hideElements.buttonIcons ? '✓' : ''}</span>
-                    Button Icons
+                    {t('menu.hideButtonIcons')}
                   </div>
                   <div
                     className="dropdown-item"
                     onClick={() => handleToggleHideElement('buttonText')}
-                    title="Hide button text labels"
+                    title={t('menu.hideButtonTextTooltip')}
                   >
                     <span className="menu-check">{hideElements.buttonText ? '✓' : ''}</span>
-                    Button Text
+                    {t('menu.hideButtonText')}
                   </div>
                   <div
                     className="dropdown-item"
                     onClick={() => handleToggleHideElement('emptyButtons')}
-                    title="Hide buttons without configured programs"
+                    title={t('menu.hideEmptyButtonsTooltip')}
                   >
                     <span className="menu-check">{hideElements.emptyButtons ? '✓' : ''}</span>
-                    Empty Buttons
+                    {t('menu.hideEmptyButtons')}
                   </div>
                   <div className="context-menu-separator" />
                   <div
                     className="dropdown-item"
                     onClick={() => handleToggleHideElement('rowF')}
-                    title="Hide function keys row (F1-F10)"
+                    title={t('menu.hideFunctionKeysTooltip')}
                   >
                     <span className="menu-check">{hideElements.rowF ? '✓' : ''}</span>
-                    Row F
+                    {t('menu.hideFunctionKeys')}
                   </div>
                   <div
                     className="dropdown-item"
                     onClick={() => handleToggleHideElement('row1')}
-                    title="Hide letter keys row 1 (Q-P)"
+                    title={t('menu.hideLetterKeysRow1Tooltip')}
                   >
                     <span className="menu-check">{hideElements.row1 ? '✓' : ''}</span>
-                    Row 1
+                    {t('menu.hideLetterKeysRow1')}
                   </div>
                   <div
                     className="dropdown-item"
                     onClick={() => handleToggleHideElement('row2')}
-                    title="Hide letter keys row 2 (A-;)"
+                    title={t('menu.hideLetterKeysRow2Tooltip')}
                   >
                     <span className="menu-check">{hideElements.row2 ? '✓' : ''}</span>
-                    Row 2
+                    {t('menu.hideLetterKeysRow2')}
                   </div>
                   <div
                     className="dropdown-item"
                     onClick={() => handleToggleHideElement('row3')}
-                    title="Hide letter keys row 3 (Z-/)"
+                    title={t('menu.hideLetterKeysRow3Tooltip')}
                   >
                     <span className="menu-check">{hideElements.row3 ? '✓' : ''}</span>
-                    Row 3
+                    {t('menu.hideLetterKeysRow3')}
                   </div>
                 </div>
               )}
@@ -393,23 +395,23 @@ export function TopBar(): ReactElement {
         onClick={() => handleMenuClick('tools')}
         onMouseEnter={() => handleMenuHover('tools')}
       >
-        Tools
+        {t('menu.tools')}
         {openMenu === 'tools' && (
           <div className="dropdown-menu">
             {(() => {
               const labels = IS_MAC
                 ? {
-                    user: 'Open Applications Folder (User)',
-                    system: 'Open Applications Folder (System)',
+                    user: t('menu.openUserApps'),
+                    system: t('menu.openSystemApps'),
                   }
                 : IS_WINDOWS
                   ? {
-                      user: 'Open Start Menu (User)',
-                      system: 'Open Start Menu (All Users)',
+                      user: t('menu.openStartMenuUser'),
+                      system: t('menu.openStartMenuAll'),
                     }
                   : {
-                      user: 'Open Applications Directory (User)',
-                      system: 'Open Applications Directory (System)',
+                      user: t('menu.openUserAppsDir'),
+                      system: t('menu.openSystemAppsDir'),
                     };
               return (
                 <>
@@ -424,7 +426,7 @@ export function TopBar(): ReactElement {
             })()}
             <div className="context-menu-separator" />
             <div className="dropdown-item" onClick={handleOpenMyConfigFolders}>
-              Open My Config Folders
+              {t('menu.openConfigFolders')}
             </div>
           </div>
         )}
@@ -436,14 +438,14 @@ export function TopBar(): ReactElement {
         onClick={() => handleMenuClick('settings')}
         onMouseEnter={() => handleMenuHover('settings')}
       >
-        Settings
+        {t('menu.settings')}
         {openMenu === 'settings' && (
           <div className="dropdown-menu">
             <div className="dropdown-item" onClick={handleHotkey}>
-              Hotkey
+              {t('menu.hotkeySettings')}
             </div>
             <div className="dropdown-item" onClick={handleOptions}>
-              Options
+              {t('menu.options')}
             </div>
           </div>
         )}
@@ -455,14 +457,14 @@ export function TopBar(): ReactElement {
         onClick={() => handleMenuClick('help')}
         onMouseEnter={() => handleMenuHover('help')}
       >
-        Help
+        {t('menu.help')}
         {openMenu === 'help' && (
           <div className="dropdown-menu">
             <div className="dropdown-item" onClick={handleDocumentation}>
-              Documentation
+              {t('menu.documentation')}
             </div>
             <div className="dropdown-item" onClick={handleAbout}>
-              About {APP_NAME}
+              {t('menu.about')} {APP_NAME}
             </div>
           </div>
         )}

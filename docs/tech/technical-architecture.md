@@ -31,6 +31,7 @@ MaxLaunchpad is a single-window Electron desktop app with a virtual keyboard UI 
 │  - Virtual keyboard UI, modals, settings                    │
 │  - Functional components and hooks only                       │
 │  - Single unified state store (Context + useReducer)        │
+│  - Renderer localization via i18next                        │
 │  - Icon memory cache & fallback generation (useIcon hook)   │
 └─────────────────────────────────────────────────────────────┘
 ```
@@ -77,6 +78,10 @@ src/
 ├── renderer/
 │   ├── index.tsx            # React entry
 │   ├── App.tsx              # Root component
+│   ├── i18n/                # Renderer localization setup and resources
+│   │   ├── index.ts         # i18next initialization
+│   │   ├── en.json          # English translations
+│   │   └── zh-CN.json       # Simplified Chinese translations
 │   ├── state/
 │   │   ├── store.ts         # Context + useReducer store
 │   │   └── selectors.ts     # Derived data selectors
@@ -115,6 +120,7 @@ src/
 | React (functional components)         | UI                                                      |
 | TypeScript                            | Language                                                |
 | Context + useReducer                  | State                                                   |
+| i18next + react-i18next               | Renderer UI localization                               |
 | js-yaml                               | Config (with `JSON_SCHEMA` for security)                |
 | zod                                   | Runtime config validation & sanitization                |
 | Electron Forge + Webpack              | Build                                                   |
@@ -1732,6 +1738,12 @@ Handles right-click context menus for function/letter keys and tab buttons.
 ---
 
 ## 9. Renderer Components
+
+Renderer-facing strings are localized with `i18next` and `react-i18next`. `src/renderer/index.tsx` imports `./i18n`
+once, and React components/hooks use `useTranslation()` for menus, modals, context menu actions, loading states, and
+renderer-generated error messages. Translation resources live in `src/renderer/i18n/en.json` and
+`src/renderer/i18n/zh-CN.json`; maintenance details are documented in [`i18n.md`](./i18n.md). Electron main-process UI,
+such as tray menus and native file dialog titles, is not part of the renderer i18n layer yet.
 
 ### 9.1 `common/Modal.tsx` - Base Modal Wrapper
 
