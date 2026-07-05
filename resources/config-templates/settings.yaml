@@ -2,6 +2,7 @@ hotkey:
   modifiers:
     - Alt
   key: '`'
+menuRevealKey: Alt
 activeTabOnShow: lastUsed
 lockWindowCenter: true
 launchOnStartup: true

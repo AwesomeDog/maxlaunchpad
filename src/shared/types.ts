@@ -35,6 +35,8 @@ export interface HotkeyConfig {
   key: string; // Main key
 }
 
+export type MenuRevealKey = 'Ctrl' | 'Shift' | 'Alt' | 'Win';
+
 // Window size configuration
 export interface WindowSize {
   width: number;
@@ -43,7 +45,7 @@ export interface WindowSize {
 
 // Hide elements configuration
 export interface HideElements {
-  menu: boolean; // Hide menu bar (press Alt to show)
+  menu: boolean; // Hide menu bar until the configured reveal key is pressed
   buttonIcons: boolean; // Hide button icons
   buttonText: boolean; // Hide button text
   emptyButtons: boolean; // Hide empty buttons (no file path configured)
@@ -59,6 +61,7 @@ export type LegacyAppLanguage = AppLanguage | 'zh';
 // App settings (stored in settings.yaml)
 export interface AppSettings {
   hotkey: HotkeyConfig;
+  menuRevealKey: MenuRevealKey; // Modifier key used to temporarily show the hidden menu
   activeTabOnShow: 'lastUsed' | string; // 'lastUsed' or tab ID '1'-'0'
   activeProfilePath: string; // Absolute path to active keyboard profile
   lockWindowCenter: boolean;

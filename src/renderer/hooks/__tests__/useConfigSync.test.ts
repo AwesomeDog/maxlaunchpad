@@ -56,6 +56,7 @@ void _TestComponent;
 const mockSettings: AppSettings = {
   activeProfilePath: '/path/to/profile.yaml',
   hotkey: { modifiers: ['Command', 'Shift'], key: 'Space' },
+  menuRevealKey: 'Alt',
   activeTabOnShow: 'lastUsed',
   lockWindowCenter: false,
   launchOnStartup: false,

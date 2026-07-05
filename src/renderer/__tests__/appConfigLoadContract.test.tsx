@@ -12,6 +12,7 @@ jest.mock('../hooks/useIcon', () => ({
 const settings: AppSettings = {
   activeProfilePath: 'C:\\Users\\hcy\\.config\\MaxLaunchpad\\keyboard.yaml',
   hotkey: { modifiers: ['Alt'], key: '`' },
+  menuRevealKey: 'Alt',
   activeTabOnShow: 'lastUsed',
   lockWindowCenter: false,
   launchOnStartup: false,

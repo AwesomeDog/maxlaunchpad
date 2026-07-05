@@ -82,9 +82,11 @@ function AppContent() {
   // Determine if menu should be hidden
   const isMenuHidden = settings.hideElements.menu;
 
-  // Container class based on menu visibility (isAltPressed is managed by useKeyboardNav)
+  // Container class based on menu visibility (reveal-key state is managed by useKeyboardNav)
   const containerClass =
-    isMenuHidden && !state.ui.isAltPressed ? 'app-container menu-hidden' : 'app-container';
+    isMenuHidden && !state.ui.isMenuRevealKeyPressed
+      ? 'app-container menu-hidden'
+      : 'app-container';
 
   const renderModal = () => {
     switch (state.ui.modal.type) {

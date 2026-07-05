@@ -38,6 +38,8 @@ export const MODIFIER_KEYS: ModifierKeyDef[] = [
 ];
 
 export const DEFAULT_MODIFIER = 'Alt';
+export const MENU_REVEAL_KEYS = ['Ctrl', 'Shift', 'Alt', 'Win'] as const;
+export const DEFAULT_MENU_REVEAL_KEY = 'Alt';
 
 export const DEFAULT_WINDOW_SIZE: WindowSize = { width: 1000, height: 600 };
 

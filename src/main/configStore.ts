@@ -3,7 +3,12 @@ import fs from 'fs';
 import { dump, JSON_SCHEMA, load } from 'js-yaml';
 import path from 'path';
 
-import { DEFAULT_HIDE_ELEMENTS, DEFAULT_MODIFIER, DEFAULT_WINDOW_SIZE } from '../shared/constants';
+import {
+  DEFAULT_HIDE_ELEMENTS,
+  DEFAULT_MENU_REVEAL_KEY,
+  DEFAULT_MODIFIER,
+  DEFAULT_WINDOW_SIZE,
+} from '../shared/constants';
 import { PartialAppSettingsSchema, PartialKeyboardProfileSchema } from '../shared/schemas';
 import { AppSettings, KeyboardProfile } from '../shared/types';
 import { formatTimestamp, normalizeProfile } from '../shared/utils';
@@ -21,6 +26,7 @@ import { IS_MAC, IS_WINDOWS } from './platform';
 
 const TEMPLATE_DIR = path.join(RESOURCES_DIR, 'config-templates');
 const KEYBOARD_SAMPLES_DIR = path.join(TEMPLATE_DIR, 'keyboard-samples');
+const DELETED_CUSTOM_STYLES = new Set(['class']);
 
 let configDirInitialized = false;
 
@@ -75,6 +81,7 @@ export function loadSettings(): AppSettings {
   ensureConfigDir();
   const defaults: AppSettings = {
     hotkey: { modifiers: [DEFAULT_MODIFIER], key: '`' },
+    menuRevealKey: DEFAULT_MENU_REVEAL_KEY,
     activeTabOnShow: 'lastUsed',
     activeProfilePath: DEFAULT_PROFILE_PATH,
     lockWindowCenter: true,
@@ -104,6 +111,9 @@ export function loadSettings(): AppSettings {
         // Deep merge hideElements
         hideElements: { ...defaults.hideElements, ...data.hideElements },
       };
+      if (DELETED_CUSTOM_STYLES.has(merged.customStyle)) {
+        merged.customStyle = defaults.customStyle;
+      }
       log.debug('Settings loaded', { scope: 'configStore', path: SETTINGS_FILE_PATH });
       return merged;
     }
@@ -208,7 +218,8 @@ export function listCustomStyles(): string[] {
     return fs
       .readdirSync(STYLES_DIR_PATH)
       .filter((f) => f.endsWith('.css'))
-      .map((f) => f.replace(/\.css$/, ''));
+      .map((f) => f.replace(/\.css$/, ''))
+      .filter((styleName) => !DELETED_CUSTOM_STYLES.has(styleName));
   } catch (error) {
     log.error('Failed to list custom styles', { scope: 'configStore', error });
     return [];
@@ -217,6 +228,11 @@ export function listCustomStyles(): string[] {
 
 export function loadCustomStyleContent(styleName: string): string | null {
   try {
+    if (DELETED_CUSTOM_STYLES.has(styleName)) {
+      log.warn('Deleted custom style rejected', { scope: 'configStore', styleName });
+      return null;
+    }
+
     // Security: only allow valid style names (alphanumeric, hyphen, underscore)
     if (!/^[\w-]+$/.test(styleName)) {
       log.warn('Invalid style name rejected', { scope: 'configStore', styleName });
