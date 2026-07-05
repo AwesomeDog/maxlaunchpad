@@ -43,4 +43,32 @@ describe('compact hidden row layout contract', () => {
       'min-height: var(--keyboard-letter-row-height, var(--keyboard-letter-row-fallback-height));',
     );
   });
+
+  it('keeps legacy tab and letter-key spacing outside the modern style scope', () => {
+    const css = readProjectFile('src', 'renderer', 'styles', 'global.css');
+
+    expect(css).toContain(`.keyboard-zone {
+  display: grid;
+  grid-template-rows: minmax(48px, 0.6fr) minmax(0, 3fr);
+  gap: var(--keyboard-gap);
+  height: 100%;
+  padding: 0 20px 20px;`);
+    expect(css).toContain(`.num-keys-row {
+  height: 40px;
+  gap: 0;`);
+    expect(css).toContain(`.letter-keys-row {
+  grid-template-columns: 1fr;
+  grid-template-rows: repeat(3, 1fr);
+  gap: var(--keyboard-gap);
+  padding: 12px;`);
+    expect(css).toContain(`body.custom-style-modern .keyboard-zone {
+  padding: 0;
+}`);
+    expect(css).toContain(`body.custom-style-modern .num-keys-row {
+  gap: var(--keyboard-gap);
+}`);
+    expect(css).toContain(`body.custom-style-modern .letter-keys-row {
+  padding: var(--keyboard-gap) 0 0;
+}`);
+  });
 });

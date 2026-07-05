@@ -45,12 +45,18 @@ export function KeyButton({
   const tooltip = description ? `${label} - ${description}` : label;
 
   const icon = useIcon(keyConfig);
+  const shouldHideIcon = Boolean(hideIcon);
+  const shouldHideText = Boolean(hideText);
 
   const className = [
     'key-btn',
     isDragOver ? 'drag-over' : '',
     isMoveSource ? 'move-source' : '',
     isHidden ? 'hidden' : '',
+    shouldHideIcon ? 'icons-hidden' : '',
+    shouldHideText ? 'text-hidden' : '',
+    shouldHideIcon && !shouldHideText ? 'text-only' : '',
+    shouldHideText && !shouldHideIcon ? 'icon-only' : '',
   ]
     .filter(Boolean)
     .join(' ');
@@ -259,13 +265,13 @@ export function KeyButton({
       <span className="key-btn-key">{keyId}</span>
       {filePath && (
         <>
-          {icon && !hideIcon && (
-            <span className="key-btn-icon-slot">
+          {icon && (
+            <span className={`key-btn-icon-slot${shouldHideIcon ? ' content-hidden' : ''}`}>
               <img className="key-btn-icon" src={icon} alt="" />
             </span>
           )}
-          {!hideText && (
-            <span className="key-btn-text-slot">
+          {label && (
+            <span className={`key-btn-text-slot${shouldHideText ? ' content-hidden' : ''}`}>
               <span className="key-btn-text" data-fit-text="key">
                 {label}
               </span>

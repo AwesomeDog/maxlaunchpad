@@ -347,7 +347,7 @@ body,
   grid-template-rows: minmax(48px, 0.6fr) minmax(0, 3fr);
   gap: var(--keyboard-gap);
   height: 100%;
-  padding: 0;
+  padding: 0 20px 20px;
   min-height: 0;
   transition: grid-template-rows 0.18s ease;
 }
@@ -397,7 +397,7 @@ body,
 
 .num-keys-row {
   height: 40px;
-  gap: var(--keyboard-gap);
+  gap: 0;
   min-height: 0;
 }
 
@@ -405,7 +405,7 @@ body,
   grid-template-columns: 1fr;
   grid-template-rows: repeat(3, 1fr);
   gap: var(--keyboard-gap);
-  padding: var(--keyboard-gap) 0 0;
+  padding: 12px;
   border: 1px solid var(--text-color);
   border-top: none;
   background-color: var(--selected-background-color);
@@ -433,7 +433,7 @@ body,
 }
 
 .letter-keys-row.rows-hidden {
-  padding-top: 0;
+  padding: 0;
   border-top: 0;
   background: transparent;
 }
@@ -669,10 +669,8 @@ body.tab-move-active {
   margin: 0;
   align-self: end;
   border-left: none;
-  border-bottom-color: transparent;
   border-radius: 12px 12px 0 0;
   position: relative;
-  overflow: visible;
   transform: none;
 }
 
@@ -683,10 +681,40 @@ body.tab-move-active {
 .num-key-btn.selected {
   background: var(--selected-background-color);
   border-bottom-color: transparent;
+}
+
+.num-key-btn:hover {
+  transform: none;
+}
+
+body.custom-style-modern .keyboard-zone {
+  padding: 0;
+}
+
+body.custom-style-modern .num-keys-row {
+  gap: var(--keyboard-gap);
+}
+
+body.custom-style-modern .letter-keys-row {
+  padding: var(--keyboard-gap) 0 0;
+}
+
+body.custom-style-modern .letter-keys-row.rows-hidden {
+  padding: 0;
+}
+
+body.custom-style-modern .num-key-btn {
+  border-left: 1px solid var(--text-color);
+  border-bottom-color: transparent;
+  overflow: visible;
+}
+
+body.custom-style-modern .num-key-btn.selected {
+  border-bottom-color: transparent;
   z-index: 2;
 }
 
-.num-key-btn.selected::after {
+body.custom-style-modern .num-key-btn.selected::after {
   content: '';
   position: absolute;
   right: 0;
@@ -695,10 +723,6 @@ body.tab-move-active {
   height: 2px;
   background: var(--selected-background-color);
   pointer-events: none;
-}
-
-.num-key-btn:hover {
-  transform: none;
 }
 
 .num-key-number,
