@@ -13,6 +13,11 @@ type ModalState =
   | { type: 'options' }
   | { type: 'about' };
 
+export interface KeyMoveLocation {
+  tabId: string;
+  keyId: string;
+}
+
 export interface AppState {
   // Persisted config (loaded from files)
   settings: AppSettings | null;
@@ -23,8 +28,9 @@ export interface AppState {
     activeTabId: string;
     searchQuery: string;
     isDragDropMode: boolean; // Runtime only, resets on restart
-    isAltPressed: boolean; // Alt key pressed (for showing hidden menu)
+    isMenuRevealKeyPressed: boolean; // Configured menu reveal key is pressed
     isConfigDirty: boolean;
+    configRevision: number;
     isLoading: boolean;
     error: string | null;
     modal: ModalState; // Discriminated union for modal state
@@ -39,14 +45,16 @@ export type Action =
   | { type: 'SET_CONFIG'; settings: AppSettings; profile: KeyboardProfile }
   | { type: 'UPDATE_SETTINGS'; settings: Partial<AppSettings> }
   | { type: 'UPDATE_KEY'; key: KeyConfig }
+  | { type: 'MOVE_KEY'; source: KeyMoveLocation; target: KeyMoveLocation }
   | { type: 'DELETE_KEY'; tabId: string; keyId: string }
+  | { type: 'MOVE_TAB'; sourceTabId: string; targetTabId: string }
   | { type: 'UPDATE_TAB'; tabId: string; label: string }
   // UI actions
   | { type: 'SET_ACTIVE_TAB'; tabId: string }
   | { type: 'SET_SEARCH_QUERY'; query: string }
   | { type: 'SET_DRAG_DROP_MODE'; enabled: boolean }
-  | { type: 'SET_ALT_PRESSED'; pressed: boolean }
-  | { type: 'SET_CONFIG_DIRTY'; dirty: boolean }
+  | { type: 'SET_MENU_REVEAL_KEY_PRESSED'; pressed: boolean }
+  | { type: 'SET_CONFIG_DIRTY'; dirty: boolean; revision?: number }
   | { type: 'SET_ERROR'; error: string | null }
   | { type: 'OPEN_EDIT_KEY_MODAL'; key: KeyConfig }
   | { type: 'OPEN_EDIT_TAB_MODAL'; tabId: string }
@@ -59,15 +67,16 @@ export type Action =
 
 // ============ Initial State ============
 
-const initialState: AppState = {
+export const initialState: AppState = {
   settings: null,
   profile: null,
   ui: {
     activeTabId: '1',
     searchQuery: '',
     isDragDropMode: false,
-    isAltPressed: false,
+    isMenuRevealKeyPressed: false,
     isConfigDirty: false,
+    configRevision: 0,
     isLoading: true,
     error: null,
     modal: { type: 'none' },
@@ -77,22 +86,42 @@ const initialState: AppState = {
 
 // ============ Reducer ============
 
-function reducer(state: AppState, action: Action): AppState {
+function markConfigDirty(ui: AppState['ui']): AppState['ui'] {
+  return {
+    ...ui,
+    isConfigDirty: true,
+    configRevision: ui.configRevision + 1,
+  };
+}
+
+export function reducer(state: AppState, action: Action): AppState {
   switch (action.type) {
     case 'SET_CONFIG':
       return {
         ...state,
         settings: action.settings,
         profile: action.profile,
-        ui: { ...state.ui, isLoading: false, isConfigDirty: false },
+        ui: {
+          ...state.ui,
+          isDragDropMode: action.settings.lockWindowCenter ? false : state.ui.isDragDropMode,
+          isLoading: false,
+          isConfigDirty: false,
+          configRevision: 0,
+        },
       };
 
-    case 'UPDATE_SETTINGS':
+    case 'UPDATE_SETTINGS': {
+      const nextSettings = state.settings ? { ...state.settings, ...action.settings } : null;
+      const lockCenterEnabled = action.settings.lockWindowCenter === true;
       return {
         ...state,
-        settings: state.settings ? { ...state.settings, ...action.settings } : null,
-        ui: { ...state.ui, isConfigDirty: true },
+        settings: nextSettings,
+        ui: {
+          ...markConfigDirty(state.ui),
+          isDragDropMode: lockCenterEnabled ? false : state.ui.isDragDropMode,
+        },
       };
+    }
 
     case 'UPDATE_KEY': {
       if (!state.profile) return state;
@@ -107,7 +136,40 @@ function reducer(state: AppState, action: Action): AppState {
       return {
         ...state,
         profile: { ...state.profile, keys: newKeys },
-        ui: { ...state.ui, isConfigDirty: true },
+        ui: markConfigDirty(state.ui),
+      };
+    }
+
+    case 'MOVE_KEY': {
+      if (!state.profile) return state;
+      const { source, target } = action;
+      if (source.tabId === target.tabId && source.keyId === target.keyId) return state;
+
+      const sourceKey = state.profile.keys.find(
+        (keyConfig) => keyConfig.tabId === source.tabId && keyConfig.id === source.keyId,
+      );
+      if (!sourceKey) return state;
+
+      const targetKey = state.profile.keys.find(
+        (keyConfig) => keyConfig.tabId === target.tabId && keyConfig.id === target.keyId,
+      );
+      const movedSource: KeyConfig = { ...sourceKey, tabId: target.tabId, id: target.keyId };
+      const movedTarget: KeyConfig | null = targetKey
+        ? { ...targetKey, tabId: source.tabId, id: source.keyId }
+        : null;
+      const keys = state.profile.keys.filter((keyConfig) => {
+        const isSource = keyConfig.tabId === source.tabId && keyConfig.id === source.keyId;
+        const isTarget = keyConfig.tabId === target.tabId && keyConfig.id === target.keyId;
+        return !isSource && !isTarget;
+      });
+
+      keys.push(movedSource);
+      if (movedTarget) keys.push(movedTarget);
+
+      return {
+        ...state,
+        profile: { ...state.profile, keys },
+        ui: markConfigDirty(state.ui),
       };
     }
 
@@ -119,7 +181,40 @@ function reducer(state: AppState, action: Action): AppState {
       return {
         ...state,
         profile: { ...state.profile, keys },
-        ui: { ...state.ui, isConfigDirty: true },
+        ui: markConfigDirty(state.ui),
+      };
+    }
+
+    case 'MOVE_TAB': {
+      if (!state.profile) return state;
+      const { sourceTabId, targetTabId } = action;
+      if (sourceTabId === targetTabId) return state;
+
+      const sourceTab = state.profile.tabs.find((tab) => tab.id === sourceTabId);
+      const targetTab = state.profile.tabs.find((tab) => tab.id === targetTabId);
+      if (!sourceTab || !targetTab) return state;
+
+      const tabs = state.profile.tabs.map((tab) => {
+        if (tab.id === sourceTabId) return { ...tab, label: targetTab.label ?? '' };
+        if (tab.id === targetTabId) return { ...tab, label: sourceTab.label ?? '' };
+        return tab;
+      });
+      const keys = state.profile.keys.map((keyConfig) => {
+        if (keyConfig.tabId === sourceTabId) return { ...keyConfig, tabId: targetTabId };
+        if (keyConfig.tabId === targetTabId) return { ...keyConfig, tabId: sourceTabId };
+        return keyConfig;
+      });
+      const activeTabId =
+        state.ui.activeTabId === sourceTabId
+          ? targetTabId
+          : state.ui.activeTabId === targetTabId
+            ? sourceTabId
+            : state.ui.activeTabId;
+
+      return {
+        ...state,
+        profile: { ...state.profile, tabs, keys },
+        ui: { ...markConfigDirty(state.ui), activeTabId },
       };
     }
 
@@ -131,7 +226,7 @@ function reducer(state: AppState, action: Action): AppState {
       return {
         ...state,
         profile: { ...state.profile, tabs },
-        ui: { ...state.ui, isConfigDirty: true },
+        ui: markConfigDirty(state.ui),
       };
     }
 
@@ -141,14 +236,40 @@ function reducer(state: AppState, action: Action): AppState {
     case 'SET_SEARCH_QUERY':
       return { ...state, ui: { ...state.ui, searchQuery: action.query } };
 
-    case 'SET_DRAG_DROP_MODE':
-      return { ...state, ui: { ...state.ui, isDragDropMode: action.enabled } };
+    case 'SET_DRAG_DROP_MODE': {
+      const shouldUnlockCenter = action.enabled && state.settings?.lockWindowCenter;
+      const nextUi = { ...state.ui, isDragDropMode: action.enabled };
+      return {
+        ...state,
+        settings:
+          shouldUnlockCenter && state.settings
+            ? { ...state.settings, lockWindowCenter: false }
+            : state.settings,
+        ui: shouldUnlockCenter ? markConfigDirty(nextUi) : nextUi,
+      };
+    }
 
-    case 'SET_ALT_PRESSED':
-      return { ...state, ui: { ...state.ui, isAltPressed: action.pressed } };
+    case 'SET_MENU_REVEAL_KEY_PRESSED':
+      return { ...state, ui: { ...state.ui, isMenuRevealKeyPressed: action.pressed } };
 
     case 'SET_CONFIG_DIRTY':
-      return { ...state, ui: { ...state.ui, isConfigDirty: action.dirty } };
+      if (
+        !action.dirty &&
+        action.revision !== undefined &&
+        action.revision !== state.ui.configRevision
+      ) {
+        return state;
+      }
+      return {
+        ...state,
+        ui: {
+          ...state.ui,
+          isConfigDirty: action.dirty,
+          configRevision: action.dirty
+            ? state.ui.configRevision + 1
+            : state.ui.configRevision,
+        },
+      };
 
     case 'SET_ERROR':
       return { ...state, ui: { ...state.ui, error: action.error } };

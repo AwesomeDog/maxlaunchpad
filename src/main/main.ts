@@ -64,16 +64,16 @@ function initializeApp(): void {
 
       registerGlobalHotkey(settings.hotkey);
 
-      createTray();
+      createTray(settings.language);
 
-      const win = createMainWindow();
+      createMainWindow();
 
       if (settings.lockWindowCenter) {
         setLockWindowCenter(true);
       }
 
       if (!settings.startInTray) {
-        win.show();
+        showMainWindow();
       }
 
       initIconService();

@@ -18,6 +18,16 @@ const renderModal = (props: Partial<React.ComponentProps<typeof Modal>> = {}) =>
 };
 
 describe('Modal', () => {
+  const setWindowAutoHideSuspended = jest.fn();
+
+  beforeEach(() => {
+    setWindowAutoHideSuspended.mockClear();
+    window.electronAPI = {
+      ...window.electronAPI,
+      setWindowAutoHideSuspended,
+    };
+  });
+
   it('should render title and children', () => {
     renderModal({
       title: 'My Modal Title',
@@ -67,6 +77,16 @@ describe('Modal', () => {
 
     const overlay = container.querySelector('.modal-overlay');
     expect(() => fireEvent.click(overlay!)).not.toThrow();
+  });
+
+  it('should suspend and release window blur auto-hide while mounted', () => {
+    const { unmount } = renderModal();
+
+    expect(setWindowAutoHideSuspended).toHaveBeenCalledWith(true);
+
+    unmount();
+
+    expect(setWindowAutoHideSuspended).toHaveBeenLastCalledWith(false);
   });
 
   it('should render complex children correctly', () => {

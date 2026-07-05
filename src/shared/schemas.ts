@@ -31,6 +31,8 @@ export const KeyboardProfileSchema = z
   })
   .strip();
 
+export const MenuRevealKeySchema = z.enum(['Ctrl', 'Shift', 'Alt', 'Win']);
+
 // Hotkey configuration schema
 export const HotkeyConfigSchema = z
   .object({
@@ -61,16 +63,22 @@ export const HideElementsSchema = z
   })
   .strip();
 
+export const AppLanguageSchema = z
+  .union([z.literal('en'), z.literal('zh-CN'), z.literal('zh')])
+  .transform((language) => (language === 'zh' ? 'zh-CN' : language));
+
 // App settings schema
 export const AppSettingsSchema = z
   .object({
     hotkey: HotkeyConfigSchema,
+    menuRevealKey: MenuRevealKeySchema,
     activeTabOnShow: z.string(),
     activeProfilePath: z.string(),
     lockWindowCenter: z.boolean(),
     launchOnStartup: z.boolean(),
     startInTray: z.boolean(),
     theme: z.enum(['light', 'dark', 'system']),
+    language: AppLanguageSchema.optional(),
     customStyle: z.string(),
     windowSize: WindowSizeSchema,
     hideElements: HideElementsSchema,

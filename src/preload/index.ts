@@ -14,13 +14,23 @@ const api = {
     ipcRenderer.invoke(IPC_CHANNELS.CONFIG_SAVE_SETTINGS, settings),
   saveProfile: (profile: KeyboardProfile, filePath?: string) =>
     ipcRenderer.invoke(IPC_CHANNELS.CONFIG_SAVE_PROFILE, profile, filePath),
-  openProfileDialog: () =>
-    ipcRenderer.invoke(IPC_CHANNELS.CONFIG_OPEN_PROFILE_DIALOG) as Promise<{
+  openProfileDialog: (title?: string) =>
+    ipcRenderer.invoke(IPC_CHANNELS.CONFIG_OPEN_PROFILE_DIALOG, title) as Promise<{
       canceled: boolean;
       filePath?: string;
     }>,
-  saveAsDialog: () =>
-    ipcRenderer.invoke(IPC_CHANNELS.CONFIG_SAVE_AS_DIALOG) as Promise<{
+  saveAsDialog: (title?: string) =>
+    ipcRenderer.invoke(IPC_CHANNELS.CONFIG_SAVE_AS_DIALOG, title) as Promise<{
+      canceled: boolean;
+      filePath?: string;
+    }>,
+  selectFile: (title?: string) =>
+    ipcRenderer.invoke(IPC_CHANNELS.DIALOG_SELECT_FILE, title) as Promise<{
+      canceled: boolean;
+      filePath?: string;
+    }>,
+  selectFolder: (title?: string) =>
+    ipcRenderer.invoke(IPC_CHANNELS.DIALOG_SELECT_FOLDER, title) as Promise<{
       canceled: boolean;
       filePath?: string;
     }>,
@@ -35,7 +45,14 @@ const api = {
   // Window controls
   setDragDropMode: (enabled: boolean) =>
     ipcRenderer.invoke(IPC_CHANNELS.WINDOW_SET_DRAG_DROP_MODE, enabled),
+  setLockWindowCenter: (enabled: boolean) =>
+    ipcRenderer.invoke(IPC_CHANNELS.WINDOW_SET_LOCK_WINDOW_CENTER, enabled),
+  minimizeWindow: () => ipcRenderer.invoke(IPC_CHANNELS.WINDOW_MINIMIZE),
   hideWindow: () => ipcRenderer.invoke(IPC_CHANNELS.WINDOW_HIDE),
+  resizeWindowByHeightDelta: (delta: number) =>
+    ipcRenderer.invoke(IPC_CHANNELS.WINDOW_RESIZE_BY_HEIGHT_DELTA, delta),
+  setWindowAutoHideSuspended: (suspended: boolean) =>
+    ipcRenderer.invoke(IPC_CHANNELS.WINDOW_SET_AUTO_HIDE_SUSPENDED, suspended),
 
   // Window events (main -> renderer)
   onWindowShown: (callback: () => void): (() => void) => {
@@ -43,6 +60,13 @@ const api = {
     ipcRenderer.on(IPC_CHANNELS.WINDOW_SHOWN, listener);
     return () => {
       ipcRenderer.removeListener(IPC_CHANNELS.WINDOW_SHOWN, listener);
+    };
+  },
+  onWindowHidden: (callback: () => void): (() => void) => {
+    const listener = () => callback();
+    ipcRenderer.on(IPC_CHANNELS.WINDOW_HIDDEN, listener);
+    return () => {
+      ipcRenderer.removeListener(IPC_CHANNELS.WINDOW_HIDDEN, listener);
     };
   },
   onWindowResized: (callback: (width: number, height: number) => void): (() => void) => {

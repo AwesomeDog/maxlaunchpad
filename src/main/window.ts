@@ -2,7 +2,15 @@ import { app, BrowserWindow, screen } from 'electron';
 
 import { APP_NAME } from '../shared/constants';
 import { IPC_CHANNELS } from '../shared/ipcChannels';
-import { loadSettings } from './configStore';
+import type { WindowSize } from '../shared/types';
+import {
+  getCenteredWindowBounds,
+  normalizeWindowSizeToWorkArea,
+  shouldAllowWindowMovement,
+  shouldAllowWindowResize,
+} from '../shared/windowBehavior';
+import { loadSettings, saveSettings } from './configStore';
+import log from './logger';
 
 declare const MAIN_WINDOW_WEBPACK_ENTRY: string;
 declare const MAIN_WINDOW_PRELOAD_WEBPACK_ENTRY: string;
@@ -10,28 +18,45 @@ declare const MAIN_WINDOW_PRELOAD_WEBPACK_ENTRY: string;
 let mainWindow: BrowserWindow | null = null;
 let isLockWindowCenter = false;
 let isDragDropMode = false;
+let nativeDialogDepth = 0;
+let rendererModalAutoHideDepth = 0;
+let preferredWindowSize: WindowSize | null = null;
+let lastProgrammaticResizeSize: WindowSize | null = null;
 
-// Cache for screen position calculation optimization
-let lastDisplayId: number | null = null;
-let lastPosition: { x: number; y: number } | null = null;
+function getCursorDisplayWorkArea() {
+  return screen.getDisplayNearestPoint(screen.getCursorScreenPoint()).workArea;
+}
+
+function suppressProgrammaticResizeNotifications(size?: WindowSize): void {
+  if (size) {
+    lastProgrammaticResizeSize = size;
+  }
+}
 
 export function createMainWindow(): BrowserWindow {
   if (mainWindow && !mainWindow.isDestroyed()) {
     return mainWindow;
   }
 
-  // Initialize screen listeners on first window creation (after app is ready)
-  initScreenListeners();
-
   // Load saved window size from settings
   const settings = loadSettings();
-  const { width, height } = settings.windowSize;
+  isLockWindowCenter = settings.lockWindowCenter;
+  isDragDropMode = false;
+
+  const currentWorkArea = getCursorDisplayWorkArea();
+  preferredWindowSize = normalizeWindowSizeToWorkArea(settings.windowSize, currentWorkArea, {
+    resetWorkAreaFill: settings.lockWindowCenter,
+  });
+  if (!isSameWindowSize(settings.windowSize, preferredWindowSize)) {
+    saveSettings({ ...settings, windowSize: preferredWindowSize });
+  }
 
   mainWindow = new BrowserWindow({
-    width,
-    height,
+    width: preferredWindowSize.width,
+    height: preferredWindowSize.height,
+    center: true,
     resizable: true,
-    frame: true,
+    frame: false,
     alwaysOnTop: true,
     show: false,
     title: APP_NAME,
@@ -49,6 +74,9 @@ export function createMainWindow(): BrowserWindow {
   void mainWindow.loadURL(MAIN_WINDOW_WEBPACK_ENTRY);
 
   mainWindow.on('blur', () => {
+    if (nativeDialogDepth > 0 || rendererModalAutoHideDepth > 0) {
+      return;
+    }
     if (!isDragDropMode && mainWindow && !mainWindow.isDestroyed()) {
       mainWindow.hide();
     }
@@ -56,20 +84,72 @@ export function createMainWindow(): BrowserWindow {
 
   mainWindow.on('close', (event) => {
     event.preventDefault();
-    mainWindow?.hide();
+    if (mainWindow && !mainWindow.isDestroyed()) {
+      mainWindow.hide();
+    }
   });
 
   mainWindow.on('closed', () => {
     mainWindow = null;
   });
 
+  mainWindow.on('minimize', () => {
+    if (mainWindow && !mainWindow.isDestroyed()) {
+      notifyWindowHidden(mainWindow);
+    }
+  });
+
+  mainWindow.on('hide', () => {
+    if (mainWindow && !mainWindow.isDestroyed()) {
+      notifyWindowHidden(mainWindow);
+    }
+  });
+
   // Notify renderer when window is resized (saving handled by useConfigSync with debounce)
   mainWindow.on('resize', () => {
     if (mainWindow && !mainWindow.isDestroyed()) {
       const [width, height] = mainWindow.getSize();
+      const currentSize = { width, height };
+      if (lastProgrammaticResizeSize && isSameWindowSize(currentSize, lastProgrammaticResizeSize)) {
+        return;
+      }
+      lastProgrammaticResizeSize = null;
+
+      const currentWorkArea = getCursorDisplayWorkArea();
+      const normalizedSize = normalizeWindowSizeToWorkArea(currentSize, currentWorkArea, {
+        resetWorkAreaFill: isLockWindowCenter,
+      });
+
+      if (!isSameWindowSize(currentSize, normalizedSize)) {
+        if (isLockWindowCenter) {
+          preferredWindowSize = normalizedSize;
+          mainWindow.webContents.send(
+            IPC_CHANNELS.WINDOW_RESIZED,
+            normalizedSize.width,
+            normalizedSize.height,
+          );
+        }
+        return;
+      }
+
+      preferredWindowSize = currentSize;
       mainWindow.webContents.send(IPC_CHANNELS.WINDOW_RESIZED, width, height);
     }
   });
+
+  mainWindow.on('will-move', (event) => {
+    if (!shouldAllowWindowMovement({ lockWindowCenter: isLockWindowCenter, isDragDropMode })) {
+      event.preventDefault();
+    }
+  });
+
+  mainWindow.on('will-resize', (event) => {
+    if (!shouldAllowWindowResize({ lockWindowCenter: isLockWindowCenter, isDragDropMode })) {
+      event.preventDefault();
+    }
+  });
+
+  applyWindowInteractionPolicy(mainWindow);
 
   return mainWindow;
 }
@@ -82,49 +162,77 @@ export function getMainWindow(): BrowserWindow | null {
 }
 
 function placeWindowOnCursorDisplay(win: BrowserWindow): void {
-  const cursorPoint = screen.getCursorScreenPoint();
-  const currentDisplay = screen.getDisplayNearestPoint(cursorPoint);
+  try {
+    const currentWorkArea = getCursorDisplayWorkArea();
+    const [width, height] = win.getSize();
+    const bounds = getCenteredWindowBounds({ width, height }, currentWorkArea);
+    suppressProgrammaticResizeNotifications({ width: bounds.width, height: bounds.height });
+    win.setBounds(bounds);
+    preferredWindowSize = { width: bounds.width, height: bounds.height };
+  } catch (error) {
+    log.error('Failed to center window', { scope: 'window', error });
+  }
+}
 
-  if (lastDisplayId === currentDisplay.id && lastPosition) {
-    win.setPosition(lastPosition.x, lastPosition.y);
+function restoreConfiguredSizeForShow(win: BrowserWindow): void {
+  const currentWorkArea = getCursorDisplayWorkArea();
+  preferredWindowSize = normalizeWindowSizeToWorkArea(preferredWindowSize, currentWorkArea, {
+    resetWorkAreaFill: isLockWindowCenter,
+  });
+  if (!preferredWindowSize) {
     return;
   }
 
-  const { x, y, width, height } = currentDisplay.workArea;
-  const windowBounds = win.getBounds();
-  const newX = Math.round(x + (width - windowBounds.width) / 2);
-  const newY = Math.round(y + (height - windowBounds.height) / 2);
+  const [currentWidth, currentHeight] = win.getSize();
+  if (currentWidth === preferredWindowSize.width && currentHeight === preferredWindowSize.height) {
+    return;
+  }
 
-  lastDisplayId = currentDisplay.id;
-  lastPosition = { x: newX, y: newY };
-
-  win.setPosition(newX, newY);
+  try {
+    if (win.isFullScreen()) {
+      win.setFullScreen(false);
+    }
+    if (win.isMaximized()) {
+      win.unmaximize();
+    }
+    suppressProgrammaticResizeNotifications(preferredWindowSize);
+    win.setSize(preferredWindowSize.width, preferredWindowSize.height);
+  } catch (error) {
+    log.error('Failed to restore window size', {
+      scope: 'window',
+      size: preferredWindowSize,
+      error,
+    });
+  }
 }
 
-let screenListenersInitialized = false;
+function isSameWindowSize(a: WindowSize, b: WindowSize): boolean {
+  return (
+    Math.round(a.width) === Math.round(b.width) && Math.round(a.height) === Math.round(b.height)
+  );
+}
 
-function initScreenListeners(): void {
-  if (screenListenersInitialized) return;
-  screenListenersInitialized = true;
+function applyWindowInteractionPolicy(win: BrowserWindow): void {
+  const state = { lockWindowCenter: isLockWindowCenter, isDragDropMode };
+  win.setMovable(shouldAllowWindowMovement(state));
+  win.setResizable(shouldAllowWindowResize(state));
+  win.setAlwaysOnTop(nativeDialogDepth === 0 && isLockWindowCenter);
+  win.setVisibleOnAllWorkspaces(isLockWindowCenter, { visibleOnFullScreen: isLockWindowCenter });
+}
 
-  screen.on('display-added', () => {
-    lastDisplayId = null;
-    lastPosition = null;
-  });
-  screen.on('display-removed', () => {
-    lastDisplayId = null;
-    lastPosition = null;
-  });
-  screen.on('display-metrics-changed', () => {
-    lastDisplayId = null;
-    lastPosition = null;
-  });
+function notifyWindowHidden(win: BrowserWindow): void {
+  if (!win.webContents.isDestroyed()) {
+    win.webContents.send(IPC_CHANNELS.WINDOW_HIDDEN);
+  }
 }
 
 export function showMainWindow(): void {
   const win = getMainWindow() ?? createMainWindow();
 
-  placeWindowOnCursorDisplay(win);
+  if (isLockWindowCenter) {
+    restoreConfiguredSizeForShow(win);
+    placeWindowOnCursorDisplay(win);
+  }
 
   // In drag-drop mode, use app.focus to force switch to the window's desktop (macOS only)
   if (isDragDropMode) {
@@ -145,25 +253,110 @@ export function hideMainWindow(): void {
   }
 }
 
+export function minimizeMainWindow(): void {
+  const win = getMainWindow();
+  if (win) {
+    win.minimize();
+  }
+}
+
+export function resizeMainWindowByHeightDelta(delta: number): void {
+  const win = getMainWindow();
+  if (!win || !Number.isFinite(delta) || Math.abs(delta) < 1) {
+    return;
+  }
+
+  const [width, height] = win.getSize();
+  const currentWorkArea = getCursorDisplayWorkArea();
+  const nextSize = normalizeWindowSizeToWorkArea(
+    { width, height: height + Math.round(delta) },
+    currentWorkArea,
+  );
+
+  if (isSameWindowSize({ width, height }, nextSize)) {
+    return;
+  }
+
+  try {
+    if (win.isFullScreen()) {
+      win.setFullScreen(false);
+    }
+    if (win.isMaximized()) {
+      win.unmaximize();
+    }
+
+    if (isLockWindowCenter) {
+      win.setBounds(getCenteredWindowBounds(nextSize, currentWorkArea));
+    } else {
+      const bounds = win.getBounds();
+      win.setBounds({ ...bounds, width: nextSize.width, height: nextSize.height });
+    }
+    preferredWindowSize = nextSize;
+  } catch (error) {
+    log.error('Failed to resize window for hidden rows', {
+      scope: 'window',
+      delta,
+      size: nextSize,
+      error,
+    });
+  }
+}
+
+export function setWindowAutoHideSuspended(suspended: boolean): void {
+  rendererModalAutoHideDepth = Math.max(
+    0,
+    rendererModalAutoHideDepth + (suspended ? 1 : -1),
+  );
+}
+
+export async function keepMainWindowVisibleDuringNativeDialog<T>(
+  task: () => Promise<T>,
+): Promise<T> {
+  nativeDialogDepth += 1;
+  try {
+    const win = getMainWindow();
+    if (win && !win.isDestroyed()) {
+      if (nativeDialogDepth === 1) {
+        win.setAlwaysOnTop(false);
+      }
+      win.show();
+    }
+
+    return await task();
+  } finally {
+    nativeDialogDepth = Math.max(0, nativeDialogDepth - 1);
+    const currentWin = getMainWindow();
+    if (nativeDialogDepth === 0 && currentWin && !currentWin.isDestroyed()) {
+      applyWindowInteractionPolicy(currentWin);
+    }
+  }
+}
+
 export function setLockWindowCenter(enabled: boolean): void {
   isLockWindowCenter = enabled;
+  if (enabled) {
+    isDragDropMode = false;
+  }
   const win = getMainWindow();
   if (win) {
     if (enabled) {
+      restoreConfiguredSizeForShow(win);
       placeWindowOnCursorDisplay(win);
     }
-    // Window is movable if drag-drop mode is on OR lock-center is off
-    win.setMovable(isDragDropMode || !enabled);
+    applyWindowInteractionPolicy(win);
   }
 }
 
 export function setDragDropMode(enabled: boolean): void {
   isDragDropMode = enabled;
+  if (enabled) {
+    isLockWindowCenter = false;
+  }
   const win = getMainWindow();
   if (win) {
-    win.setMovable(enabled || !isLockWindowCenter);
-    win.setAlwaysOnTop(!enabled);
-    // In drag-drop mode, show window only on current workspace to prevent it from following when switching desktops
-    win.setVisibleOnAllWorkspaces(!enabled, { visibleOnFullScreen: !enabled });
+    if (isLockWindowCenter) {
+      placeWindowOnCursorDisplay(win);
+    }
+    applyWindowInteractionPolicy(win);
   }
 }

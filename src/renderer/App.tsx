@@ -1,6 +1,6 @@
 import './styles/global.css';
 
-import { useEffect } from 'react';
+import { useCallback, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { VirtualKeyboard } from './components/keyboard/VirtualKeyboard';
@@ -10,6 +10,8 @@ import { EditKeyModal } from './components/modals/EditKeyModal';
 import { EditTabModal } from './components/modals/EditTabModal';
 import { HotkeySettingsModal } from './components/modals/HotkeySettingsModal';
 import { OptionsModal } from './components/modals/OptionsModal';
+import { useCloseOnWindowHide } from './hooks/useCloseOnWindowHide';
+import { useCompactWindowHeight } from './hooks/useCompactWindowHeight';
 import { useConfigSync } from './hooks/useConfigSync';
 import { useCustomStyle } from './hooks/useCustomStyle';
 import { useErrorDialog } from './hooks/useErrorDialog';
@@ -17,14 +19,20 @@ import { useKeyboardNav } from './hooks/useKeyboardNav';
 import { useTheme } from './hooks/useTheme';
 import { useWindowBehavior } from './hooks/useWindowBehavior';
 import { useWindowTitle } from './hooks/useWindowTitle';
+import i18n from './i18n';
 import { AppStateProvider, useAppState, useDispatch } from './state/store';
 
 function AppContent() {
   const { t } = useTranslation();
   const state = useAppState();
   const dispatch = useDispatch();
+  const closeModal = useCallback(() => {
+    dispatch({ type: 'CLOSE_MODAL' });
+  }, [dispatch]);
 
   useConfigSync();
+
+  useCloseOnWindowHide(closeModal);
 
   useErrorDialog();
 
@@ -33,6 +41,8 @@ function AppContent() {
   useTheme();
 
   useCustomStyle();
+
+  useCompactWindowHeight();
 
   useWindowBehavior();
 
@@ -44,11 +54,11 @@ function AppContent() {
         const { settings, profile } = await window.electronAPI.loadConfig();
         dispatch({ type: 'SET_CONFIG', settings, profile });
       } catch {
-        dispatch({ type: 'SET_ERROR', error: t('errors.failedToLoadConfiguration') });
+        dispatch({ type: 'SET_ERROR', error: i18n.t('errors.failedToLoadConfiguration') });
       }
     }
     void load();
-  }, [dispatch, t]);
+  }, [dispatch]);
 
   if (state.ui.isLoading) {
     return (
@@ -75,9 +85,11 @@ function AppContent() {
   // Determine if menu should be hidden
   const isMenuHidden = settings.hideElements.menu;
 
-  // Container class based on menu visibility (isAltPressed is managed by useKeyboardNav)
+  // Container class based on menu visibility (reveal-key state is managed by useKeyboardNav)
   const containerClass =
-    isMenuHidden && !state.ui.isAltPressed ? 'app-container menu-hidden' : 'app-container';
+    isMenuHidden && !state.ui.isMenuRevealKeyPressed
+      ? 'app-container menu-hidden'
+      : 'app-container';
 
   const renderModal = () => {
     switch (state.ui.modal.type) {

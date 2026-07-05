@@ -29,11 +29,13 @@ beforeEach(() => {
 const mockSettings: AppSettings = {
   activeProfilePath: '/path/to/profile.yaml',
   hotkey: { modifiers: ['Command', 'Shift'], key: 'Space' },
+  menuRevealKey: 'Alt',
   activeTabOnShow: 'lastUsed',
   lockWindowCenter: false,
   launchOnStartup: false,
   startInTray: false,
   theme: 'system',
+  language: 'zh-CN',
   customStyle: 'default',
   windowSize: { width: 1000, height: 600 },
   hideElements: { ...DEFAULT_HIDE_ELEMENTS },
@@ -682,6 +684,88 @@ describe('useKeyboardNav', () => {
       expect(capturedState!.ui.activeTabId).toBe('1');
 
       document.body.removeChild(keyboardZone);
+    });
+  });
+
+  describe('menu reveal key', () => {
+    it('uses the configured modifier key to temporarily reveal hidden menu items', () => {
+      let capturedState: ReturnType<typeof useAppState>;
+      let capturedDispatch: ReturnType<typeof useDispatch>;
+
+      renderHook(
+        () => {
+          const state = useAppState();
+          const dispatch = useDispatch();
+          capturedState = state;
+          capturedDispatch = dispatch;
+          useKeyboardNav();
+        },
+        { wrapper: AppStateProvider },
+      );
+
+      act(() => {
+        capturedDispatch!({
+          type: 'SET_CONFIG',
+          settings: {
+            ...mockSettings,
+            menuRevealKey: 'Shift',
+            hideElements: { ...DEFAULT_HIDE_ELEMENTS, menu: true },
+          },
+          profile: mockProfile,
+        });
+      });
+
+      act(() => {
+        window.dispatchEvent(createKeyboardEvent('Alt'));
+      });
+
+      expect(capturedState!.ui.isMenuRevealKeyPressed).toBe(false);
+
+      act(() => {
+        window.dispatchEvent(createKeyboardEvent('Shift'));
+      });
+
+      expect(capturedState!.ui.isMenuRevealKeyPressed).toBe(true);
+
+      act(() => {
+        window.dispatchEvent(new KeyboardEvent('keyup', { key: 'Shift', bubbles: true }));
+      });
+
+      expect(capturedState!.ui.isMenuRevealKeyPressed).toBe(false);
+    });
+
+    it('maps the Windows key to the Win menu reveal setting', () => {
+      let capturedState: ReturnType<typeof useAppState>;
+      let capturedDispatch: ReturnType<typeof useDispatch>;
+
+      renderHook(
+        () => {
+          const state = useAppState();
+          const dispatch = useDispatch();
+          capturedState = state;
+          capturedDispatch = dispatch;
+          useKeyboardNav();
+        },
+        { wrapper: AppStateProvider },
+      );
+
+      act(() => {
+        capturedDispatch!({
+          type: 'SET_CONFIG',
+          settings: {
+            ...mockSettings,
+            menuRevealKey: 'Win',
+            hideElements: { ...DEFAULT_HIDE_ELEMENTS, menu: true },
+          },
+          profile: mockProfile,
+        });
+      });
+
+      act(() => {
+        window.dispatchEvent(createKeyboardEvent('Meta', { code: 'MetaLeft' }));
+      });
+
+      expect(capturedState!.ui.isMenuRevealKeyPressed).toBe(true);
     });
   });
 

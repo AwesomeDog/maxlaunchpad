@@ -3,6 +3,7 @@ import React from 'react';
 
 import { DEFAULT_HIDE_ELEMENTS } from '../../../shared/constants';
 import type { AppSettings, KeyboardProfile } from '../../../shared/types';
+import i18n from '../../i18n';
 import { AppStateProvider, useAppState, useDispatch } from '../../state/store';
 import { useConfigSync } from '../useConfigSync';
 
@@ -28,6 +29,7 @@ beforeEach(() => {
 
 afterEach(() => {
   jest.useRealTimers();
+  jest.restoreAllMocks();
 });
 
 // Test component that allows us to control state and observe behavior
@@ -55,11 +57,13 @@ void _TestComponent;
 const mockSettings: AppSettings = {
   activeProfilePath: '/path/to/profile.yaml',
   hotkey: { modifiers: ['Command', 'Shift'], key: 'Space' },
+  menuRevealKey: 'Alt',
   activeTabOnShow: 'lastUsed',
   lockWindowCenter: false,
   launchOnStartup: false,
   startInTray: false,
   theme: 'system',
+  language: 'zh-CN',
   customStyle: 'default',
   windowSize: { width: 1000, height: 600 },
   hideElements: { ...DEFAULT_HIDE_ELEMENTS },
@@ -69,6 +73,17 @@ const mockProfile: KeyboardProfile = {
   tabs: [{ id: '1', label: 'Tab 1' }],
   keys: [],
 };
+
+function createDeferred<T = void>() {
+  let resolve!: (value: T | PromiseLike<T>) => void;
+  let reject!: (reason?: unknown) => void;
+  const promise = new Promise<T>((resolvePromise, rejectPromise) => {
+    resolve = resolvePromise;
+    reject = rejectPromise;
+  });
+
+  return { promise, resolve, reject };
+}
 
 describe('useConfigSync', () => {
   it('should not save on first render', () => {
@@ -109,6 +124,60 @@ describe('useConfigSync', () => {
 
     expect(mockSaveSettings).not.toHaveBeenCalled();
     expect(mockSaveProfile).not.toHaveBeenCalled();
+  });
+
+  it('does not drive i18next from persisted settings language', async () => {
+    const changeLanguageSpy = jest.spyOn(i18n, 'changeLanguage');
+    let capturedDispatch: ReturnType<typeof useDispatch>;
+
+    const { rerender } = renderHook(
+      () => {
+        const dispatch = useDispatch();
+        capturedDispatch = dispatch;
+        useConfigSync();
+      },
+      { wrapper: AppStateProvider },
+    );
+
+    act(() => {
+      capturedDispatch!({ type: 'SET_CONFIG', settings: mockSettings, profile: mockProfile });
+    });
+    rerender();
+
+    await act(async () => {
+      await i18n.changeLanguage('en');
+    });
+    changeLanguageSpy.mockClear();
+    rerender();
+
+    expect(changeLanguageSpy).not.toHaveBeenCalled();
+  });
+
+  it('does not force i18next when loaded settings omit language', () => {
+    const settingsWithoutLanguage: AppSettings = { ...mockSettings };
+    delete settingsWithoutLanguage.language;
+    const changeLanguageSpy = jest.spyOn(i18n, 'changeLanguage');
+    let capturedDispatch: ReturnType<typeof useDispatch>;
+
+    const { rerender } = renderHook(
+      () => {
+        const dispatch = useDispatch();
+        capturedDispatch = dispatch;
+        useConfigSync();
+      },
+      { wrapper: AppStateProvider },
+    );
+
+    act(() => {
+      capturedDispatch!({
+        type: 'SET_CONFIG',
+        settings: settingsWithoutLanguage,
+        profile: mockProfile,
+      });
+    });
+    rerender();
+
+    expect(changeLanguageSpy).not.toHaveBeenCalled();
   });
 
   it('should not save when settings is null', () => {
@@ -289,7 +358,7 @@ describe('useConfigSync', () => {
     rerender();
 
     await waitFor(() => {
-      expect(capturedState!.ui.error).toBe('Failed to save configuration');
+      expect(capturedState!.ui.error).toBe(i18n.t('errors.failedToSaveConfiguration'));
     });
   });
 
@@ -338,6 +407,77 @@ describe('useConfigSync', () => {
     await waitFor(() => {
       expect(capturedState!.ui.isConfigDirty).toBe(false);
     });
+  });
+
+  it('keeps dirty and saves the latest edit when an older save finishes late', async () => {
+    let capturedDispatch: ReturnType<typeof useDispatch>;
+    let capturedState: ReturnType<typeof useAppState>;
+    const firstSettingsSave = createDeferred<void>();
+
+    mockSaveSettings.mockImplementationOnce(() => firstSettingsSave.promise);
+    mockSaveSettings.mockResolvedValue(undefined);
+    mockSaveProfile.mockResolvedValue(undefined);
+
+    const { rerender } = renderHook(
+      () => {
+        const state = useAppState();
+        const dispatch = useDispatch();
+        capturedState = state;
+        capturedDispatch = dispatch;
+        useConfigSync();
+      },
+      { wrapper: AppStateProvider },
+    );
+
+    act(() => {
+      capturedDispatch!({ type: 'SET_CONFIG', settings: mockSettings, profile: mockProfile });
+    });
+    rerender();
+
+    act(() => {
+      capturedDispatch!({ type: 'UPDATE_SETTINGS', settings: { theme: 'dark' } });
+    });
+    rerender();
+
+    await act(async () => {
+      jest.advanceTimersByTime(1000);
+      await Promise.resolve();
+    });
+
+    expect(mockSaveSettings).toHaveBeenCalledTimes(1);
+    expect(mockSaveSettings).toHaveBeenCalledWith(
+      expect.objectContaining({ theme: 'dark', customStyle: 'default' }),
+    );
+
+    act(() => {
+      capturedDispatch!({ type: 'UPDATE_SETTINGS', settings: { customStyle: 'modern' } });
+    });
+    rerender();
+
+    await act(async () => {
+      firstSettingsSave.resolve();
+      await Promise.resolve();
+      await Promise.resolve();
+    });
+    rerender();
+
+    expect(capturedState!.ui.isConfigDirty).toBe(true);
+
+    await act(async () => {
+      jest.advanceTimersByTime(1000);
+      await Promise.resolve();
+      await Promise.resolve();
+    });
+    rerender();
+
+    await waitFor(() => {
+      expect(capturedState!.ui.isConfigDirty).toBe(false);
+    });
+    expect(mockSaveSettings).toHaveBeenCalledTimes(2);
+    expect(mockSaveSettings).toHaveBeenLastCalledWith(
+      expect.objectContaining({ theme: 'dark', customStyle: 'modern' }),
+    );
+    expect(mockSaveProfile).toHaveBeenCalledTimes(2);
   });
 
   it('should cleanup timer on unmount', () => {

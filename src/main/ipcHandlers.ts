@@ -4,6 +4,7 @@ import path from 'path';
 
 import { IPC_CHANNELS } from '../shared/ipcChannels';
 import { AppSettingsSchema, KeyboardProfileSchema } from '../shared/schemas';
+import type { AppSettings } from '../shared/types';
 import { listInstalledApps } from './appList';
 import { configureAutoLaunch } from './autoLaunch';
 import {
@@ -20,7 +21,17 @@ import { launchProgram } from './launcher';
 import log from './logger';
 import { APP_CONFIG_DIR } from './paths';
 import { IS_WINDOWS } from './platform';
-import { getMainWindow, hideMainWindow, setDragDropMode, setLockWindowCenter } from './window';
+import { refreshTrayMenu } from './tray';
+import {
+  getMainWindow,
+  hideMainWindow,
+  keepMainWindowVisibleDuringNativeDialog,
+  minimizeMainWindow,
+  resizeMainWindowByHeightDelta,
+  setDragDropMode,
+  setLockWindowCenter,
+  setWindowAutoHideSuspended,
+} from './window';
 
 function resolveSpecialPath(targetPath: string): string {
   // Handle app-specific special paths
@@ -52,6 +63,22 @@ function resolveSpecialPath(targetPath: string): string {
   return targetPath;
 }
 
+function parseBooleanIpcArg(value: unknown): boolean {
+  if (typeof value !== 'boolean') {
+    throw new TypeError('Expected boolean IPC payload');
+  }
+  return value;
+}
+
+function normalizeDialogTitle(value: unknown, fallback: string): string {
+  if (typeof value !== 'string') {
+    return fallback;
+  }
+
+  const normalized = value.replace(/[\r\n\t]+/g, ' ').trim();
+  return normalized ? normalized.slice(0, 120) : fallback;
+}
+
 export function registerIpcHandlers(): void {
   ipcMain.handle(IPC_CHANNELS.CONFIG_LOAD, async () => {
     try {
@@ -67,7 +94,7 @@ export function registerIpcHandlers(): void {
 
   ipcMain.handle(IPC_CHANNELS.CONFIG_SAVE_SETTINGS, async (_, settings) => {
     try {
-      const validatedSettings = AppSettingsSchema.parse(settings);
+      const validatedSettings = AppSettingsSchema.parse(settings) as AppSettings;
       const oldSettings = loadSettings();
 
       saveSettings(validatedSettings);
@@ -82,6 +109,10 @@ export function registerIpcHandlers(): void {
 
       if (oldSettings.launchOnStartup !== validatedSettings.launchOnStartup) {
         await configureAutoLaunch(validatedSettings.launchOnStartup);
+      }
+
+      if (oldSettings.language !== validatedSettings.language) {
+        refreshTrayMenu(validatedSettings.language);
       }
 
       if (oldSettings.lockWindowCenter !== validatedSettings.lockWindowCenter) {
@@ -106,9 +137,9 @@ export function registerIpcHandlers(): void {
     }
   });
 
-  ipcMain.handle(IPC_CHANNELS.CONFIG_OPEN_PROFILE_DIALOG, async () => {
+  ipcMain.handle(IPC_CHANNELS.CONFIG_OPEN_PROFILE_DIALOG, async (_, title?: string) => {
     const result = await dialog.showOpenDialog({
-      title: 'Open Keyboard Profile',
+      title: normalizeDialogTitle(title, 'Open Keyboard Profile'),
       filters: [{ name: 'YAML', extensions: ['yaml', 'yml'] }],
       properties: ['openFile', 'showHiddenFiles'],
     });
@@ -116,14 +147,44 @@ export function registerIpcHandlers(): void {
     return { canceled: false, filePath: result.filePaths[0] };
   });
 
-  ipcMain.handle(IPC_CHANNELS.CONFIG_SAVE_AS_DIALOG, async () => {
+  ipcMain.handle(IPC_CHANNELS.CONFIG_SAVE_AS_DIALOG, async (_, title?: string) => {
     const result = await dialog.showSaveDialog({
-      title: 'Save Keyboard Profile As',
+      title: normalizeDialogTitle(title, 'Save Keyboard Profile As'),
       filters: [{ name: 'YAML', extensions: ['yaml', 'yml'] }],
       properties: ['showHiddenFiles'],
     });
     if (result.canceled) return { canceled: true };
     return { canceled: false, filePath: result.filePath };
+  });
+
+  ipcMain.handle(IPC_CHANNELS.DIALOG_SELECT_FILE, async (_, title?: string) => {
+    const result = await keepMainWindowVisibleDuringNativeDialog(async () => {
+      const win = getMainWindow();
+      const options: Electron.OpenDialogOptions = {
+        title: normalizeDialogTitle(title, 'Select File'),
+        properties: ['openFile', 'showHiddenFiles'],
+      };
+      return win && !win.isDestroyed()
+        ? await dialog.showOpenDialog(win, options)
+        : await dialog.showOpenDialog(options);
+    });
+    if (result.canceled) return { canceled: true };
+    return { canceled: false, filePath: result.filePaths[0] };
+  });
+
+  ipcMain.handle(IPC_CHANNELS.DIALOG_SELECT_FOLDER, async (_, title?: string) => {
+    const result = await keepMainWindowVisibleDuringNativeDialog(async () => {
+      const win = getMainWindow();
+      const options: Electron.OpenDialogOptions = {
+        title: normalizeDialogTitle(title, 'Select Folder'),
+        properties: ['openDirectory', 'showHiddenFiles'],
+      };
+      return win && !win.isDestroyed()
+        ? await dialog.showOpenDialog(win, options)
+        : await dialog.showOpenDialog(options);
+    });
+    if (result.canceled) return { canceled: true };
+    return { canceled: false, filePath: result.filePaths[0] };
   });
 
   ipcMain.handle(IPC_CHANNELS.LAUNCHER_RUN, async (_, keyConfig) => {
@@ -142,11 +203,27 @@ export function registerIpcHandlers(): void {
   });
 
   ipcMain.handle(IPC_CHANNELS.WINDOW_SET_DRAG_DROP_MODE, (_, enabled) => {
-    setDragDropMode(enabled);
+    setDragDropMode(parseBooleanIpcArg(enabled));
+  });
+
+  ipcMain.handle(IPC_CHANNELS.WINDOW_SET_LOCK_WINDOW_CENTER, (_, enabled) => {
+    setLockWindowCenter(parseBooleanIpcArg(enabled));
+  });
+
+  ipcMain.handle(IPC_CHANNELS.WINDOW_MINIMIZE, () => {
+    minimizeMainWindow();
   });
 
   ipcMain.handle(IPC_CHANNELS.WINDOW_HIDE, () => {
     hideMainWindow();
+  });
+
+  ipcMain.handle(IPC_CHANNELS.WINDOW_RESIZE_BY_HEIGHT_DELTA, (_, delta: number) => {
+    resizeMainWindowByHeightDelta(delta);
+  });
+
+  ipcMain.handle(IPC_CHANNELS.WINDOW_SET_AUTO_HIDE_SUSPENDED, (_, suspended: boolean) => {
+    setWindowAutoHideSuspended(parseBooleanIpcArg(suspended));
   });
 
   ipcMain.handle(

@@ -5,6 +5,13 @@
   --background-color: #fafafa;
   --selected-background-color: #e3f2fd;
   --text-color: #212121;
+  --keyboard-gap: 8px;
+  --key-button-label-font-size: clamp(11px, 11.5cqw, 15px);
+  --tab-button-label-font-size: clamp(12px, 12cqw, 16px);
+  --keyboard-f-row-fallback-height: clamp(72px, 5vw, 132px);
+  --keyboard-letter-row-fallback-height: clamp(88px, 7vw, 180px);
+  --keyboard-f-row-flex: 0.6;
+  --keyboard-panel-row-flex: 3;
 }
 
 :root.dark-mode {
@@ -29,6 +36,7 @@ body,
   height: 100%;
   margin: 0;
   padding: 0;
+  overflow: hidden;
   font-family:
     'PingFang SC',
     -apple-system,
@@ -53,43 +61,78 @@ body,
   width: 100%;
   height: 100%;
   display: grid;
-  gap: 8px;
-  padding: 4px;
+  gap: var(--keyboard-gap);
+  padding: var(--keyboard-gap);
   background: var(--background-color);
   grid-template-rows: 40px auto;
   transition: grid-template-rows 0.15s;
-}
-
-.app-container.menu-hidden {
-  grid-template-rows: 0px auto;
 }
 
 /* ============================================
    4. Menu Bar
    ============================================ */
 .main-menu {
+  position: relative;
+  z-index: 1000;
   display: flex;
   align-items: center;
+  height: 40px;
   padding: 0 10px;
+  padding-right: 100px;
   user-select: none;
-  transition: height 0.15s, opacity 0.15s, padding 0.15s;
+  -webkit-app-region: drag;
+  transition:
+    height 0.15s,
+    opacity 0.15s,
+    padding 0.15s;
 }
 
-.main-menu.menu-hidden {
-  height: 0;
+.app-title {
+  flex: 0 0 auto;
+  max-width: 160px;
+  margin-right: 12px;
   overflow: hidden;
-  padding: 0;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: var(--text-color);
+  font-weight: 600;
+}
+
+.topbar-menu-items {
+  display: flex;
+  align-items: center;
+  flex: 0 0 auto;
+  max-width: 520px;
+  min-width: 0;
+  overflow: visible;
+  opacity: 1;
+  transform: translateX(0);
+  transition:
+    max-width 0.18s ease,
+    opacity 0.14s ease,
+    transform 0.18s ease;
+  -webkit-app-region: no-drag;
+}
+
+.topbar-menu-items.menu-items-hidden {
+  max-width: 0;
+  overflow: hidden;
   opacity: 0;
+  pointer-events: none;
+  transform: translateX(-10px);
 }
 
 /* 4.1 Menu Item */
 .menu-item {
+  flex: 0 0 auto;
   position: relative;
   margin-right: 24px;
   padding: 0 8px;
   border-radius: 4px 4px 0 0;
   cursor: pointer;
   color: var(--text-color) !important;
+  white-space: nowrap;
+  -webkit-app-region: no-drag;
 }
 
 .menu-item:hover {
@@ -113,6 +156,45 @@ body,
 /* 4.2 Menu Search */
 .menu-search {
   margin-left: auto;
+}
+
+.window-controls {
+  position: absolute;
+  top: 0;
+  right: 10px;
+  bottom: 0;
+  z-index: 1;
+  display: flex;
+  align-items: stretch;
+  align-self: stretch;
+  margin-left: 8px;
+  -webkit-app-region: no-drag;
+}
+
+.window-control {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 42px;
+  height: 100%;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  color: var(--text-color);
+  cursor: pointer;
+  font: inherit;
+  font-size: 16px;
+  line-height: 1;
+  -webkit-app-region: no-drag;
+}
+
+.window-control:hover {
+  background: var(--selected-background-color);
+}
+
+.window-control.close:hover {
+  background: #c42b1c;
+  color: #fff;
 }
 
 .menu-search-input {
@@ -261,40 +343,115 @@ body,
    7. Keyboard Layout
    ============================================ */
 .keyboard-zone {
-  display: flex;
-  flex-direction: column;
+  display: grid;
+  grid-template-rows: minmax(48px, 0.6fr) minmax(0, 3fr);
+  gap: var(--keyboard-gap);
   height: 100%;
   padding: 0 20px 20px;
+  min-height: 0;
+  transition: grid-template-rows 0.18s ease;
+}
+
+.keyboard-zone.letter-rows-compact {
+  grid-template-rows: var(--keyboard-f-row-height, var(--keyboard-f-row-fallback-height)) minmax(
+      0,
+      1fr
+    );
+  align-content: stretch;
 }
 
 /* 7.1 Keyboard Rows */
 .keyboard-row {
   display: grid;
   grid-template-columns: repeat(10, 1fr);
-  gap: 8px;
+  gap: var(--keyboard-gap);
+  min-height: 0;
 }
 
 .f-keys-row {
-  flex: 2;
+  min-height: 0;
+}
+
+.f-keys-row .key-btn {
+  height: 100%;
+  min-height: 0;
+}
+
+.tabbed-keyboard-panel {
+  display: grid;
+  grid-template-rows: 40px minmax(0, 1fr);
+  min-height: 0;
+  position: relative;
+  transition: grid-template-rows 0.18s ease;
+}
+
+.tabbed-keyboard-panel.letter-rows-compact {
+  grid-template-rows: 40px minmax(0, 1fr);
+  align-self: stretch;
+  padding-bottom: 0;
+}
+
+.tabbed-keyboard-panel.letter-rows-hidden {
+  grid-template-rows: 40px 0;
 }
 
 .num-keys-row {
-  flex: 2;
+  height: 40px;
   gap: 0;
+  min-height: 0;
 }
 
 .letter-keys-row {
-  flex: 6;
+  grid-template-columns: 1fr;
   grid-template-rows: repeat(3, 1fr);
+  gap: var(--keyboard-gap);
   padding: 12px;
   border: 1px solid var(--text-color);
   border-top: none;
   background-color: var(--selected-background-color);
+  min-height: 0;
+  transition:
+    grid-template-rows 0.18s ease,
+    padding 0.18s ease;
+}
+
+.letter-keys-row.letter-rows-compact {
+  align-content: stretch;
+}
+
+.letter-keys-row.visible-letter-rows-2 {
+  grid-template-rows: repeat(2, minmax(0, 1fr));
+}
+
+.letter-keys-row.visible-letter-rows-1 {
+  grid-template-rows: minmax(0, 1fr);
+}
+
+.letter-keys-row.visible-letter-rows-0 {
+  grid-template-rows: 0;
+  gap: 0;
+}
+
+.letter-keys-row.rows-hidden {
+  padding: 0;
+  border-top: 0;
+  background: transparent;
+}
+
+.letter-key-grid-row {
+  display: grid;
+  grid-template-columns: repeat(10, 1fr);
+  gap: var(--keyboard-gap);
+  min-height: 0;
 }
 
 /* 7.1.1 F-row hidden state */
-.keyboard-zone.f-row-hidden .num-keys-row {
-  flex: 1;
+.keyboard-zone.f-row-hidden {
+  grid-template-rows: minmax(0, 1fr);
+}
+
+.keyboard-zone.f-row-hidden.letter-rows-compact {
+  grid-template-rows: minmax(0, 1fr);
 }
 
 .keyboard-zone.f-row-hidden .num-key-btn {
@@ -305,19 +462,20 @@ body,
 /* 7.2 Key Button Base */
 .key-btn {
   position: relative;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
+  container-type: inline-size;
+  display: block;
   min-width: 48px;
   min-height: 48px;
-  margin: 3px;
+  margin: 0;
   padding: 1px 8px;
   border: 1px solid var(--text-color);
   border-radius: 4px;
   background: var(--background-color);
   overflow: hidden;
-  transition: transform 0.1s ease-in-out;
+  transition:
+    background 0.12s ease,
+    color 0.12s ease,
+    transform 0.12s ease;
 }
 
 .key-btn > * {
@@ -336,6 +494,40 @@ body,
   transform: scale(1.05);
 }
 
+body.key-move-active {
+  cursor: grabbing;
+  user-select: none;
+}
+
+.key-btn.move-source {
+  cursor: grabbing;
+  opacity: 0.72;
+  transform: scale(0.97);
+}
+
+.key-btn.move-target {
+  outline: 2px solid #0078d4;
+  outline-offset: 2px;
+  transform: scale(1.03);
+}
+
+.num-key-btn.tab-move-source {
+  cursor: grabbing;
+  opacity: 0.72;
+  transform: scale(0.97);
+}
+
+.num-key-btn.tab-move-target {
+  outline: 2px solid #0078d4;
+  outline-offset: 2px;
+  transform: scale(1.03);
+}
+
+body.tab-move-active {
+  cursor: grabbing;
+  user-select: none;
+}
+
 .key-btn.hidden {
   visibility: hidden;
 }
@@ -351,21 +543,114 @@ body,
 }
 
 .key-btn-text {
+  display: block;
   width: 100%;
-  padding: 0 2px;
   text-align: center;
-  white-space: nowrap;
+  white-space: normal;
   overflow: hidden;
-  text-overflow: ellipsis;
-  font-size: 0.8em;
+  text-overflow: clip;
+  overflow-wrap: anywhere;
+  font-size: var(--key-button-label-font-size);
+  line-height: 1.12;
   color: var(--text-color);
+  transition:
+    font-size 0.18s ease,
+    line-height 0.18s ease;
+}
+
+.key-btn-text-slot {
+  position: absolute;
+  right: 8px;
+  top: calc(68% + 4px);
+  bottom: auto;
+  left: 8px;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  max-height: calc(32% - 10px);
+  min-height: 0;
+  opacity: 1;
+  transform: translateY(0) scale(1);
+  transition:
+    top 0.18s ease,
+    max-height 0.18s ease,
+    opacity 0.14s ease,
+    transform 0.18s ease;
+}
+
+.f-keys-row .key-btn-text-slot {
+  top: calc(66% + 3px);
+  bottom: auto;
+  max-height: calc(34% - 9px);
+}
+
+.key-btn-icon-slot {
+  position: absolute;
+  top: 47%;
+  right: 8px;
+  left: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 48%;
+  min-height: 0;
+  opacity: 1;
+  transform: translateY(-50%);
+  transition:
+    top 0.18s ease,
+    height 0.18s ease,
+    opacity 0.14s ease,
+    transform 0.18s ease;
+}
+
+.f-keys-row .key-btn-icon-slot {
+  top: 47%;
+  height: 44%;
 }
 
 .key-btn-icon {
-  width: 32px;
-  height: 32px;
+  width: clamp(34px, 46cqw, 44px);
+  height: clamp(34px, 46cqw, 44px);
+  max-height: 100%;
   object-fit: contain;
-  margin-bottom: 2px;
+  margin: 0;
+  transition:
+    width 0.18s ease,
+    height 0.18s ease;
+}
+
+.key-btn-icon-slot.content-hidden,
+.key-btn-text-slot.content-hidden {
+  opacity: 0;
+  transform: translateY(-50%) scale(0.88);
+}
+
+.key-btn-text-slot.content-hidden {
+  transform: translateY(8px) scale(0.88);
+}
+
+.key-btn.text-only .key-btn-text-slot {
+  top: 50%;
+  bottom: auto;
+  align-items: center;
+  max-height: calc(100% - 28px);
+  transform: translateY(-50%) scale(1.1);
+}
+
+.key-btn.text-only .key-btn-text {
+  font-size: clamp(14px, 15cqw, 22px);
+  line-height: 1.08;
+}
+
+.key-btn.icon-only .key-btn-icon-slot {
+  top: 50%;
+  height: calc(100% - 28px);
+  transform: translateY(-50%) scale(1.16);
+}
+
+.key-btn.icon-only .key-btn-icon {
+  width: clamp(44px, 62cqw, 72px);
+  height: clamp(44px, 62cqw, 72px);
 }
 
 .key-btn:hover .key-btn-key,
@@ -375,11 +660,18 @@ body,
 
 /* 7.4 Number Key (Tab Selector) */
 .num-key-btn {
-  height: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  height: 100%;
+  min-height: 0;
   margin: 0;
   align-self: end;
   border-left: none;
   border-radius: 12px 12px 0 0;
+  position: relative;
+  transform: none;
 }
 
 .num-key-btn:first-child {
@@ -388,7 +680,74 @@ body,
 
 .num-key-btn.selected {
   background: var(--selected-background-color);
-  border-bottom: none;
+  border-bottom-color: transparent;
+}
+
+.num-key-btn:hover {
+  transform: none;
+}
+
+body.custom-style-modern .keyboard-zone {
+  padding: 0;
+}
+
+body.custom-style-modern .num-keys-row {
+  gap: var(--keyboard-gap);
+}
+
+body.custom-style-modern .letter-keys-row {
+  padding: var(--keyboard-gap) 0 0;
+}
+
+body.custom-style-modern .letter-keys-row.rows-hidden {
+  padding: 0;
+}
+
+body.custom-style-modern .num-key-btn {
+  border-left: 1px solid var(--text-color);
+  border-bottom-color: transparent;
+  overflow: visible;
+}
+
+body.custom-style-modern .num-key-btn.selected {
+  border-bottom-color: transparent;
+  z-index: 2;
+}
+
+body.custom-style-modern .num-key-btn.selected::after {
+  content: '';
+  position: absolute;
+  right: 0;
+  bottom: -1px;
+  left: 0;
+  height: 2px;
+  background: var(--selected-background-color);
+  pointer-events: none;
+}
+
+.num-key-number,
+.num-key-label {
+  color: var(--text-color);
+}
+
+.num-key-number {
+  position: absolute;
+  top: 50%;
+  left: 3px;
+  flex: 0 0 auto;
+  font-weight: bold;
+  transform: translateY(-50%);
+}
+
+.num-key-label {
+  flex: 0 1 auto;
+  min-width: 0;
+  max-width: calc(100% - 32px);
+  max-height: 1.2em;
+  overflow: hidden;
+  text-align: center;
+  white-space: nowrap;
+  font-size: var(--tab-button-label-font-size);
 }
 
 /* ============================================
@@ -424,6 +783,20 @@ body,
   text-align: center;
 }
 
+.modal-section {
+  margin: 18px 0 10px;
+}
+
+.modal-section:first-of-type {
+  margin-top: 0;
+}
+
+.modal-section h3 {
+  margin: 0;
+  font-size: 1em;
+  color: var(--text-color);
+}
+
 /* 8.1 Modal Row */
 .modal-row {
   display: flex;
@@ -431,9 +804,33 @@ body,
   margin-bottom: 15px;
 }
 
-.modal-row > label {
+.modal-row-quick-select {
+  margin-bottom: 0;
+}
+
+.modal-row-file-actions {
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.modal-row-path {
+  align-items: flex-start;
+}
+
+.modal-row-path > label {
+  padding-top: 7px;
+}
+
+.modal-row > label,
+.modal-row-label-spacer {
   flex-basis: 150px;
   flex-shrink: 0;
+}
+
+.modal-field {
+  position: relative;
+  flex-grow: 1;
+  min-width: 0;
 }
 
 .modal-row input[type='text'],
@@ -452,6 +849,56 @@ body,
 .modal-row textarea {
   resize: vertical;
   min-height: 60px;
+}
+
+.path-picker {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  flex-grow: 1;
+  min-width: 0;
+  gap: 8px;
+}
+
+.path-picker input {
+  width: 100%;
+  min-width: 0;
+}
+
+.file-picker-actions,
+.path-picker-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  min-width: 0;
+}
+
+.file-picker-actions {
+  justify-content: flex-start;
+}
+
+.path-picker-actions {
+  justify-content: flex-end;
+}
+
+.file-picker-actions button,
+.path-picker-actions button,
+.path-picker button {
+  flex: 0 0 auto;
+  white-space: nowrap;
+}
+
+.icon-path-picker {
+  flex-grow: 1;
+}
+
+.app-picker-field input {
+  width: 100%;
+}
+
+.app-picker-dropdown {
+  left: 0;
+  right: 0;
 }
 
 .modal-row input[type='checkbox'] {
@@ -488,6 +935,8 @@ body,
   margin-top: 25px;
 }
 
+.file-picker-actions button,
+.path-picker button,
 .modal-actions button {
   border: 1px solid var(--text-color);
   border-radius: 4px;
@@ -498,11 +947,15 @@ body,
   cursor: pointer;
 }
 
+.file-picker-actions button:hover,
+.path-picker button:hover,
 .modal-actions button:hover {
   background: var(--text-color);
   color: var(--background-color);
 }
 
+.file-picker-actions button:disabled,
+.path-picker button:disabled,
 .modal-actions button:disabled {
   opacity: 0.5;
   cursor: not-allowed;

@@ -12,6 +12,11 @@ import { NumButton } from './NumButton';
 
 // Letter keys rows derived from layout
 const [LETTER_KEYS_ROW1, LETTER_KEYS_ROW2, LETTER_KEYS_ROW3] = LETTER_KEYS_LAYOUT;
+const LETTER_KEY_ROWS = [
+  { id: 'row1', keys: LETTER_KEYS_ROW1 },
+  { id: 'row2', keys: LETTER_KEYS_ROW2 },
+  { id: 'row3', keys: LETTER_KEYS_ROW3 },
+] as const;
 
 export function VirtualKeyboard(): ReactElement {
   const state = useAppState();
@@ -57,35 +62,69 @@ export function VirtualKeyboard(): ReactElement {
     dispatch({ type: 'SET_ACTIVE_TAB', tabId });
   };
 
+  const handleMoveKey = (
+    source: { tabId: string; keyId: string },
+    target: { tabId: string; keyId: string },
+  ) => {
+    dispatch({ type: 'MOVE_KEY', source, target });
+  };
+
+  const handleMoveTab = (sourceTabId: string, targetTabId: string) => {
+    dispatch({ type: 'MOVE_TAB', sourceTabId, targetTabId });
+  };
+
+  const handleEditKey = (tabId: string, keyId: string, keyConfig: KeyConfig | undefined) => {
+    dispatch({
+      type: 'OPEN_EDIT_KEY_MODAL',
+      key: keyConfig ?? {
+        tabId,
+        id: keyId,
+        label: '',
+        filePath: '',
+      },
+    });
+  };
+
   // Calculate visible row count for grid styling
   const visibleRowCount = [!hideElements.row1, !hideElements.row2, !hideElements.row3].filter(
-    Boolean
+    Boolean,
   ).length;
 
   // Helper to render letter keys for a row
-  const renderLetterRow = (keys: readonly string[]) =>
-    keys.map((keyId) => {
-      const keyConfig = selectKeyConfig(state, state.ui.activeTabId, keyId);
-      return (
-        <KeyButton
-          key={keyId}
-          keyId={keyId}
-          tabId={state.ui.activeTabId}
-          keyConfig={keyConfig}
-          isHidden={!isKeyVisible(keyConfig) || isEmptyButtonHidden(keyConfig)}
-          hideIcon={hideElements.buttonIcons}
-          hideText={hideElements.buttonText}
-          onClick={() => handleKeyClick(keyConfig)}
-          onContextMenu={(e) => openKeyContextMenu(e, state.ui.activeTabId, keyId, keyConfig)}
-        />
-      );
-    });
+  const renderLetterRow = (row: (typeof LETTER_KEY_ROWS)[number]) => (
+    <div key={row.id} className="letter-key-grid-row" data-layout-row={row.id}>
+      {row.keys.map((keyId) => {
+        const keyConfig = selectKeyConfig(state, state.ui.activeTabId, keyId);
+        return (
+          <KeyButton
+            key={keyId}
+            keyId={keyId}
+            tabId={state.ui.activeTabId}
+            keyConfig={keyConfig}
+            isHidden={!isKeyVisible(keyConfig) || isEmptyButtonHidden(keyConfig)}
+            hideIcon={hideElements.buttonIcons}
+            hideText={hideElements.buttonText}
+            onClick={() => handleKeyClick(keyConfig)}
+            onEdit={() => handleEditKey(state.ui.activeTabId, keyId, keyConfig)}
+            onContextMenu={(e) => openKeyContextMenu(e, state.ui.activeTabId, keyId, keyConfig)}
+            onMoveKey={handleMoveKey}
+          />
+        );
+      })}
+    </div>
+  );
+
+  const visibleLetterRows = LETTER_KEY_ROWS.filter((row) => !hideElements[row.id]);
+  const shouldCompactLetterRows = visibleRowCount < LETTER_KEY_ROWS.length;
+  const compactClass = shouldCompactLetterRows
+    ? ` letter-rows-compact visible-letter-rows-${visibleRowCount}`
+    : '';
 
   return (
-    <div className={`keyboard-zone${hideElements.rowF ? ' f-row-hidden' : ''}`}>
+    <div className={`keyboard-zone${hideElements.rowF ? ' f-row-hidden' : ''}${compactClass}`}>
       {/* F1-F10 function keys (global) */}
       {!hideElements.rowF && (
-        <div className="keyboard-row f-keys-row">
+        <div className="keyboard-row f-keys-row" data-layout-row="rowF">
           {FUNCTION_KEYS.map((keyId) => {
             const keyConfig = selectKeyConfig(state, 'F', keyId);
             return (
@@ -98,43 +137,43 @@ export function VirtualKeyboard(): ReactElement {
                 hideIcon={hideElements.buttonIcons}
                 hideText={hideElements.buttonText}
                 onClick={() => handleKeyClick(keyConfig)}
+                onEdit={() => handleEditKey('F', keyId, keyConfig)}
                 onContextMenu={(e) => openKeyContextMenu(e, 'F', keyId, keyConfig)}
+                onMoveKey={handleMoveKey}
               />
             );
           })}
         </div>
       )}
 
-      {/* 1-0 tab selector row */}
-      <div className="keyboard-row num-keys-row">
-        {NUM_KEYS.map((keyId) => {
-          const label = selectTabLabel(state, keyId) || '';
-          return (
-            <NumButton
-              key={keyId}
-              keyId={keyId}
-              label={label}
-              isSelected={state.ui.activeTabId === keyId}
-              isHidden={!isTabVisible(keyId)}
-              onClick={() => handleTabClick(keyId)}
-              onContextMenu={(e) => openTabContextMenu(e, keyId)}
-            />
-          );
-        })}
-      </div>
-
-      {/* Letter/symbol keys (30 keys per tab, split into 3 rows) */}
       <div
-        className="keyboard-row letter-keys-row"
-        style={
-          visibleRowCount < 3
-            ? { gridTemplateRows: `repeat(${visibleRowCount || 1}, 1fr)` }
-            : undefined
-        }
+        className={`tabbed-keyboard-panel${visibleRowCount === 0 ? ' letter-rows-hidden' : ''}${compactClass}`}
       >
-        {!hideElements.row1 && renderLetterRow(LETTER_KEYS_ROW1)}
-        {!hideElements.row2 && renderLetterRow(LETTER_KEYS_ROW2)}
-        {!hideElements.row3 && renderLetterRow(LETTER_KEYS_ROW3)}
+        {/* 1-0 tab selector row */}
+        <div className="keyboard-row num-keys-row">
+          {NUM_KEYS.map((keyId) => {
+            const label = selectTabLabel(state, keyId) || '';
+            return (
+              <NumButton
+                key={keyId}
+                keyId={keyId}
+                label={label}
+                isSelected={state.ui.activeTabId === keyId}
+                isHidden={!isTabVisible(keyId)}
+                onClick={() => handleTabClick(keyId)}
+                onContextMenu={(e) => openTabContextMenu(e, keyId)}
+                onMoveTab={handleMoveTab}
+              />
+            );
+          })}
+        </div>
+
+        {/* Letter/symbol keys (30 keys per tab, split into 3 rows) */}
+        <div
+          className={`keyboard-row letter-keys-row${visibleRowCount === 0 ? ' rows-hidden' : ''}${compactClass}`}
+        >
+          {visibleLetterRows.map(renderLetterRow)}
+        </div>
       </div>
 
       {/* Context Menu */}

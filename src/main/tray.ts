@@ -2,11 +2,14 @@ import { app, Menu, nativeImage, Tray } from 'electron';
 import path from 'path';
 
 import { APP_NAME } from '../shared/constants';
+import { getTrayI18n } from '../shared/trayI18n';
+import type { AppLanguage } from '../shared/types';
 import log from './logger';
 import { IS_MAC } from './platform';
 import { showMainWindow } from './window';
 
 let tray: Tray | null = null;
+let trayLanguage: AppLanguage | undefined;
 
 function getTrayIconPath(): string {
   const iconName = IS_MAC ? 'iconTemplate.png' : 'icon.png';
@@ -17,8 +20,37 @@ function getTrayIconPath(): string {
   return path.join(app.getAppPath(), 'out/icons', iconName);
 }
 
-export function createTray(): void {
+function buildTrayMenu(language: AppLanguage | undefined): Electron.Menu {
+  const text = getTrayI18n(language);
+
+  return Menu.buildFromTemplate([
+    {
+      label: text.show,
+      click: () => {
+        showMainWindow();
+      },
+    },
+    { type: 'separator' },
+    {
+      label: text.exit,
+      click: () => {
+        app.exit();
+      },
+    },
+  ]);
+}
+
+export function refreshTrayMenu(language: AppLanguage | undefined): void {
+  trayLanguage = language;
+  if (!tray) {
+    return;
+  }
+  tray.setContextMenu(buildTrayMenu(trayLanguage));
+}
+
+export function createTray(language?: AppLanguage): void {
   if (tray) {
+    refreshTrayMenu(language);
     log.debug('Tray already exists', { scope: 'tray' });
     return;
   }
@@ -40,24 +72,8 @@ export function createTray(): void {
 
     tray = new Tray(icon);
 
-    const contextMenu = Menu.buildFromTemplate([
-      {
-        label: 'Show',
-        click: () => {
-          showMainWindow();
-        },
-      },
-      { type: 'separator' },
-      {
-        label: 'Exit',
-        click: () => {
-          app.exit();
-        },
-      },
-    ]);
-
     tray.setToolTip(APP_NAME);
-    tray.setContextMenu(contextMenu);
+    refreshTrayMenu(language);
 
     tray.on('click', () => {
       showMainWindow();

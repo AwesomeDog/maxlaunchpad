@@ -1,8 +1,13 @@
+import type { WindowSize } from './types';
+
 export const APP_NAME = 'MaxLaunchpad';
 
 export const APP_DESCRIPTION = `${APP_NAME} is a simple, reliable launcher that makes your most-used applications instantly accessible from the keyboard`;
 
 export const DOCUMENTATION_URL = 'https://awesomedog.github.io/maxlaunchpad/';
+
+export const DEFAULT_FOLDER_ICON_URL =
+  'data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2224%22 height=%2224%22 viewBox=%220 0 24 24%22 fill=%22none%22 stroke=%22%23f59e0b%22 stroke-width=%222%22 stroke-linecap=%22round%22 stroke-linejoin=%22round%22%3E%3Cpath d=%22M3 7a2 2 0 0 1 2-2h5l2 2h7a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2Z%22/%3E%3C/svg%3E';
 
 export const FUNCTION_KEYS = ['F1', 'F2', 'F3', 'F4', 'F5', 'F6', 'F7', 'F8', 'F9', 'F10'] as const;
 
@@ -33,6 +38,10 @@ export const MODIFIER_KEYS: ModifierKeyDef[] = [
 ];
 
 export const DEFAULT_MODIFIER = 'Alt';
+export const MENU_REVEAL_KEYS = ['Ctrl', 'Shift', 'Alt', 'Win'] as const;
+export const DEFAULT_MENU_REVEAL_KEY = 'Alt';
+
+export const DEFAULT_WINDOW_SIZE: WindowSize = { width: 1000, height: 600 };
 
 // Electron Accelerator format mapping table
 export const CODE_TO_ACCELERATOR: Record<string, string> = {

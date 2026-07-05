@@ -14,6 +14,26 @@ export function getBasename(filePath: string, ext?: string): string {
   return name.replace(/\.[^.]+$/, '');
 }
 
+export function getParentDirectory(filePath: string): string {
+  const trimmedPath = filePath.trim();
+  if (!trimmedPath || isUrl(trimmedPath) || trimmedPath.toLowerCase().startsWith('shell:')) {
+    return '';
+  }
+
+  const normalizedPath = trimmedPath.replace(/[\\/]+$/, '');
+  const slashIndex = Math.max(normalizedPath.lastIndexOf('/'), normalizedPath.lastIndexOf('\\'));
+  if (slashIndex < 0) {
+    return '';
+  }
+
+  const separator = normalizedPath[slashIndex];
+  const parent = normalizedPath.slice(0, slashIndex);
+  if (/^[A-Za-z]:$/.test(parent)) {
+    return `${parent}${separator}`;
+  }
+  return parent || separator;
+}
+
 /**
  * Normalize a keyboard profile:
  * 1. Ensure all tabs (1-9, 0) exist and are sorted

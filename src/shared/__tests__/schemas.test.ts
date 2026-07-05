@@ -229,12 +229,14 @@ describe('HotkeyConfigSchema', () => {
 describe('AppSettingsSchema', () => {
   const validSettings = {
     hotkey: { modifiers: ['Command'], key: 'Space' },
+    menuRevealKey: 'Alt' as const,
     activeTabOnShow: '1',
     activeProfilePath: '/path/to/profile.yaml',
     lockWindowCenter: true,
     launchOnStartup: false,
     startInTray: true,
     theme: 'dark' as const,
+    language: 'zh-CN' as const,
     customStyle: '.key { color: red; }',
     windowSize: { width: 1000, height: 600 },
     hideElements: { ...DEFAULT_HIDE_ELEMENTS },
@@ -245,6 +247,26 @@ describe('AppSettingsSchema', () => {
     expect(result.success).toBe(true);
     if (result.success) {
       expect(result.data).toEqual(validSettings);
+    }
+  });
+
+  it('should normalize legacy Chinese language settings', () => {
+    const result = AppSettingsSchema.safeParse({ ...validSettings, language: 'zh' });
+    expect(result.success).toBe(true);
+    if (result.success) {
+      expect(result.data.language).toBe('zh-CN');
+    }
+  });
+
+  it('should allow omitted language to preserve renderer detection', () => {
+    const settingsWithoutLanguage = { ...validSettings };
+    delete (settingsWithoutLanguage as Record<string, unknown>).language;
+
+    const result = AppSettingsSchema.safeParse(settingsWithoutLanguage);
+
+    expect(result.success).toBe(true);
+    if (result.success) {
+      expect(result.data.language).toBeUndefined();
     }
   });
 
@@ -266,6 +288,7 @@ describe('AppSettingsSchema', () => {
   it('should reject settings missing required fields', () => {
     const requiredFields = [
       'hotkey',
+      'menuRevealKey',
       'activeTabOnShow',
       'activeProfilePath',
       'lockWindowCenter',
@@ -289,6 +312,15 @@ describe('AppSettingsSchema', () => {
     const invalidSettings = {
       ...validSettings,
       hotkey: { key: 'Space' }, // missing modifiers
+    };
+    const result = AppSettingsSchema.safeParse(invalidSettings);
+    expect(result.success).toBe(false);
+  });
+
+  it('should reject settings with invalid menu reveal key', () => {
+    const invalidSettings = {
+      ...validSettings,
+      menuRevealKey: 'Space',
     };
     const result = AppSettingsSchema.safeParse(invalidSettings);
     expect(result.success).toBe(false);
@@ -328,6 +360,11 @@ describe('PartialAppSettingsSchema', () => {
       hotkey: { modifiers: ['Control'], key: 'Space' },
     };
     const result = PartialAppSettingsSchema.safeParse(partial);
+    expect(result.success).toBe(true);
+  });
+
+  it('should validate settings with only menu reveal key', () => {
+    const result = PartialAppSettingsSchema.safeParse({ menuRevealKey: 'Win' });
     expect(result.success).toBe(true);
   });
 
