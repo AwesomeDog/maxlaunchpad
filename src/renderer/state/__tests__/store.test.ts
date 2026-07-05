@@ -10,6 +10,7 @@ const settings: AppSettings = {
   launchOnStartup: false,
   startInTray: false,
   theme: 'system',
+  language: 'zh-CN',
   customStyle: 'default',
   windowSize: { width: 1000, height: 600 },
   hideElements: { ...DEFAULT_HIDE_ELEMENTS },
@@ -53,5 +54,20 @@ describe('store reducer', () => {
 
     expect(locked.settings?.lockWindowCenter).toBe(true);
     expect(locked.ui.isDragDropMode).toBe(false);
+  });
+
+  it('preserves the selected modern style when only language changes', () => {
+    const loaded = reducer(initialState, {
+      type: 'SET_CONFIG',
+      settings: { ...settings, customStyle: 'modern' },
+      profile,
+    });
+    const languageChanged = reducer(loaded, {
+      type: 'UPDATE_SETTINGS',
+      settings: { language: 'en' },
+    });
+
+    expect(languageChanged.settings?.language).toBe('en');
+    expect(languageChanged.settings?.customStyle).toBe('modern');
   });
 });

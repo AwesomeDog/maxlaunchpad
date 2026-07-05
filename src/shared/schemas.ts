@@ -61,6 +61,10 @@ export const HideElementsSchema = z
   })
   .strip();
 
+export const AppLanguageSchema = z
+  .union([z.literal('en'), z.literal('zh-CN'), z.literal('zh')])
+  .transform((language) => (language === 'zh' ? 'zh-CN' : language));
+
 // App settings schema
 export const AppSettingsSchema = z
   .object({
@@ -71,6 +75,7 @@ export const AppSettingsSchema = z
     launchOnStartup: z.boolean(),
     startInTray: z.boolean(),
     theme: z.enum(['light', 'dark', 'system']),
+    language: AppLanguageSchema,
     customStyle: z.string(),
     windowSize: WindowSizeSchema,
     hideElements: HideElementsSchema,

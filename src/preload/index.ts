@@ -14,13 +14,13 @@ const api = {
     ipcRenderer.invoke(IPC_CHANNELS.CONFIG_SAVE_SETTINGS, settings),
   saveProfile: (profile: KeyboardProfile, filePath?: string) =>
     ipcRenderer.invoke(IPC_CHANNELS.CONFIG_SAVE_PROFILE, profile, filePath),
-  openProfileDialog: () =>
-    ipcRenderer.invoke(IPC_CHANNELS.CONFIG_OPEN_PROFILE_DIALOG) as Promise<{
+  openProfileDialog: (title?: string) =>
+    ipcRenderer.invoke(IPC_CHANNELS.CONFIG_OPEN_PROFILE_DIALOG, title) as Promise<{
       canceled: boolean;
       filePath?: string;
     }>,
-  saveAsDialog: () =>
-    ipcRenderer.invoke(IPC_CHANNELS.CONFIG_SAVE_AS_DIALOG) as Promise<{
+  saveAsDialog: (title?: string) =>
+    ipcRenderer.invoke(IPC_CHANNELS.CONFIG_SAVE_AS_DIALOG, title) as Promise<{
       canceled: boolean;
       filePath?: string;
     }>,

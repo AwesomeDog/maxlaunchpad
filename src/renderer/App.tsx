@@ -18,6 +18,7 @@ import { useKeyboardNav } from './hooks/useKeyboardNav';
 import { useTheme } from './hooks/useTheme';
 import { useWindowBehavior } from './hooks/useWindowBehavior';
 import { useWindowTitle } from './hooks/useWindowTitle';
+import i18n from './i18n';
 import { AppStateProvider, useAppState, useDispatch } from './state/store';
 
 function AppContent() {
@@ -50,11 +51,11 @@ function AppContent() {
         const { settings, profile } = await window.electronAPI.loadConfig();
         dispatch({ type: 'SET_CONFIG', settings, profile });
       } catch {
-        dispatch({ type: 'SET_ERROR', error: t('errors.failedToLoadConfiguration') });
+        dispatch({ type: 'SET_ERROR', error: i18n.t('errors.failedToLoadConfiguration') });
       }
     }
     void load();
-  }, [dispatch, t]);
+  }, [dispatch]);
 
   if (state.ui.isLoading) {
     return (

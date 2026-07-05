@@ -81,6 +81,7 @@ export function loadSettings(): AppSettings {
     launchOnStartup: true,
     startInTray: false,
     theme: 'system',
+    language: 'zh-CN',
     customStyle: 'default',
     windowSize: { ...DEFAULT_WINDOW_SIZE },
     hideElements: { ...DEFAULT_HIDE_ELEMENTS },

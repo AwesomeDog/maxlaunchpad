@@ -25,6 +25,7 @@ export interface AppState {
     isDragDropMode: boolean; // Runtime only, resets on restart
     isAltPressed: boolean; // Alt key pressed (for showing hidden menu)
     isConfigDirty: boolean;
+    configRevision: number;
     isLoading: boolean;
     error: string | null;
     modal: ModalState; // Discriminated union for modal state
@@ -46,7 +47,7 @@ export type Action =
   | { type: 'SET_SEARCH_QUERY'; query: string }
   | { type: 'SET_DRAG_DROP_MODE'; enabled: boolean }
   | { type: 'SET_ALT_PRESSED'; pressed: boolean }
-  | { type: 'SET_CONFIG_DIRTY'; dirty: boolean }
+  | { type: 'SET_CONFIG_DIRTY'; dirty: boolean; revision?: number }
   | { type: 'SET_ERROR'; error: string | null }
   | { type: 'OPEN_EDIT_KEY_MODAL'; key: KeyConfig }
   | { type: 'OPEN_EDIT_TAB_MODAL'; tabId: string }
@@ -68,6 +69,7 @@ export const initialState: AppState = {
     isDragDropMode: false,
     isAltPressed: false,
     isConfigDirty: false,
+    configRevision: 0,
     isLoading: true,
     error: null,
     modal: { type: 'none' },
@@ -76,6 +78,14 @@ export const initialState: AppState = {
 };
 
 // ============ Reducer ============
+
+function markConfigDirty(ui: AppState['ui']): AppState['ui'] {
+  return {
+    ...ui,
+    isConfigDirty: true,
+    configRevision: ui.configRevision + 1,
+  };
+}
 
 export function reducer(state: AppState, action: Action): AppState {
   switch (action.type) {
@@ -89,6 +99,7 @@ export function reducer(state: AppState, action: Action): AppState {
           isDragDropMode: !action.settings.lockWindowCenter,
           isLoading: false,
           isConfigDirty: false,
+          configRevision: 0,
         },
       };
 
@@ -98,12 +109,11 @@ export function reducer(state: AppState, action: Action): AppState {
         ...state,
         settings: nextSettings,
         ui: {
-          ...state.ui,
+          ...markConfigDirty(state.ui),
           isDragDropMode:
             action.settings.lockWindowCenter === undefined
               ? state.ui.isDragDropMode
               : !action.settings.lockWindowCenter,
-          isConfigDirty: true,
         },
       };
     }
@@ -121,7 +131,7 @@ export function reducer(state: AppState, action: Action): AppState {
       return {
         ...state,
         profile: { ...state.profile, keys: newKeys },
-        ui: { ...state.ui, isConfigDirty: true },
+        ui: markConfigDirty(state.ui),
       };
     }
 
@@ -133,7 +143,7 @@ export function reducer(state: AppState, action: Action): AppState {
       return {
         ...state,
         profile: { ...state.profile, keys },
-        ui: { ...state.ui, isConfigDirty: true },
+        ui: markConfigDirty(state.ui),
       };
     }
 
@@ -145,7 +155,7 @@ export function reducer(state: AppState, action: Action): AppState {
       return {
         ...state,
         profile: { ...state.profile, tabs },
-        ui: { ...state.ui, isConfigDirty: true },
+        ui: markConfigDirty(state.ui),
       };
     }
 
@@ -162,7 +172,23 @@ export function reducer(state: AppState, action: Action): AppState {
       return { ...state, ui: { ...state.ui, isAltPressed: action.pressed } };
 
     case 'SET_CONFIG_DIRTY':
-      return { ...state, ui: { ...state.ui, isConfigDirty: action.dirty } };
+      if (
+        !action.dirty &&
+        action.revision !== undefined &&
+        action.revision !== state.ui.configRevision
+      ) {
+        return state;
+      }
+      return {
+        ...state,
+        ui: {
+          ...state.ui,
+          isConfigDirty: action.dirty,
+          configRevision: action.dirty
+            ? state.ui.configRevision + 1
+            : state.ui.configRevision,
+        },
+      };
 
     case 'SET_ERROR':
       return { ...state, ui: { ...state.ui, error: action.error } };
