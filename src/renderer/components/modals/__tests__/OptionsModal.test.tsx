@@ -9,6 +9,7 @@ const dispatchMock = jest.fn();
 
 const settings: AppSettings = {
   hotkey: { modifiers: ['Alt'], key: '`' },
+  menuRevealKey: 'Alt',
   activeTabOnShow: 'lastUsed',
   activeProfilePath: 'C:\\Users\\hcy\\.config\\MaxLaunchpad\\keyboard.yaml',
   lockWindowCenter: true,
@@ -56,6 +57,7 @@ describe('OptionsModal', () => {
     window.electronAPI = {
       ...window.electronAPI,
       listStyles: jest.fn(() => new Promise(() => undefined)),
+      setWindowAutoHideSuspended: jest.fn(),
     };
   });
 
