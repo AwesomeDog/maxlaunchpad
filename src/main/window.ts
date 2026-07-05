@@ -216,7 +216,7 @@ function applyWindowInteractionPolicy(win: BrowserWindow): void {
   const state = { lockWindowCenter: isLockWindowCenter, isDragDropMode };
   win.setMovable(shouldAllowWindowMovement(state));
   win.setResizable(shouldAllowWindowResize(state));
-  win.setAlwaysOnTop(isLockWindowCenter);
+  win.setAlwaysOnTop(nativeDialogDepth === 0 && isLockWindowCenter);
   win.setVisibleOnAllWorkspaces(isLockWindowCenter, { visibleOnFullScreen: isLockWindowCenter });
 }
 
@@ -313,15 +313,22 @@ export async function keepMainWindowVisibleDuringNativeDialog<T>(
   task: () => Promise<T>,
 ): Promise<T> {
   nativeDialogDepth += 1;
-  const win = getMainWindow();
-  if (win && !win.isDestroyed()) {
-    win.show();
-  }
-
   try {
+    const win = getMainWindow();
+    if (win && !win.isDestroyed()) {
+      if (nativeDialogDepth === 1) {
+        win.setAlwaysOnTop(false);
+      }
+      win.show();
+    }
+
     return await task();
   } finally {
     nativeDialogDepth = Math.max(0, nativeDialogDepth - 1);
+    const currentWin = getMainWindow();
+    if (nativeDialogDepth === 0 && currentWin && !currentWin.isDestroyed()) {
+      applyWindowInteractionPolicy(currentWin);
+    }
   }
 }
 

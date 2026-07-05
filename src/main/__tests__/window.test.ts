@@ -250,6 +250,72 @@ describe('createMainWindow', () => {
     expect(hideMock).toHaveBeenCalledTimes(1);
   });
 
+  it('temporarily disables always-on-top while native dialogs are open', async () => {
+    const { createMainWindow, keepMainWindowVisibleDuringNativeDialog } = await import('../window');
+
+    createMainWindow();
+    setAlwaysOnTopMock.mockClear();
+
+    await keepMainWindowVisibleDuringNativeDialog(async () => {
+      expect(setAlwaysOnTopMock).toHaveBeenLastCalledWith(false);
+    });
+
+    expect(showMock).toHaveBeenCalledTimes(1);
+    expect(setAlwaysOnTopMock.mock.calls.map(([enabled]) => enabled)).toEqual([false, true]);
+  });
+
+  it('restores native dialog always-on-top policy when the dialog task rejects', async () => {
+    const { createMainWindow, keepMainWindowVisibleDuringNativeDialog } = await import('../window');
+
+    createMainWindow();
+    setAlwaysOnTopMock.mockClear();
+
+    await expect(
+      keepMainWindowVisibleDuringNativeDialog(async () => {
+        throw new Error('dialog failed');
+      }),
+    ).rejects.toThrow('dialog failed');
+
+    expect(setAlwaysOnTopMock.mock.calls.map(([enabled]) => enabled)).toEqual([false, true]);
+  });
+
+  it('waits for overlapping native dialogs before restoring always-on-top policy', async () => {
+    const { createMainWindow, keepMainWindowVisibleDuringNativeDialog } = await import('../window');
+
+    createMainWindow();
+    setAlwaysOnTopMock.mockClear();
+
+    await keepMainWindowVisibleDuringNativeDialog(async () => {
+      await keepMainWindowVisibleDuringNativeDialog(async () => {
+        expect(setAlwaysOnTopMock.mock.calls.map(([enabled]) => enabled)).toEqual([false]);
+      });
+
+      expect(setAlwaysOnTopMock.mock.calls.map(([enabled]) => enabled)).toEqual([false]);
+    });
+
+    expect(setAlwaysOnTopMock.mock.calls.map(([enabled]) => enabled)).toEqual([false, true]);
+  });
+
+  it('keeps policy reapplication from restoring always-on-top before native dialogs close', async () => {
+    const { createMainWindow, keepMainWindowVisibleDuringNativeDialog, setLockWindowCenter } =
+      await import('../window');
+
+    createMainWindow();
+    setAlwaysOnTopMock.mockClear();
+
+    await keepMainWindowVisibleDuringNativeDialog(async () => {
+      setLockWindowCenter(true);
+
+      expect(setAlwaysOnTopMock.mock.calls.map(([enabled]) => enabled)).toEqual([false, false]);
+    });
+
+    expect(setAlwaysOnTopMock.mock.calls.map(([enabled]) => enabled)).toEqual([
+      false,
+      false,
+      true,
+    ]);
+  });
+
   it('keeps unlocked windows movable without enabling drag-drop runtime mode on startup', async () => {
     loadSettingsMock.mockReturnValue({
       windowSize: {

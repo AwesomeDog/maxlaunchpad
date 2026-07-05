@@ -9,6 +9,7 @@ const mockSetWindowAutoHideSuspended = jest.fn();
 const mockHideMainWindow = jest.fn();
 const mockMinimizeMainWindow = jest.fn();
 const mockResizeMainWindowByHeightDelta = jest.fn();
+const mockGetMainWindow = jest.fn();
 const mockKeepMainWindowVisibleDuringNativeDialog = jest.fn((task: () => unknown) => task());
 
 jest.mock('electron', () => ({
@@ -36,7 +37,7 @@ jest.mock('electron', () => ({
 }));
 
 jest.mock('../window', () => ({
-  getMainWindow: jest.fn(),
+  getMainWindow: mockGetMainWindow,
   hideMainWindow: mockHideMainWindow,
   keepMainWindowVisibleDuringNativeDialog: mockKeepMainWindowVisibleDuringNativeDialog,
   minimizeMainWindow: mockMinimizeMainWindow,
@@ -69,6 +70,7 @@ jest.mock('../logger', () => ({ error: jest.fn() }));
 describe('registerIpcHandlers', () => {
   beforeEach(async () => {
     jest.clearAllMocks();
+    mockGetMainWindow.mockReturnValue(null);
     mockKeepMainWindowVisibleDuringNativeDialog.mockImplementation((task: () => unknown) => task());
     (dialog.showOpenDialog as jest.Mock).mockResolvedValue({ canceled: true, filePaths: [] });
     (dialog.showSaveDialog as jest.Mock).mockResolvedValue({ canceled: true });
@@ -141,6 +143,42 @@ describe('registerIpcHandlers', () => {
     await selectFolderHandler!(undefined, 42);
     expect(dialog.showOpenDialog).toHaveBeenLastCalledWith(
       expect.objectContaining({ title: 'Select Folder' }),
+    );
+  });
+
+  it('routes edit-key file and folder pickers through the native dialog visibility guard', async () => {
+    const selectFileHandler = mockIpcHandlers.get(IPC_CHANNELS.DIALOG_SELECT_FILE);
+    const selectFolderHandler = mockIpcHandlers.get(IPC_CHANNELS.DIALOG_SELECT_FOLDER);
+
+    await selectFileHandler!(undefined, 'Select File');
+    await selectFolderHandler!(undefined, 'Select Folder');
+
+    expect(mockKeepMainWindowVisibleDuringNativeDialog).toHaveBeenCalledTimes(2);
+  });
+
+  it('parents edit-key file and folder pickers to a live main window', async () => {
+    const mainWindow = { isDestroyed: jest.fn(() => false) };
+    mockGetMainWindow.mockReturnValue(mainWindow);
+
+    const selectFileHandler = mockIpcHandlers.get(IPC_CHANNELS.DIALOG_SELECT_FILE);
+    const selectFolderHandler = mockIpcHandlers.get(IPC_CHANNELS.DIALOG_SELECT_FOLDER);
+
+    await selectFileHandler!(undefined, 'Select File');
+    expect(dialog.showOpenDialog).toHaveBeenLastCalledWith(
+      mainWindow,
+      expect.objectContaining({
+        title: 'Select File',
+        properties: ['openFile', 'showHiddenFiles'],
+      }),
+    );
+
+    await selectFolderHandler!(undefined, 'Select Folder');
+    expect(dialog.showOpenDialog).toHaveBeenLastCalledWith(
+      mainWindow,
+      expect.objectContaining({
+        title: 'Select Folder',
+        properties: ['openDirectory', 'showHiddenFiles'],
+      }),
     );
   });
 });
