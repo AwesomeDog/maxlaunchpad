@@ -30,24 +30,37 @@ const profile: KeyboardProfile = {
 };
 
 describe('store reducer', () => {
-  it('derives the required drag/center mode from lockWindowCenter on config load', () => {
+  it('keeps drag/drop runtime-only on config load unless center lock is enabled', () => {
+    const runtimeDragState = {
+      ...initialState,
+      ui: { ...initialState.ui, isDragDropMode: true },
+    };
     const dragState = reducer(initialState, {
       type: 'SET_CONFIG',
       settings: { ...settings, lockWindowCenter: false },
       profile,
     });
-    const lockState = reducer(initialState, {
+    const preservedDragState = reducer(runtimeDragState, {
+      type: 'SET_CONFIG',
+      settings: { ...settings, lockWindowCenter: false },
+      profile,
+    });
+    const lockState = reducer(runtimeDragState, {
       type: 'SET_CONFIG',
       settings: { ...settings, lockWindowCenter: true },
       profile,
     });
 
-    expect(dragState.ui.isDragDropMode).toBe(true);
+    expect(dragState.ui.isDragDropMode).toBe(false);
+    expect(preservedDragState.ui.isDragDropMode).toBe(true);
     expect(lockState.ui.isDragDropMode).toBe(false);
   });
 
-  it('keeps lock center and drag mode mutually exclusive when settings change', () => {
-    const loaded = reducer(initialState, { type: 'SET_CONFIG', settings, profile });
+  it('turns off drag/drop mode when lock center is enabled', () => {
+    const loaded = reducer(
+      { ...initialState, ui: { ...initialState.ui, isDragDropMode: true } },
+      { type: 'SET_CONFIG', settings, profile },
+    );
     const locked = reducer(loaded, {
       type: 'UPDATE_SETTINGS',
       settings: { lockWindowCenter: true },
@@ -55,6 +68,43 @@ describe('store reducer', () => {
 
     expect(locked.settings?.lockWindowCenter).toBe(true);
     expect(locked.ui.isDragDropMode).toBe(false);
+  });
+
+  it('turns off lock center when drag/drop mode is enabled', () => {
+    const loaded = reducer(initialState, {
+      type: 'SET_CONFIG',
+      settings: { ...settings, lockWindowCenter: true },
+      profile,
+    });
+    const dragDrop = reducer(loaded, {
+      type: 'SET_DRAG_DROP_MODE',
+      enabled: true,
+    });
+
+    expect(dragDrop.ui.isDragDropMode).toBe(true);
+    expect(dragDrop.settings?.lockWindowCenter).toBe(false);
+    expect(dragDrop.ui.isConfigDirty).toBe(true);
+  });
+
+  it('does not turn on center lock when drag/drop mode is disabled', () => {
+    const loaded = reducer(
+      {
+        ...initialState,
+        ui: { ...initialState.ui, isDragDropMode: true },
+      },
+      {
+        type: 'SET_CONFIG',
+        settings: { ...settings, lockWindowCenter: false },
+        profile,
+      },
+    );
+    const dragDrop = reducer(loaded, {
+      type: 'SET_DRAG_DROP_MODE',
+      enabled: false,
+    });
+
+    expect(dragDrop.ui.isDragDropMode).toBe(false);
+    expect(dragDrop.settings?.lockWindowCenter).toBe(false);
   });
 
   it('preserves the selected modern style when only language changes', () => {

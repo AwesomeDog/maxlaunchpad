@@ -3,7 +3,10 @@ import { IPC_CHANNELS } from '../../shared/ipcChannels';
 const mockIpcHandlers = new Map<string, (...args: unknown[]) => unknown>();
 const mockSetDragDropMode = jest.fn();
 const mockSetLockWindowCenter = jest.fn();
+const mockSetWindowAutoHideSuspended = jest.fn();
 const mockHideMainWindow = jest.fn();
+const mockMinimizeMainWindow = jest.fn();
+const mockResizeMainWindowByHeightDelta = jest.fn();
 
 jest.mock('electron', () => ({
   app: {
@@ -32,8 +35,11 @@ jest.mock('electron', () => ({
 jest.mock('../window', () => ({
   getMainWindow: jest.fn(),
   hideMainWindow: mockHideMainWindow,
+  minimizeMainWindow: mockMinimizeMainWindow,
+  resizeMainWindowByHeightDelta: mockResizeMainWindowByHeightDelta,
   setDragDropMode: mockSetDragDropMode,
   setLockWindowCenter: mockSetLockWindowCenter,
+  setWindowAutoHideSuspended: mockSetWindowAutoHideSuspended,
 }));
 
 jest.mock('../appList', () => ({ listInstalledApps: jest.fn() }));
@@ -85,5 +91,21 @@ describe('registerIpcHandlers', () => {
 
     expect(mockSetDragDropMode).toHaveBeenCalledWith(true);
     expect(mockSetLockWindowCenter).toHaveBeenCalledWith(false);
+  });
+
+  it('rejects non-boolean auto-hide suspension IPC payloads', () => {
+    const autoHideHandler = mockIpcHandlers.get(IPC_CHANNELS.WINDOW_SET_AUTO_HIDE_SUSPENDED);
+
+    expect(autoHideHandler).toBeDefined();
+    expect(() => autoHideHandler!(undefined, 'true')).toThrow('Expected boolean');
+    expect(mockSetWindowAutoHideSuspended).not.toHaveBeenCalled();
+  });
+
+  it('accepts strict boolean auto-hide suspension IPC payloads', () => {
+    const autoHideHandler = mockIpcHandlers.get(IPC_CHANNELS.WINDOW_SET_AUTO_HIDE_SUSPENDED);
+
+    autoHideHandler!(undefined, true);
+
+    expect(mockSetWindowAutoHideSuspended).toHaveBeenCalledWith(true);
   });
 });

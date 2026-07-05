@@ -41,6 +41,8 @@
     "settings": "设置",
     "hotkeySettings": "快捷键",
     "options": "选项",
+    "minimizeWindow": "最小化窗口",
+    "closeWindow": "关闭窗口",
     "help": "帮助",
     "documentation": "文档",
     "about": "关于",

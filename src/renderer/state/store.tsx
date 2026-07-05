@@ -103,7 +103,7 @@ export function reducer(state: AppState, action: Action): AppState {
         profile: action.profile,
         ui: {
           ...state.ui,
-          isDragDropMode: !action.settings.lockWindowCenter,
+          isDragDropMode: action.settings.lockWindowCenter ? false : state.ui.isDragDropMode,
           isLoading: false,
           isConfigDirty: false,
           configRevision: 0,
@@ -112,15 +112,13 @@ export function reducer(state: AppState, action: Action): AppState {
 
     case 'UPDATE_SETTINGS': {
       const nextSettings = state.settings ? { ...state.settings, ...action.settings } : null;
+      const lockCenterEnabled = action.settings.lockWindowCenter === true;
       return {
         ...state,
         settings: nextSettings,
         ui: {
           ...markConfigDirty(state.ui),
-          isDragDropMode:
-            action.settings.lockWindowCenter === undefined
-              ? state.ui.isDragDropMode
-              : !action.settings.lockWindowCenter,
+          isDragDropMode: lockCenterEnabled ? false : state.ui.isDragDropMode,
         },
       };
     }
@@ -238,8 +236,18 @@ export function reducer(state: AppState, action: Action): AppState {
     case 'SET_SEARCH_QUERY':
       return { ...state, ui: { ...state.ui, searchQuery: action.query } };
 
-    case 'SET_DRAG_DROP_MODE':
-      return { ...state, ui: { ...state.ui, isDragDropMode: action.enabled } };
+    case 'SET_DRAG_DROP_MODE': {
+      const shouldUnlockCenter = action.enabled && state.settings?.lockWindowCenter;
+      const nextUi = { ...state.ui, isDragDropMode: action.enabled };
+      return {
+        ...state,
+        settings:
+          shouldUnlockCenter && state.settings
+            ? { ...state.settings, lockWindowCenter: false }
+            : state.settings,
+        ui: shouldUnlockCenter ? markConfigDirty(nextUi) : nextUi,
+      };
+    }
 
     case 'SET_MENU_REVEAL_KEY_PRESSED':
       return { ...state, ui: { ...state.ui, isMenuRevealKeyPressed: action.pressed } };

@@ -47,7 +47,12 @@ const api = {
     ipcRenderer.invoke(IPC_CHANNELS.WINDOW_SET_DRAG_DROP_MODE, enabled),
   setLockWindowCenter: (enabled: boolean) =>
     ipcRenderer.invoke(IPC_CHANNELS.WINDOW_SET_LOCK_WINDOW_CENTER, enabled),
+  minimizeWindow: () => ipcRenderer.invoke(IPC_CHANNELS.WINDOW_MINIMIZE),
   hideWindow: () => ipcRenderer.invoke(IPC_CHANNELS.WINDOW_HIDE),
+  resizeWindowByHeightDelta: (delta: number) =>
+    ipcRenderer.invoke(IPC_CHANNELS.WINDOW_RESIZE_BY_HEIGHT_DELTA, delta),
+  setWindowAutoHideSuspended: (suspended: boolean) =>
+    ipcRenderer.invoke(IPC_CHANNELS.WINDOW_SET_AUTO_HIDE_SUSPENDED, suspended),
 
   // Window events (main -> renderer)
   onWindowShown: (callback: () => void): (() => void) => {

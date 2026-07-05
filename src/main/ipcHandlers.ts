@@ -25,8 +25,11 @@ import {
   getMainWindow,
   hideMainWindow,
   keepMainWindowVisibleDuringNativeDialog,
+  minimizeMainWindow,
+  resizeMainWindowByHeightDelta,
   setDragDropMode,
   setLockWindowCenter,
+  setWindowAutoHideSuspended,
 } from './window';
 
 function resolveSpecialPath(targetPath: string): string {
@@ -197,8 +200,20 @@ export function registerIpcHandlers(): void {
     setLockWindowCenter(parseBooleanIpcArg(enabled));
   });
 
+  ipcMain.handle(IPC_CHANNELS.WINDOW_MINIMIZE, () => {
+    minimizeMainWindow();
+  });
+
   ipcMain.handle(IPC_CHANNELS.WINDOW_HIDE, () => {
     hideMainWindow();
+  });
+
+  ipcMain.handle(IPC_CHANNELS.WINDOW_RESIZE_BY_HEIGHT_DELTA, (_, delta: number) => {
+    resizeMainWindowByHeightDelta(delta);
+  });
+
+  ipcMain.handle(IPC_CHANNELS.WINDOW_SET_AUTO_HIDE_SUSPENDED, (_, suspended: boolean) => {
+    setWindowAutoHideSuspended(parseBooleanIpcArg(suspended));
   });
 
   ipcMain.handle(
