@@ -3,7 +3,7 @@ import fs from 'fs';
 import { dump, JSON_SCHEMA, load } from 'js-yaml';
 import path from 'path';
 
-import { DEFAULT_HIDE_ELEMENTS, DEFAULT_MODIFIER } from '../shared/constants';
+import { DEFAULT_HIDE_ELEMENTS, DEFAULT_MODIFIER, DEFAULT_WINDOW_SIZE } from '../shared/constants';
 import { PartialAppSettingsSchema, PartialKeyboardProfileSchema } from '../shared/schemas';
 import { AppSettings, KeyboardProfile } from '../shared/types';
 import { formatTimestamp, normalizeProfile } from '../shared/utils';
@@ -82,7 +82,7 @@ export function loadSettings(): AppSettings {
     startInTray: false,
     theme: 'system',
     customStyle: 'default',
-    windowSize: { width: 1000, height: 600 },
+    windowSize: { ...DEFAULT_WINDOW_SIZE },
     hideElements: { ...DEFAULT_HIDE_ELEMENTS },
   };
 

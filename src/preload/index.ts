@@ -35,6 +35,8 @@ const api = {
   // Window controls
   setDragDropMode: (enabled: boolean) =>
     ipcRenderer.invoke(IPC_CHANNELS.WINDOW_SET_DRAG_DROP_MODE, enabled),
+  setLockWindowCenter: (enabled: boolean) =>
+    ipcRenderer.invoke(IPC_CHANNELS.WINDOW_SET_LOCK_WINDOW_CENTER, enabled),
   hideWindow: () => ipcRenderer.invoke(IPC_CHANNELS.WINDOW_HIDE),
 
   // Window events (main -> renderer)
@@ -43,6 +45,13 @@ const api = {
     ipcRenderer.on(IPC_CHANNELS.WINDOW_SHOWN, listener);
     return () => {
       ipcRenderer.removeListener(IPC_CHANNELS.WINDOW_SHOWN, listener);
+    };
+  },
+  onWindowHidden: (callback: () => void): (() => void) => {
+    const listener = () => callback();
+    ipcRenderer.on(IPC_CHANNELS.WINDOW_HIDDEN, listener);
+    return () => {
+      ipcRenderer.removeListener(IPC_CHANNELS.WINDOW_HIDDEN, listener);
     };
   },
   onWindowResized: (callback: (width: number, height: number) => void): (() => void) => {

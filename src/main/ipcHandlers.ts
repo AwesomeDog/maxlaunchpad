@@ -52,6 +52,13 @@ function resolveSpecialPath(targetPath: string): string {
   return targetPath;
 }
 
+function parseBooleanIpcArg(value: unknown): boolean {
+  if (typeof value !== 'boolean') {
+    throw new TypeError('Expected boolean IPC payload');
+  }
+  return value;
+}
+
 export function registerIpcHandlers(): void {
   ipcMain.handle(IPC_CHANNELS.CONFIG_LOAD, async () => {
     try {
@@ -142,7 +149,11 @@ export function registerIpcHandlers(): void {
   });
 
   ipcMain.handle(IPC_CHANNELS.WINDOW_SET_DRAG_DROP_MODE, (_, enabled) => {
-    setDragDropMode(enabled);
+    setDragDropMode(parseBooleanIpcArg(enabled));
+  });
+
+  ipcMain.handle(IPC_CHANNELS.WINDOW_SET_LOCK_WINDOW_CENTER, (_, enabled) => {
+    setLockWindowCenter(parseBooleanIpcArg(enabled));
   });
 
   ipcMain.handle(IPC_CHANNELS.WINDOW_HIDE, () => {

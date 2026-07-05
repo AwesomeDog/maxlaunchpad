@@ -1,5 +1,6 @@
 import { useEffect, useRef } from 'react';
 
+import { shouldPersistWindowSize } from '../../shared/windowBehavior';
 import { useAppState, useDispatch } from '../state/store';
 
 /**
@@ -39,6 +40,14 @@ export function useWindowBehavior() {
     return window.electronAPI.onWindowResized((width, height) => {
       const settings = settingsRef.current;
       if (settings) {
+        if (
+          !shouldPersistWindowSize({
+            lockWindowCenter: settings.lockWindowCenter,
+            isDragDropMode: state.ui.isDragDropMode,
+          })
+        ) {
+          return;
+        }
         const currentSize = settings.windowSize;
         if (currentSize.width !== width || currentSize.height !== height) {
           dispatch({
@@ -48,5 +57,5 @@ export function useWindowBehavior() {
         }
       }
     });
-  }, [dispatch]);
+  }, [dispatch, state.ui.isDragDropMode]);
 }

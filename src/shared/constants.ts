@@ -1,3 +1,5 @@
+import type { WindowSize } from './types';
+
 export const APP_NAME = 'MaxLaunchpad';
 
 export const APP_DESCRIPTION = `${APP_NAME} is a simple, reliable launcher that makes your most-used applications instantly accessible from the keyboard`;
@@ -33,6 +35,8 @@ export const MODIFIER_KEYS: ModifierKeyDef[] = [
 ];
 
 export const DEFAULT_MODIFIER = 'Alt';
+
+export const DEFAULT_WINDOW_SIZE: WindowSize = { width: 1000, height: 600 };
 
 // Electron Accelerator format mapping table
 export const CODE_TO_ACCELERATOR: Record<string, string> = {
