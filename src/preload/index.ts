@@ -24,6 +24,16 @@ const api = {
       canceled: boolean;
       filePath?: string;
     }>,
+  selectFile: (title?: string) =>
+    ipcRenderer.invoke(IPC_CHANNELS.DIALOG_SELECT_FILE, title) as Promise<{
+      canceled: boolean;
+      filePath?: string;
+    }>,
+  selectFolder: (title?: string) =>
+    ipcRenderer.invoke(IPC_CHANNELS.DIALOG_SELECT_FOLDER, title) as Promise<{
+      canceled: boolean;
+      filePath?: string;
+    }>,
 
   // Launcher
   launchProgram: (key: KeyConfig) => ipcRenderer.invoke(IPC_CHANNELS.LAUNCHER_RUN, key),

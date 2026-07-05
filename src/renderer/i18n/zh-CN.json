@@ -84,6 +84,8 @@
       "filePath": "文件路径",
       "filePathRequired": "文件路径 *",
       "filePathPlaceholder": "程序路径",
+      "selectFile": "选择文件",
+      "selectFolder": "选择文件夹",
       "arguments": "参数",
       "argumentsPlaceholder": "命令行参数",
       "workingDirectory": "工作目录",

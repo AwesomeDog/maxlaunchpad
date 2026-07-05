@@ -1,5 +1,18 @@
 import type { KeyboardProfile, KeyConfig } from '../types';
-import { normalizeProfile } from '../utils';
+import { getParentDirectory, normalizeProfile } from '../utils';
+
+describe('getParentDirectory', () => {
+  it('returns the containing folder for Windows and POSIX file paths', () => {
+    expect(getParentDirectory('C:\\Tools\\App\\app.exe')).toBe('C:\\Tools\\App');
+    expect(getParentDirectory('C:\\app.exe')).toBe('C:\\');
+    expect(getParentDirectory('/usr/local/bin/app')).toBe('/usr/local/bin');
+  });
+
+  it('ignores URLs and shell targets that do not have a file working directory', () => {
+    expect(getParentDirectory('https://example.com/app')).toBe('');
+    expect(getParentDirectory('shell:AppsFolder\\Package!App')).toBe('');
+  });
+});
 
 describe('normalizeProfile', () => {
   describe('tabs normalization', () => {
