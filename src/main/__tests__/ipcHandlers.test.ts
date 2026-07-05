@@ -1,3 +1,5 @@
+import { dialog } from 'electron';
+
 import { IPC_CHANNELS } from '../../shared/ipcChannels';
 
 const mockIpcHandlers = new Map<string, (...args: unknown[]) => unknown>();
@@ -7,6 +9,7 @@ const mockSetWindowAutoHideSuspended = jest.fn();
 const mockHideMainWindow = jest.fn();
 const mockMinimizeMainWindow = jest.fn();
 const mockResizeMainWindowByHeightDelta = jest.fn();
+const mockKeepMainWindowVisibleDuringNativeDialog = jest.fn((task: () => unknown) => task());
 
 jest.mock('electron', () => ({
   app: {
@@ -35,6 +38,7 @@ jest.mock('electron', () => ({
 jest.mock('../window', () => ({
   getMainWindow: jest.fn(),
   hideMainWindow: mockHideMainWindow,
+  keepMainWindowVisibleDuringNativeDialog: mockKeepMainWindowVisibleDuringNativeDialog,
   minimizeMainWindow: mockMinimizeMainWindow,
   resizeMainWindowByHeightDelta: mockResizeMainWindowByHeightDelta,
   setDragDropMode: mockSetDragDropMode,
@@ -65,6 +69,9 @@ jest.mock('../logger', () => ({ error: jest.fn() }));
 describe('registerIpcHandlers', () => {
   beforeEach(async () => {
     jest.clearAllMocks();
+    mockKeepMainWindowVisibleDuringNativeDialog.mockImplementation((task: () => unknown) => task());
+    (dialog.showOpenDialog as jest.Mock).mockResolvedValue({ canceled: true, filePaths: [] });
+    (dialog.showSaveDialog as jest.Mock).mockResolvedValue({ canceled: true });
     mockIpcHandlers.clear();
     const { registerIpcHandlers } = await import('../ipcHandlers');
     registerIpcHandlers();
@@ -107,5 +114,33 @@ describe('registerIpcHandlers', () => {
     autoHideHandler!(undefined, true);
 
     expect(mockSetWindowAutoHideSuspended).toHaveBeenCalledWith(true);
+  });
+
+  it('normalizes renderer supplied native dialog titles', async () => {
+    const longTitle = ` ${'A'.repeat(130)}\nignored `;
+    const openProfileHandler = mockIpcHandlers.get(IPC_CHANNELS.CONFIG_OPEN_PROFILE_DIALOG);
+    const saveAsHandler = mockIpcHandlers.get(IPC_CHANNELS.CONFIG_SAVE_AS_DIALOG);
+    const selectFileHandler = mockIpcHandlers.get(IPC_CHANNELS.DIALOG_SELECT_FILE);
+    const selectFolderHandler = mockIpcHandlers.get(IPC_CHANNELS.DIALOG_SELECT_FOLDER);
+
+    await openProfileHandler!(undefined, longTitle);
+    expect(dialog.showOpenDialog).toHaveBeenLastCalledWith(
+      expect.objectContaining({ title: 'A'.repeat(120) }),
+    );
+
+    await saveAsHandler!(undefined, '\n\t ');
+    expect(dialog.showSaveDialog).toHaveBeenLastCalledWith(
+      expect.objectContaining({ title: 'Save Keyboard Profile As' }),
+    );
+
+    await selectFileHandler!(undefined, ' Pick\tFile ');
+    expect(dialog.showOpenDialog).toHaveBeenLastCalledWith(
+      expect.objectContaining({ title: 'Pick File' }),
+    );
+
+    await selectFolderHandler!(undefined, 42);
+    expect(dialog.showOpenDialog).toHaveBeenLastCalledWith(
+      expect.objectContaining({ title: 'Select Folder' }),
+    );
   });
 });

@@ -78,7 +78,7 @@ export const AppSettingsSchema = z
     launchOnStartup: z.boolean(),
     startInTray: z.boolean(),
     theme: z.enum(['light', 'dark', 'system']),
-    language: AppLanguageSchema,
+    language: AppLanguageSchema.optional(),
     customStyle: z.string(),
     windowSize: WindowSizeSchema,
     hideElements: HideElementsSchema,

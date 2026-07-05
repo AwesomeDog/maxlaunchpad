@@ -124,4 +124,41 @@ describe('configStore legacy custom styles', () => {
 
     expect(loadSettings().menuRevealKey).toBe('Alt');
   });
+
+  it('does not default missing language so i18next can detect it', async () => {
+    const settingsPath = path.join(tempConfigHome, 'MaxLaunchpad', 'settings.yaml');
+    fs.mkdirSync(path.dirname(settingsPath), { recursive: true });
+    fs.writeFileSync(
+      settingsPath,
+      [
+        'hotkey:',
+        '  modifiers:',
+        '    - Alt',
+        "  key: '`'",
+        'activeTabOnShow: lastUsed',
+        'lockWindowCenter: true',
+        'launchOnStartup: true',
+        'startInTray: false',
+        'theme: dark',
+        'customStyle: default',
+        'windowSize:',
+        '  width: 1000',
+        '  height: 600',
+        'hideElements:',
+        '  menu: false',
+        '  buttonIcons: false',
+        '  buttonText: false',
+        '  emptyButtons: false',
+        '  rowF: false',
+        '  row1: false',
+        '  row2: false',
+        '  row3: false',
+      ].join('\n'),
+      'utf8',
+    );
+
+    const { loadSettings } = await import('../configStore');
+
+    expect(loadSettings().language).toBeUndefined();
+  });
 });

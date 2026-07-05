@@ -258,6 +258,18 @@ describe('AppSettingsSchema', () => {
     }
   });
 
+  it('should allow omitted language to preserve renderer detection', () => {
+    const settingsWithoutLanguage = { ...validSettings };
+    delete (settingsWithoutLanguage as Record<string, unknown>).language;
+
+    const result = AppSettingsSchema.safeParse(settingsWithoutLanguage);
+
+    expect(result.success).toBe(true);
+    if (result.success) {
+      expect(result.data.language).toBeUndefined();
+    }
+  });
+
   it('should validate all theme options', () => {
     const themes = ['light', 'dark', 'system'] as const;
     themes.forEach((theme) => {
@@ -283,7 +295,6 @@ describe('AppSettingsSchema', () => {
       'launchOnStartup',
       'startInTray',
       'theme',
-      'language',
       'customStyle',
       'windowSize',
       'hideElements',

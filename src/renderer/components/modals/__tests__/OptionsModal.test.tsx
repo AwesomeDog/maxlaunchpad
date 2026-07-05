@@ -141,7 +141,7 @@ describe('OptionsModal', () => {
   });
 
   it('uses the detected i18next language when settings omit language', async () => {
-    delete (settings as unknown as Record<string, unknown>).language;
+    settings.language = undefined;
     await act(async () => {
       await i18n.changeLanguage('en');
     });

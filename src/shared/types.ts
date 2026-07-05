@@ -68,7 +68,7 @@ export interface AppSettings {
   launchOnStartup: boolean;
   startInTray: boolean;
   theme: 'light' | 'dark' | 'system';
-  language: AppLanguage;
+  language?: AppLanguage;
   customStyle: string; // Style name without ".css", default 'default'
   windowSize: WindowSize; // User-customized window size
   hideElements: HideElements; // Hide elements configuration

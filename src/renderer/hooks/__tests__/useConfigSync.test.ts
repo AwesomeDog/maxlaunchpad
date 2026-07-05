@@ -29,6 +29,7 @@ beforeEach(() => {
 
 afterEach(() => {
   jest.useRealTimers();
+  jest.restoreAllMocks();
 });
 
 // Test component that allows us to control state and observe behavior
@@ -147,6 +148,33 @@ describe('useConfigSync', () => {
       await i18n.changeLanguage('en');
     });
     changeLanguageSpy.mockClear();
+    rerender();
+
+    expect(changeLanguageSpy).not.toHaveBeenCalled();
+  });
+
+  it('does not force i18next when loaded settings omit language', () => {
+    const settingsWithoutLanguage: AppSettings = { ...mockSettings };
+    delete settingsWithoutLanguage.language;
+    const changeLanguageSpy = jest.spyOn(i18n, 'changeLanguage');
+    let capturedDispatch: ReturnType<typeof useDispatch>;
+
+    const { rerender } = renderHook(
+      () => {
+        const dispatch = useDispatch();
+        capturedDispatch = dispatch;
+        useConfigSync();
+      },
+      { wrapper: AppStateProvider },
+    );
+
+    act(() => {
+      capturedDispatch!({
+        type: 'SET_CONFIG',
+        settings: settingsWithoutLanguage,
+        profile: mockProfile,
+      });
+    });
     rerender();
 
     expect(changeLanguageSpy).not.toHaveBeenCalled();
