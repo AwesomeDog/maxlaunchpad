@@ -70,4 +70,49 @@ describe('store reducer', () => {
     expect(languageChanged.settings?.language).toBe('en');
     expect(languageChanged.settings?.customStyle).toBe('modern');
   });
+
+  it('swaps configured keys when a key is moved onto another configured key', () => {
+    const loaded = reducer(initialState, { type: 'SET_CONFIG', settings, profile });
+    const moved = reducer(loaded, {
+      type: 'MOVE_KEY',
+      source: { tabId: '1', keyId: 'Q' },
+      target: { tabId: '1', keyId: 'W' },
+    });
+
+    expect(moved.profile?.keys).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ tabId: '1', id: 'Q', label: 'Beta' }),
+        expect.objectContaining({ tabId: '1', id: 'W', label: 'Alpha' }),
+      ]),
+    );
+    expect(moved.ui.isConfigDirty).toBe(true);
+  });
+
+  it('swaps tab labels and key ownership when a tab is moved onto another tab', () => {
+    const loaded = reducer(
+      {
+        ...initialState,
+        ui: { ...initialState.ui, activeTabId: '1' },
+      },
+      { type: 'SET_CONFIG', settings, profile },
+    );
+    const moved = reducer(loaded, {
+      type: 'MOVE_TAB',
+      sourceTabId: '1',
+      targetTabId: '2',
+    });
+
+    expect(moved.profile?.tabs).toEqual([
+      { id: '1', label: 'Two' },
+      { id: '2', label: 'One' },
+    ]);
+    expect(moved.profile?.keys).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ tabId: '2', id: 'Q', label: 'Alpha' }),
+        expect.objectContaining({ tabId: '1', id: 'Q', label: 'Gamma' }),
+      ]),
+    );
+    expect(moved.ui.activeTabId).toBe('2');
+    expect(moved.ui.isConfigDirty).toBe(true);
+  });
 });
