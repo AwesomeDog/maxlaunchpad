@@ -155,6 +155,16 @@ keys:
     label: CMD
     filePath: C:\Windows\System32\cmd.exe
     description: Open Command Prompt
+  # At sign-in, Windows may start MaxLaunchpad without the user portion of PATH.
+  # Append it from the registry so VS Code terminals can find per-user tools.
+  - tabId: '2'
+    id: V
+    label: VSCode
+    filePath: powershell.exe
+    arguments: >-
+      -NoProfile -NonInteractive -WindowStyle Hidden -Command "$env:Path += ';' + [Environment]::GetEnvironmentVariable('Path', 'User'); Start-Process code"
+    description: Launch VS Code with the current user's PATH
+    iconPath: https://code.visualstudio.com/assets/branding/code-stable.png
   - tabId: '2'
     id: 'N'
     label: Network
