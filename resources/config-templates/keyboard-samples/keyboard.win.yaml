@@ -162,7 +162,9 @@ keys:
     label: VSCode
     filePath: powershell.exe
     arguments: >-
-      -NoProfile -NonInteractive -WindowStyle Hidden -Command "$env:Path += ';' + [Environment]::GetEnvironmentVariable('Path', 'User'); Start-Process code"
+      -NoProfile -NonInteractive -WindowStyle Hidden -Command "$env:Path += ';'
+      + [Environment]::GetEnvironmentVariable('Path', 'User'); Start-Process
+      -FilePath code -WindowStyle Hidden"
     description: Launch VS Code with the current user's PATH
     iconPath: https://code.visualstudio.com/assets/branding/code-stable.png
   - tabId: '2'
