@@ -19,6 +19,25 @@ import { useWindowBehavior } from './hooks/useWindowBehavior';
 import { useWindowTitle } from './hooks/useWindowTitle';
 import { AppStateProvider, useAppState, useDispatch } from './state/store';
 
+export function LoadingScreen({ text = 'Loading...' }: { text?: string }) {
+  return (
+    <div className="app-container">
+      <div
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          height: '100%',
+          fontSize: '1.2em',
+          color: 'var(--text-color)',
+        }}
+      >
+        {text}
+      </div>
+    </div>
+  );
+}
+
 function AppContent() {
   const { t } = useTranslation();
   const state = useAppState();
@@ -51,22 +70,7 @@ function AppContent() {
   }, [dispatch, t]);
 
   if (state.ui.isLoading) {
-    return (
-      <div className="app-container">
-        <div
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            height: '100%',
-            fontSize: '1.2em',
-            color: 'var(--text-color)',
-          }}
-        >
-          {t('app.loading')}
-        </div>
-      </div>
-    );
+    return <LoadingScreen text={t('app.loading')} />;
   }
 
   // After loading, settings is guaranteed to be non-null
