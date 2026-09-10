@@ -19,7 +19,12 @@ import { useWindowBehavior } from './hooks/useWindowBehavior';
 import { useWindowTitle } from './hooks/useWindowTitle';
 import { AppStateProvider, useAppState, useDispatch } from './state/store';
 
-export function LoadingScreen({ text = 'Loading...' }: { text?: string }) {
+/** Stable, dependency-free fallback shown while React/i18n initializes. */
+export function StartupFallback() {
+  return <LoadingScreen text="Loading..." />;
+}
+
+export function LoadingScreen({ text }: { text: string }) {
   return (
     <div className="app-container">
       <div

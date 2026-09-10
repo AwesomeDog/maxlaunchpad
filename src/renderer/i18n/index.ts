@@ -2,13 +2,11 @@ import i18n from 'i18next';
 import LanguageDetector from 'i18next-browser-languagedetector';
 import { initReactI18next } from 'react-i18next';
 
-import en from './en.json';
-import zhCN from './zh-CN.json';
+import { languageCodes, languages } from './languages';
 
-const resources = {
-  en: { translation: en },
-  'zh-CN': { translation: zhCN },
-};
+const resources = Object.fromEntries(
+  languages.map(({ code, resource }) => [code, { translation: resource }]),
+);
 
 const i18nInstance = i18n;
 
@@ -18,6 +16,8 @@ i18nInstance
   .init({
     resources,
     fallbackLng: 'en',
+    supportedLngs: languageCodes,
+    load: 'currentOnly',
     debug: process.env.NODE_ENV === 'development',
     interpolation: {
       escapeValue: false,

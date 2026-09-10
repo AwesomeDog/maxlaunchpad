@@ -106,7 +106,7 @@ export function EditKeyModal({ keyConfig }: EditKeyModalProps) {
 
   return (
     <Modal
-      title={t('modals.editKey.titleWithKey', {
+      title={t('modals.editKey.titleForKey', {
         tabId: keyConfig.tabId,
         keyId: keyConfig.id,
       })}

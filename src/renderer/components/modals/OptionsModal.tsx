@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { useAppState, useDispatch } from '../../state/store';
+import { languages } from '../../i18n/languages';
 import { Modal } from '../common/Modal';
 
 export function OptionsModal(): ReactElement {
@@ -89,7 +90,7 @@ export function OptionsModal(): ReactElement {
     void i18n.changeLanguage(e.target.value);
   };
 
-  const currentLanguage = i18n.resolvedLanguage?.startsWith('zh') ? 'zh-CN' : 'en';
+  const currentLanguage = i18n.resolvedLanguage ?? i18n.language;
 
   return (
     <Modal title={t('modals.options.title')}>
@@ -138,8 +139,11 @@ export function OptionsModal(): ReactElement {
       <div className="modal-row">
         <label>{t('modals.options.language')}:</label>
         <select value={currentLanguage} onChange={handleLanguageChange}>
-          <option value="en">{t('modals.options.languageEnglish')}</option>
-          <option value="zh-CN">{t('modals.options.languageChineseSimplified')}</option>
+          {languages.map(({ code, nativeName }) => (
+            <option key={code} value={code}>
+              {nativeName}
+            </option>
+          ))}
         </select>
       </div>
 

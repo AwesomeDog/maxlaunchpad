@@ -4,7 +4,7 @@ import './i18n';
 import React, { Suspense } from 'react';
 import { createRoot } from 'react-dom/client';
 
-import { App, LoadingScreen } from './App';
+import { App, StartupFallback } from './App';
 
 const container = document.getElementById('root');
 if (!container) {
@@ -14,7 +14,7 @@ if (!container) {
 const root = createRoot(container);
 root.render(
   <React.StrictMode>
-    <Suspense fallback={<LoadingScreen />}>
+    <Suspense fallback={<StartupFallback />}>
       <App />
     </Suspense>
   </React.StrictMode>,

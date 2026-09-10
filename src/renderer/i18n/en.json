@@ -75,7 +75,7 @@
   "modals": {
     "editKey": {
       "title": "Edit Key",
-      "titleWithKey": "Edit Key: {{tabId}} / {{keyId}}",
+      "titleForKey": "Edit Key: {{tabId}} / {{keyId}}",
       "quickSelect": "Quick Select",
       "quickSelectPlaceholder": "(Optional) Search to auto-fill below...",
       "label": "Label",
@@ -94,17 +94,13 @@
       "runAsAdminWarning": "Only enable if you understand the consequences",
       "iconPath": "Icon Path",
       "iconPathPlaceholder": "Custom icon path (file/url)",
-      "browse": "Browse",
-      "save": "Save",
-      "cancel": "Cancel"
+      "browse": "Browse"
     },
     "editTab": {
       "title": "Edit Tab",
-      "titleWithTab": "Edit Tab: {{tabId}}",
+      "titleForTab": "Edit Tab: {{tabId}}",
       "tabLabel": "Tab Label",
-      "tabDisplayName": "Tab Display Name",
-      "save": "Save",
-      "cancel": "Cancel"
+      "tabDisplayName": "Tab Display Name"
     },
     "options": {
       "title": "Options",
@@ -115,11 +111,7 @@
       "themeLight": "Light",
       "themeDark": "Dark",
       "customStyle": "Custom Style",
-      "language": "Language",
-      "languageEnglish": "English",
-      "languageChineseSimplified": "Simplified Chinese",
-      "save": "Save",
-      "cancel": "Cancel"
+      "language": "Language"
     },
     "hotkeySettings": {
       "title": "Hotkey Settings",
@@ -132,9 +124,7 @@
       "tabOption": "Tab {{tabId}}",
       "currentHotkey": "Current Hotkey:",
       "recommendation": "We recommend trying the hotkey before customizing.",
-      "linuxGlobalHotkeyNote": "On Linux, global hotkeys may require additional setup due to system restrictions. Please refer to your desktop environment's manual for keyboard shortcut configuration.",
-      "save": "Save",
-      "cancel": "Cancel"
+      "linuxGlobalHotkeyNote": "On Linux, global hotkeys may require additional setup due to system restrictions. Please refer to your desktop environment's manual for keyboard shortcut configuration."
     },
     "about": {
       "title": "About",
@@ -142,9 +132,7 @@
       "application": "Application",
       "version": "Version",
       "gitCommit": "Git Commit",
-      "description": "MaxLaunchpad is a simple, reliable launcher that makes your most-used applications instantly accessible from the keyboard",
-      "loading": "Loading...",
-      "close": "Close"
+      "description": "MaxLaunchpad is a simple, reliable launcher that makes your most-used applications instantly accessible from the keyboard"
     },
     "common": {
       "save": "Save",

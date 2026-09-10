@@ -29,7 +29,7 @@ export function EditTabModal({ tabId }: EditTabModalProps) {
   };
 
   return (
-    <Modal title={t('modals.editTab.titleWithTab', { tabId })} width={400}>
+    <Modal title={t('modals.editTab.titleForTab', { tabId })} width={400}>
       <div className="modal-row">
         <label>{t('modals.editTab.tabLabel')}</label>
         <input

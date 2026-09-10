@@ -75,7 +75,7 @@
   "modals": {
     "editKey": {
       "title": "编辑按键",
-      "titleWithKey": "编辑按键：{{tabId}} / {{keyId}}",
+      "titleForKey": "编辑按键：{{tabId}} / {{keyId}}",
       "quickSelect": "快速选择",
       "quickSelectPlaceholder": "（可选）搜索以自动填充下方...",
       "label": "标签",
@@ -94,17 +94,13 @@
       "runAsAdminWarning": "仅在了解后果时启用",
       "iconPath": "图标路径",
       "iconPathPlaceholder": "自定义图标路径（文件/URL）",
-      "browse": "浏览",
-      "save": "保存",
-      "cancel": "取消"
+      "browse": "浏览"
     },
     "editTab": {
       "title": "编辑标签页",
-      "titleWithTab": "编辑标签页：{{tabId}}",
+      "titleForTab": "编辑标签页：{{tabId}}",
       "tabLabel": "标签页标签",
-      "tabDisplayName": "标签页显示名称",
-      "save": "保存",
-      "cancel": "取消"
+      "tabDisplayName": "标签页显示名称"
     },
     "options": {
       "title": "选项",
@@ -115,11 +111,7 @@
       "themeLight": "浅色",
       "themeDark": "深色",
       "customStyle": "自定义样式",
-      "language": "语言",
-      "languageEnglish": "英语",
-      "languageChineseSimplified": "简体中文",
-      "save": "保存",
-      "cancel": "取消"
+      "language": "语言"
     },
     "hotkeySettings": {
       "title": "快捷键设置",
@@ -132,9 +124,7 @@
       "tabOption": "标签页 {{tabId}}",
       "currentHotkey": "当前快捷键：",
       "recommendation": "建议先试用默认快捷键，再进行自定义。",
-      "linuxGlobalHotkeyNote": "在 Linux 上，由于系统限制，全局快捷键可能需要额外设置。请参考桌面环境手册配置键盘快捷键。",
-      "save": "保存",
-      "cancel": "取消"
+      "linuxGlobalHotkeyNote": "在 Linux 上，由于系统限制，全局快捷键可能需要额外设置。请参考桌面环境手册配置键盘快捷键。"
     },
     "about": {
       "title": "关于",
@@ -142,9 +132,7 @@
       "application": "应用程序",
       "version": "版本",
       "gitCommit": "Git 提交",
-      "description": "MaxLaunchpad 是一个简单可靠的启动器，让你最常用的应用可以通过键盘立即访问",
-      "loading": "加载中...",
-      "close": "关闭"
+      "description": "MaxLaunchpad 是一个简单可靠的启动器，让你最常用的应用可以通过键盘立即访问"
     },
     "common": {
       "save": "保存",
