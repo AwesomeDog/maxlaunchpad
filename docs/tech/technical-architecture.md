@@ -80,8 +80,16 @@ src/
 │   ├── App.tsx              # Root component
 │   ├── i18n/                # Renderer localization setup and resources
 │   │   ├── index.ts         # i18next initialization
+│   │   ├── languages.ts     # Language registry (code → resource + native name)
 │   │   ├── en.json          # English translations
-│   │   └── zh-CN.json       # Simplified Chinese translations
+│   │   ├── zh-CN.json       # Simplified Chinese translations
+│   │   ├── zh-TW.json       # Traditional Chinese translations
+│   │   ├── fr.json          # French translations
+│   │   ├── de.json          # German translations
+│   │   ├── ja.json          # Japanese translations
+│   │   ├── ru.json          # Russian translations
+│   │   ├── es.json          # Spanish translations
+│   │   └── ko.json          # Korean translations
 │   ├── state/
 │   │   ├── store.ts         # Context + useReducer store
 │   │   └── selectors.ts     # Derived data selectors
@@ -1741,8 +1749,9 @@ Handles right-click context menus for function/letter keys and tab buttons.
 
 Renderer-facing strings are localized with `i18next` and `react-i18next`. `src/renderer/index.tsx` imports `./i18n`
 once, and React components/hooks use `useTranslation()` for menus, modals, context menu actions, loading states, and
-renderer-generated error messages. Translation resources live in `src/renderer/i18n/en.json` and
-`src/renderer/i18n/zh-CN.json`; maintenance details are documented in [`i18n.md`](./i18n.md). Electron main-process UI,
+renderer-generated error messages. Translation resources live in `src/renderer/i18n/<locale>.json` for English
+(default), 简体中文, 繁體中文, Français, Deutsch, 日本語, Русский, Español and 한국어, and are registered in
+`src/renderer/i18n/languages.ts`; maintenance details are documented in [`i18n.md`](./i18n.md). Electron main-process UI,
 such as tray menus and native file dialog titles, is not part of the renderer i18n layer yet.
 
 ### 9.1 `common/Modal.tsx` - Base Modal Wrapper

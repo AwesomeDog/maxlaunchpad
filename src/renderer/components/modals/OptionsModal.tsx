@@ -2,8 +2,8 @@ import type { ChangeEvent, ReactElement } from 'react';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { useAppState, useDispatch } from '../../state/store';
 import { languages } from '../../i18n/languages';
+import { useAppState, useDispatch } from '../../state/store';
 import { Modal } from '../common/Modal';
 
 export function OptionsModal(): ReactElement {

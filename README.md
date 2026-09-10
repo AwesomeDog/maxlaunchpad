@@ -15,6 +15,8 @@ No typing, no searching, no fuzzy-match roulette.
 [![Docs](https://img.shields.io/badge/docs-online-brightgreen)](https://awesomedog.github.io/maxlaunchpad/)
 [![Stars](https://img.shields.io/github/stars/AwesomeDog/maxlaunchpad?style=social)](https://github.com/AwesomeDog/maxlaunchpad/stargazers)
 
+**Languages:** **English** · [简体中文](docs/i18n/README.zh-CN.md) · [繁體中文](docs/i18n/README.zh-TW.md) · [Français](docs/i18n/README.fr.md) · [Deutsch](docs/i18n/README.de.md) · [日本語](docs/i18n/README.ja.md) · [Русский](docs/i18n/README.ru.md) · [Español](docs/i18n/README.es.md) · [한국어](docs/i18n/README.ko.md)
+
 [Download](https://github.com/AwesomeDog/maxlaunchpad/releases) ·
 [Documentation](https://awesomedog.github.io/maxlaunchpad/) ·
 [Features](#features) ·

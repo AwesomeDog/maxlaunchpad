@@ -1,5 +1,5 @@
 import en from '../en.json';
-import zhCN from '../zh-CN.json';
+import { languages } from '../languages';
 
 function flatten(value: Record<string, unknown>, prefix = ''): Map<string, string> {
   const result = new Map<string, string>();
@@ -20,15 +20,24 @@ function interpolationVariables(value: string): Set<string> {
   return new Set([...value.matchAll(/{{\s*([^}, ]+)/g)].map((match) => match[1]));
 }
 
+const translated = languages.filter(({ code }) => code !== 'en');
+
 describe('translation resources', () => {
-  it('keeps every locale key and interpolation variable aligned with English', () => {
-    const base = flatten(en);
-    const locale = flatten(zhCN);
-
-    expect([...locale.keys()].sort()).toEqual([...base.keys()].sort());
-    for (const [key, value] of base) {
-      expect(interpolationVariables(locale.get(key)!)).toEqual(interpolationVariables(value));
-    }
+  it('registers English as the base locale', () => {
+    expect(languages.map(({ code }) => code)).toContain('en');
+    expect(translated.length).toBeGreaterThan(0);
   });
-});
 
+  it.each(translated)(
+    'keeps every $code key and interpolation variable aligned with English',
+    ({ resource }) => {
+      const base = flatten(en);
+      const locale = flatten(resource as Record<string, unknown>);
+
+      expect([...locale.keys()].sort()).toEqual([...base.keys()].sort());
+      for (const [key, value] of base) {
+        expect(interpolationVariables(locale.get(key)!)).toEqual(interpolationVariables(value));
+      }
+    },
+  );
+});
