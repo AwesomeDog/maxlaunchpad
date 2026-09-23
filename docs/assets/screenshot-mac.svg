@@ -1,0 +1,249 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1040" height="664" viewBox="0 0 1040 664">
+  <title>MaxLaunchpad — main window (vector replica)</title>
+  <defs>
+    <filter id="winShadow" x="-30%" y="-30%" width="160%" height="170%">
+      <feDropShadow dx="0" dy="12" stdDeviation="16" flood-color="#000000" flood-opacity="0.26"/>
+    </filter>
+    <linearGradient id="titlebar" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#F2F2F2"/>
+      <stop offset="1" stop-color="#E0E0E0"/>
+    </linearGradient>
+    <clipPath id="winClip"><rect width="1000" height="600" rx="10"/></clipPath>
+    <linearGradient id="ic-shot" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#6A7383"/><stop offset="1" stop-color="#454C58"/></linearGradient>
+    <linearGradient id="ic-xcode" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#2F86EE"/><stop offset="1" stop-color="#0B62D8"/></linearGradient>
+    <linearGradient id="ic-set" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#D3D7DB"/><stop offset="1" stop-color="#9AA1A9"/></linearGradient>
+    <linearGradient id="ic-act" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#F7F8F9"/><stop offset="1" stop-color="#E3E5E8"/></linearGradient>
+    <linearGradient id="ic-qt" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#3AA3F0"/><stop offset="1" stop-color="#0F6FD1"/></linearGradient>
+    <linearGradient id="ic-weather" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#3EA0F5"/><stop offset="1" stop-color="#1E6FD9"/></linearGradient>
+    <linearGradient id="ic-mail" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#4BA3F5"/><stop offset="1" stop-color="#1170D6"/></linearGradient>
+    <linearGradient id="ic-term" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#33373C"/><stop offset="1" stop-color="#17191C"/></linearGradient>
+    <linearGradient id="ic-ic" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#7A828C"/><stop offset="1" stop-color="#4A5159"/></linearGradient>
+    <linearGradient id="ic-as" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#2FA5F7"/><stop offset="1" stop-color="#0B6BE0"/></linearGradient>
+    <linearGradient id="ic-saf" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#3EA5F2"/><stop offset="1" stop-color="#0C6AD5"/></linearGradient>
+    <linearGradient id="ic-dict" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#B98A5C"/><stop offset="1" stop-color="#7A5636"/></linearGradient>
+    <clipPath id="finderClip"><rect width="32" height="32" rx="7.2"/></clipPath>
+    <linearGradient id="ic-finder" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#3FA9F5"/><stop offset="1" stop-color="#1E7FE0"/></linearGradient>
+    <linearGradient id="ic-home" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#F7B733"/><stop offset="1" stop-color="#E08A0B"/></linearGradient>
+    <linearGradient id="ic-kn" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#3EA5F2"/><stop offset="1" stop-color="#0C6AD5"/></linearGradient>
+    <linearGradient id="ic-lock" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#9AA1A9"/><stop offset="1" stop-color="#6E757D"/></linearGradient>
+    <linearGradient id="ic-si" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#B4B9C0"/><stop offset="1" stop-color="#7C838C"/></linearGradient>
+    <linearGradient id="ic-ct" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#C0986A"/><stop offset="1" stop-color="#8A6742"/></linearGradient>
+    <linearGradient id="ic-bk" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#F7B733"/><stop offset="1" stop-color="#E08A0B"/></linearGradient>
+    <linearGradient id="ic-nt" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FFDE59"/><stop offset="1" stop-color="#F7C331"/></linearGradient>
+    <linearGradient id="ic-mu" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FB4E6A"/><stop offset="1" stop-color="#E8183F"/></linearGradient>
+    <linearGradient id="ic-msg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#5CDB6B"/><stop offset="1" stop-color="#28B93A"/></linearGradient>
+    <clipPath id="mapsClip"><rect width="32" height="32" rx="7.2"/></clipPath>
+  </defs>
+
+  <!-- Everything lives in one translated group: the window body, its clip path
+       and its content must share the same origin, or the frame drifts sideways. -->
+  <g transform="translate(20 20)">
+    <g filter="url(#winShadow)">
+      <rect width="1000" height="600" rx="10" fill="#E3F2FD"/>
+    </g>
+
+    <g clip-path="url(#winClip)">
+      <!-- window body -->
+      <rect x="4" y="32" width="992" height="564" fill="#E3F2FD"/>
+      <rect x="24" y="278.4" width="952" height="297.6" fill="#90CAF9"/>
+
+      <!-- title bar -->
+      <rect width="1000" height="28" fill="url(#titlebar)"/>
+      <path d="M0 27.5 H1000" stroke="#C6C6C8" stroke-width="1" fill="none"/>
+      <circle cx="20" cy="14" r="6" fill="#FF5F57" stroke="rgba(0,0,0,0.10)" stroke-width="0.6"/><circle cx="40" cy="14" r="6" fill="#FEBC2E" stroke="rgba(0,0,0,0.10)" stroke-width="0.6"/><circle cx="60" cy="14" r="6" fill="#28C840" stroke="rgba(0,0,0,0.10)" stroke-width="0.6"/>
+      <text x="500" y="18.4" font-family="-apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Helvetica Neue', Arial, sans-serif" font-size="13" font-weight="400" fill="#4A4A4A" text-anchor="middle" >MaxLaunchpad - /Users/you/.config/MaxLaunchpad/keyboard.yaml</text>
+
+      <!-- UI -->
+      <text x="22" y="56.9" font-family="-apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Helvetica Neue', Arial, sans-serif" font-size="14" font-weight="400" fill="#0D47A1" text-anchor="start" >File</text>
+      <text x="92.52" y="56.9" font-family="-apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Helvetica Neue', Arial, sans-serif" font-size="14" font-weight="400" fill="#0D47A1" text-anchor="start" >View</text>
+      <text x="163.04" y="56.9" font-family="-apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Helvetica Neue', Arial, sans-serif" font-size="14" font-weight="400" fill="#0D47A1" text-anchor="start" >Tools</text>
+      <text x="240.84" y="56.9" font-family="-apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Helvetica Neue', Arial, sans-serif" font-size="14" font-weight="400" fill="#0D47A1" text-anchor="start" >Settings</text>
+      <text x="340.48" y="56.9" font-family="-apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Helvetica Neue', Arial, sans-serif" font-size="14" font-weight="400" fill="#0D47A1" text-anchor="start" >Help</text>
+      <rect x="838" y="39.6" width="140" height="24.8" rx="3" fill="#E3F2FD" stroke="#0D47A1" stroke-width="1" opacity="0.7"/>
+      <text x="846" y="56.9" font-family="-apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Helvetica Neue', Arial, sans-serif" font-size="14" font-weight="400" fill="#0D47A1" text-anchor="start" opacity="0.7">Search (Cmd+F)</text>
+      <rect x="27" y="83" width="82" height="93.2" rx="4" fill="#E3F2FD" stroke="#0D47A1" stroke-width="1"/>
+<text x="30" y="96.5" font-family="-apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Helvetica Neue', Arial, sans-serif" font-size="14" font-weight="700" fill="#0D47A1" text-anchor="start" >F1</text>
+<g transform="translate(52 105.88)"><rect width="32" height="32" rx="7.2" fill="url(#ic-shot)"/><circle cx="16" cy="16" r="7" fill="none" stroke="#fff" stroke-width="2.2"/><circle cx="16" cy="16" r="2" fill="#fff"/></g>
+<text x="68" y="148.62" font-family="-apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Helvetica Neue', Arial, sans-serif" font-size="11.200000000000001" font-weight="400" fill="#0D47A1" text-anchor="middle" >ScreenShot</text>
+      <rect x="123" y="83" width="82" height="93.2" rx="4" fill="#E3F2FD" stroke="#0D47A1" stroke-width="1"/>
+<text x="126" y="96.5" font-family="-apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Helvetica Neue', Arial, sans-serif" font-size="14" font-weight="700" fill="#0D47A1" text-anchor="start" >F2</text>
+<g transform="translate(148 105.88)"><rect width="32" height="32" rx="7.2" fill="#fff"/><path d="M 16.4 4.41 L 16.99 4.44 L 17.58 4.51 L 18.16 4.6 L 18.74 4.73 L 19.31 4.88 L 19.87 5.07 L 20.42 5.28 L 20.96 5.52 L 21.49 5.78 L 22 6.07 L 22.5 6.39 L 22.98 6.74 L 23.44 7.1 L 23.89 7.49 L 24.31 7.91 L 24.71 8.34 L 25.09 8.79 L 25.44 9.26 L 25.77 9.75 L 26.08 10.26 L 26.36 10.78 L 26.61 11.31 L 26.84 11.86 L 27.03 12.42" fill="none" stroke="#4285F4" stroke-width="4.8"/><path d="M 4.58 13.99 L 4.72 13.31 L 4.9 12.64 L 5.12 11.99 L 5.38 11.34 L 5.67 10.72 L 6.01 10.11 L 6.37 9.53 L 6.78 8.97 L 7.21 8.43 L 7.68 7.92 L 8.18 7.44 L 8.7 6.99 L 9.25 6.57 L 9.82 6.18 L 10.42 5.83 L 11.04 5.52 L 11.67 5.24 L 12.32 5 L 12.98 4.8 L 13.65 4.64 L 14.34 4.52 L 15.02 4.44 L 15.71 4.4 L 16.4 4.41" fill="none" stroke="#EA4335" stroke-width="4.8"/><path d="M 13.99 27.42 L 13.24 27.27 L 12.51 27.06 L 11.8 26.81 L 11.1 26.51 L 10.42 26.17 L 9.77 25.78 L 9.14 25.35 L 8.54 24.89 L 7.98 24.38 L 7.45 23.84 L 6.95 23.26 L 6.5 22.65 L 6.08 22.02 L 5.71 21.36 L 5.38 20.67 L 5.1 19.97 L 4.86 19.25 L 4.67 18.51 L 4.54 17.76 L 4.44 17.01 L 4.4 16.25 L 4.41 15.49 L 4.47 14.74 L 4.58 13.99" fill="none" stroke="#FBBC05" stroke-width="4.8"/><path d="M 27.42 18.01 L 27.27 18.76 L 27.06 19.49 L 26.81 20.2 L 26.51 20.9 L 26.17 21.58 L 25.78 22.23 L 25.35 22.86 L 24.89 23.46 L 24.38 24.02 L 23.84 24.55 L 23.26 25.05 L 22.65 25.5 L 22.02 25.92 L 21.36 26.29 L 20.67 26.62 L 19.97 26.9 L 19.25 27.14 L 18.51 27.33 L 17.76 27.46 L 17.01 27.56 L 16.25 27.6 L 15.49 27.59 L 14.74 27.53 L 13.99 27.42" fill="none" stroke="#34A853" stroke-width="4.8"/><rect x="16" y="13.6" width="9.8" height="4.8" fill="#4285F4"/></g>
+<text x="164" y="148.62" font-family="-apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Helvetica Neue', Arial, sans-serif" font-size="11.200000000000001" font-weight="400" fill="#0D47A1" text-anchor="middle" >Google</text>
+      <rect x="219" y="83" width="82" height="93.2" rx="4" fill="#E3F2FD" stroke="#0D47A1" stroke-width="1"/>
+<text x="222" y="96.5" font-family="-apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Helvetica Neue', Arial, sans-serif" font-size="14" font-weight="700" fill="#0D47A1" text-anchor="start" >F3</text>
+<g transform="translate(244 105.88)"><path d="M3.6 25.6 V9.8 Q3.6 7.8 5.6 7.8 H13 L16.2 11.2 H26.4 Q28.4 11.2 28.4 13.2 V25.6 Z" fill="none" stroke="#1F2937" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></g>
+<text x="260" y="148.62" font-family="-apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Helvetica Neue', Arial, sans-serif" font-size="11.200000000000001" font-weight="400" fill="#0D47A1" text-anchor="middle" >Folder</text>
+      <rect x="315" y="83" width="82" height="93.2" rx="4" fill="#E3F2FD" stroke="#0D47A1" stroke-width="1"/>
+<text x="318" y="96.5" font-family="-apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Helvetica Neue', Arial, sans-serif" font-size="14" font-weight="700" fill="#0D47A1" text-anchor="start" >F4</text>
+      <rect x="411" y="83" width="82" height="93.2" rx="4" fill="#E3F2FD" stroke="#0D47A1" stroke-width="1"/>
+<text x="414" y="96.5" font-family="-apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Helvetica Neue', Arial, sans-serif" font-size="14" font-weight="700" fill="#0D47A1" text-anchor="start" >F5</text>
+      <rect x="507" y="83" width="82" height="93.2" rx="4" fill="#E3F2FD" stroke="#0D47A1" stroke-width="1"/>
+<text x="510" y="96.5" font-family="-apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Helvetica Neue', Arial, sans-serif" font-size="14" font-weight="700" fill="#0D47A1" text-anchor="start" >F6</text>
+<g transform="translate(532 105.88)"><rect width="32" height="32" rx="7.2" fill="url(#ic-xcode)"/><g fill="#fff" transform="rotate(-45 16 18)"><rect x="14.2" y="14" width="3.6" height="14" rx="1.6"/><rect x="14.2" y="6" width="12" height="6.4" rx="1.8"/></g></g>
+<text x="548" y="148.62" font-family="-apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Helvetica Neue', Arial, sans-serif" font-size="11.200000000000001" font-weight="400" fill="#0D47A1" text-anchor="middle" >Xcode</text>
+      <rect x="603" y="83" width="82" height="93.2" rx="4" fill="#E3F2FD" stroke="#0D47A1" stroke-width="1"/>
+<text x="606" y="96.5" font-family="-apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Helvetica Neue', Arial, sans-serif" font-size="14" font-weight="700" fill="#0D47A1" text-anchor="start" >F7</text>
+      <rect x="699" y="83" width="82" height="93.2" rx="4" fill="#E3F2FD" stroke="#0D47A1" stroke-width="1"/>
+<text x="702" y="96.5" font-family="-apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Helvetica Neue', Arial, sans-serif" font-size="14" font-weight="700" fill="#0D47A1" text-anchor="start" >F8</text>
+      <rect x="795" y="83" width="82" height="93.2" rx="4" fill="#E3F2FD" stroke="#0D47A1" stroke-width="1"/>
+<text x="798" y="96.5" font-family="-apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Helvetica Neue', Arial, sans-serif" font-size="14" font-weight="700" fill="#0D47A1" text-anchor="start" >F9</text>
+<g transform="translate(820 105.88)"><rect width="32" height="32" rx="7.2" fill="url(#ic-set)"/><g fill="#fff"><rect x="14.5" y="2.6" width="3" height="6" rx="1.2" transform="rotate(0 16 16)"/><rect x="14.5" y="2.6" width="3" height="6" rx="1.2" transform="rotate(45 16 16)"/><rect x="14.5" y="2.6" width="3" height="6" rx="1.2" transform="rotate(90 16 16)"/><rect x="14.5" y="2.6" width="3" height="6" rx="1.2" transform="rotate(135 16 16)"/><rect x="14.5" y="2.6" width="3" height="6" rx="1.2" transform="rotate(180 16 16)"/><rect x="14.5" y="2.6" width="3" height="6" rx="1.2" transform="rotate(225 16 16)"/><rect x="14.5" y="2.6" width="3" height="6" rx="1.2" transform="rotate(270 16 16)"/><rect x="14.5" y="2.6" width="3" height="6" rx="1.2" transform="rotate(315 16 16)"/><circle cx="16" cy="16" r="9" fill="#fff"/></g><circle cx="16" cy="16" r="3.4" fill="#9AA1A9"/></g>
+<text x="836" y="148.62" font-family="-apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Helvetica Neue', Arial, sans-serif" font-size="11.200000000000001" font-weight="400" fill="#0D47A1" text-anchor="middle" >SystemSetti…</text>
+      <rect x="891" y="83" width="82" height="93.2" rx="4" fill="#E3F2FD" stroke="#0D47A1" stroke-width="1"/>
+<text x="894" y="96.5" font-family="-apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Helvetica Neue', Arial, sans-serif" font-size="14" font-weight="700" fill="#0D47A1" text-anchor="start" >F10</text>
+<g transform="translate(916 105.88)"><rect width="32" height="32" rx="7.2" fill="url(#ic-act)"/><path d="M4 18.5 H8.8 L11.6 10.5 L15.8 24 L19.2 14.5 L21.6 18.5 H28" fill="none" stroke="#2FBE4E" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></g>
+<text x="932" y="148.62" font-family="-apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Helvetica Neue', Arial, sans-serif" font-size="11.200000000000001" font-weight="400" fill="#0D47A1" text-anchor="middle" >ActivityMon…</text>
+      <path d="M 24 278.4 V 240.8 A 12 12 0 0 1 36 228.8 H 107.2 A 12 12 0 0 1 119.2 240.8 V 278.4 Z" fill="#90CAF9"/>
+<path d="M 24 278.4 V 240.8 M 24 240.8 A 12 12 0 0 1 36 228.8 H 107.2 A 12 12 0 0 1 119.2 240.8 V 278.4" fill="none" stroke="#0D47A1" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"/>
+<text x="29" y="242.3" font-family="-apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Helvetica Neue', Arial, sans-serif" font-size="14" font-weight="700" fill="#0D47A1" text-anchor="start" >1</text>
+<text x="71.6" y="257.52" font-family="-apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Helvetica Neue', Arial, sans-serif" font-size="11.200000000000001" font-weight="400" fill="#0D47A1" text-anchor="middle" >Fav</text>
+      <path d="M 119.2 278.4 V 240.8 A 12 12 0 0 1 131.2 228.8 H 202.4 A 12 12 0 0 1 214.4 240.8 V 278.4 Z" fill="#E3F2FD"/>
+<path d="M 119.2 240.8 A 12 12 0 0 1 131.2 228.8 H 202.4 A 12 12 0 0 1 214.4 240.8 V 278.4" fill="none" stroke="#0D47A1" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M 119.2 278.4 H 214.4" fill="none" stroke="#0D47A1" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"/>
+<text x="124.2" y="242.3" font-family="-apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Helvetica Neue', Arial, sans-serif" font-size="14" font-weight="700" fill="#0D47A1" text-anchor="start" >2</text>
+<text x="166.8" y="257.52" font-family="-apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Helvetica Neue', Arial, sans-serif" font-size="11.200000000000001" font-weight="400" fill="#0D47A1" text-anchor="middle" >Work</text>
+      <path d="M 214.4 278.4 V 240.8 A 12 12 0 0 1 226.4 228.8 H 297.6 A 12 12 0 0 1 309.6 240.8 V 278.4 Z" fill="#E3F2FD"/>
+<path d="M 214.4 240.8 A 12 12 0 0 1 226.4 228.8 H 297.6 A 12 12 0 0 1 309.6 240.8 V 278.4" fill="none" stroke="#0D47A1" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M 214.4 278.4 H 309.6" fill="none" stroke="#0D47A1" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"/>
+<text x="219.4" y="242.3" font-family="-apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Helvetica Neue', Arial, sans-serif" font-size="14" font-weight="700" fill="#0D47A1" text-anchor="start" >3</text>
+<text x="262" y="257.52" font-family="-apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Helvetica Neue', Arial, sans-serif" font-size="11.200000000000001" font-weight="400" fill="#0D47A1" text-anchor="middle" >Media</text>
+      <path d="M 309.6 278.4 V 240.8 A 12 12 0 0 1 321.6 228.8 H 392.8 A 12 12 0 0 1 404.8 240.8 V 278.4 Z" fill="#E3F2FD"/>
+<path d="M 309.6 240.8 A 12 12 0 0 1 321.6 228.8 H 392.8 A 12 12 0 0 1 404.8 240.8 V 278.4" fill="none" stroke="#0D47A1" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M 309.6 278.4 H 404.8" fill="none" stroke="#0D47A1" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"/>
+<text x="314.6" y="242.3" font-family="-apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Helvetica Neue', Arial, sans-serif" font-size="14" font-weight="700" fill="#0D47A1" text-anchor="start" >4</text>
+      <path d="M 404.8 278.4 V 240.8 A 12 12 0 0 1 416.8 228.8 H 488 A 12 12 0 0 1 500 240.8 V 278.4 Z" fill="#E3F2FD"/>
+<path d="M 404.8 240.8 A 12 12 0 0 1 416.8 228.8 H 488 A 12 12 0 0 1 500 240.8 V 278.4" fill="none" stroke="#0D47A1" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M 404.8 278.4 H 500" fill="none" stroke="#0D47A1" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"/>
+<text x="409.8" y="242.3" font-family="-apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Helvetica Neue', Arial, sans-serif" font-size="14" font-weight="700" fill="#0D47A1" text-anchor="start" >5</text>
+      <path d="M 500 278.4 V 240.8 A 12 12 0 0 1 512 228.8 H 583.2 A 12 12 0 0 1 595.2 240.8 V 278.4 Z" fill="#E3F2FD"/>
+<path d="M 500 240.8 A 12 12 0 0 1 512 228.8 H 583.2 A 12 12 0 0 1 595.2 240.8 V 278.4" fill="none" stroke="#0D47A1" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M 500 278.4 H 595.2" fill="none" stroke="#0D47A1" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"/>
+<text x="505" y="242.3" font-family="-apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Helvetica Neue', Arial, sans-serif" font-size="14" font-weight="700" fill="#0D47A1" text-anchor="start" >6</text>
+      <path d="M 595.2 278.4 V 240.8 A 12 12 0 0 1 607.2 228.8 H 678.4 A 12 12 0 0 1 690.4 240.8 V 278.4 Z" fill="#E3F2FD"/>
+<path d="M 595.2 240.8 A 12 12 0 0 1 607.2 228.8 H 678.4 A 12 12 0 0 1 690.4 240.8 V 278.4" fill="none" stroke="#0D47A1" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M 595.2 278.4 H 690.4" fill="none" stroke="#0D47A1" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"/>
+<text x="600.2" y="242.3" font-family="-apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Helvetica Neue', Arial, sans-serif" font-size="14" font-weight="700" fill="#0D47A1" text-anchor="start" >7</text>
+      <path d="M 690.4 278.4 V 240.8 A 12 12 0 0 1 702.4 228.8 H 773.6 A 12 12 0 0 1 785.6 240.8 V 278.4 Z" fill="#E3F2FD"/>
+<path d="M 690.4 240.8 A 12 12 0 0 1 702.4 228.8 H 773.6 A 12 12 0 0 1 785.6 240.8 V 278.4" fill="none" stroke="#0D47A1" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M 690.4 278.4 H 785.6" fill="none" stroke="#0D47A1" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"/>
+<text x="695.4" y="242.3" font-family="-apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Helvetica Neue', Arial, sans-serif" font-size="14" font-weight="700" fill="#0D47A1" text-anchor="start" >8</text>
+      <path d="M 785.6 278.4 V 240.8 A 12 12 0 0 1 797.6 228.8 H 868.8 A 12 12 0 0 1 880.8 240.8 V 278.4 Z" fill="#E3F2FD"/>
+<path d="M 785.6 240.8 A 12 12 0 0 1 797.6 228.8 H 868.8 A 12 12 0 0 1 880.8 240.8 V 278.4" fill="none" stroke="#0D47A1" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M 785.6 278.4 H 880.8" fill="none" stroke="#0D47A1" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"/>
+<text x="790.6" y="242.3" font-family="-apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Helvetica Neue', Arial, sans-serif" font-size="14" font-weight="700" fill="#0D47A1" text-anchor="start" >9</text>
+      <path d="M 880.8 278.4 V 240.8 A 12 12 0 0 1 892.8 228.8 H 964 A 12 12 0 0 1 976 240.8 V 278.4 Z" fill="#E3F2FD"/>
+<path d="M 880.8 240.8 A 12 12 0 0 1 892.8 228.8 H 964 A 12 12 0 0 1 976 240.8 V 278.4" fill="none" stroke="#0D47A1" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M 880.8 278.4 H 976" fill="none" stroke="#0D47A1" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"/>
+<text x="885.8" y="242.3" font-family="-apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Helvetica Neue', Arial, sans-serif" font-size="14" font-weight="700" fill="#0D47A1" text-anchor="start" >0</text>
+      <path d="M 24 278.4 V 576 H 976 V 278.4" fill="none" stroke="#0D47A1" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"/>
+      <rect x="40" y="293.4" width="79.4" height="79.53" rx="4" fill="#E3F2FD" stroke="#0D47A1" stroke-width="1"/>
+<text x="43" y="306.9" font-family="-apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Helvetica Neue', Arial, sans-serif" font-size="14" font-weight="700" fill="#0D47A1" text-anchor="start" >Q</text>
+<g transform="translate(63.7 309.45)"><rect width="32" height="32" rx="7.2" fill="url(#ic-qt)"/><circle cx="16" cy="16" r="8.6" fill="none" stroke="#fff" stroke-width="3"/><path d="M18.4 18.4 L24.4 24.4" fill="none" stroke="#fff" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"/></g>
+<text x="79.7" y="352.18" font-family="-apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Helvetica Neue', Arial, sans-serif" font-size="11.200000000000001" font-weight="400" fill="#0D47A1" text-anchor="middle" >QuickTime</text>
+      <rect x="133.4" y="293.4" width="79.4" height="79.53" rx="4" fill="#E3F2FD" stroke="#0D47A1" stroke-width="1"/>
+<text x="136.4" y="306.9" font-family="-apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Helvetica Neue', Arial, sans-serif" font-size="14" font-weight="700" fill="#0D47A1" text-anchor="start" >W</text>
+<g transform="translate(157.1 309.45)"><rect width="32" height="32" rx="7.2" fill="url(#ic-weather)"/><g fill="#FFD84D"><circle cx="12" cy="11" r="4.4" fill="#FFD84D"/></g><g stroke="#FFD84D" stroke-width="1.6" stroke-linecap="round"><path d="M12 3.4 V5.2 M19.6 11 H21.4 M4.6 11 H6.4 M15.4 7.6 L16.7 6.3 M8.6 7.6 L7.3 6.3"/></g><path d="M11.6 26 A5.4 5.4 0 0 1 12.4 15.4 A7 7 0 0 1 25 17.6 A4.4 4.4 0 0 1 24.2 26 Z" fill="#fff"/></g>
+<text x="173.1" y="352.18" font-family="-apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Helvetica Neue', Arial, sans-serif" font-size="11.200000000000001" font-weight="400" fill="#0D47A1" text-anchor="middle" >Weather</text>
+      <rect x="226.8" y="293.4" width="79.4" height="79.53" rx="4" fill="#E3F2FD" stroke="#0D47A1" stroke-width="1"/>
+<text x="229.8" y="306.9" font-family="-apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Helvetica Neue', Arial, sans-serif" font-size="14" font-weight="700" fill="#0D47A1" text-anchor="start" >E</text>
+<g transform="translate(250.5 309.45)"><rect width="32" height="32" rx="7.2" fill="url(#ic-mail)"/><rect x="5" y="9" width="22" height="14" rx="2.4" fill="#fff"/><path d="M6.2 10.6 L16 17.8 L25.8 10.6" fill="none" stroke="#1170D6" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></g>
+<text x="266.5" y="352.18" font-family="-apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Helvetica Neue', Arial, sans-serif" font-size="11.200000000000001" font-weight="400" fill="#0D47A1" text-anchor="middle" >Email</text>
+      <rect x="320.2" y="293.4" width="79.4" height="79.53" rx="4" fill="#E3F2FD" stroke="#0D47A1" stroke-width="1"/>
+<text x="323.2" y="306.9" font-family="-apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Helvetica Neue', Arial, sans-serif" font-size="14" font-weight="700" fill="#0D47A1" text-anchor="start" >R</text>
+<g transform="translate(343.9 309.45)"><rect width="32" height="32" rx="7.2" fill="#fff" stroke="#E3E5E8"/><circle cx="8.6" cy="10" r="1.9" fill="#FF3B30"/><rect x="13" y="9.1" width="11.4" height="1.8" rx="0.9" fill="#FF3B30" opacity="0.55"/><circle cx="8.6" cy="16" r="1.9" fill="#FF9500"/><rect x="13" y="15.1" width="11.4" height="1.8" rx="0.9" fill="#FF9500" opacity="0.55"/><circle cx="8.6" cy="22" r="1.9" fill="#007AFF"/><rect x="13" y="21.1" width="11.4" height="1.8" rx="0.9" fill="#007AFF" opacity="0.55"/></g>
+<text x="359.9" y="352.18" font-family="-apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Helvetica Neue', Arial, sans-serif" font-size="11.200000000000001" font-weight="400" fill="#0D47A1" text-anchor="middle" >Reminders</text>
+      <rect x="413.6" y="293.4" width="79.4" height="79.53" rx="4" fill="#E3F2FD" stroke="#0D47A1" stroke-width="1"/>
+<text x="416.6" y="306.9" font-family="-apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Helvetica Neue', Arial, sans-serif" font-size="14" font-weight="700" fill="#0D47A1" text-anchor="start" >T</text>
+<g transform="translate(437.3 309.45)"><rect width="32" height="32" rx="7.2" fill="url(#ic-term)"/><path d="M8 11 L14 16.4 L8 21.8" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/><path d="M16.6 22 H24.4" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></g>
+<text x="453.3" y="352.18" font-family="-apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Helvetica Neue', Arial, sans-serif" font-size="11.200000000000001" font-weight="400" fill="#0D47A1" text-anchor="middle" >Terminal</text>
+      <rect x="507" y="293.4" width="79.4" height="79.53" rx="4" fill="#E3F2FD" stroke="#0D47A1" stroke-width="1"/>
+<text x="510" y="306.9" font-family="-apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Helvetica Neue', Arial, sans-serif" font-size="14" font-weight="700" fill="#0D47A1" text-anchor="start" >Y</text>
+      <rect x="600.4" y="293.4" width="79.4" height="79.53" rx="4" fill="#E3F2FD" stroke="#0D47A1" stroke-width="1"/>
+<text x="603.4" y="306.9" font-family="-apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Helvetica Neue', Arial, sans-serif" font-size="14" font-weight="700" fill="#0D47A1" text-anchor="start" >U</text>
+      <rect x="693.8" y="293.4" width="79.4" height="79.53" rx="4" fill="#E3F2FD" stroke="#0D47A1" stroke-width="1"/>
+<text x="696.8" y="306.9" font-family="-apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Helvetica Neue', Arial, sans-serif" font-size="14" font-weight="700" fill="#0D47A1" text-anchor="start" >I</text>
+<g transform="translate(717.5 309.45)"><rect width="32" height="32" rx="7.2" fill="url(#ic-ic)"/><rect x="11.4" y="6.4" width="9.2" height="4.6" rx="1.6" fill="#fff"/><rect x="4.6" y="9.6" width="22.8" height="15.4" rx="2.8" fill="#fff"/><circle cx="16" cy="17.3" r="4.6" fill="none" stroke="#5A6169" stroke-width="2.4"/></g>
+<text x="733.5" y="352.18" font-family="-apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Helvetica Neue', Arial, sans-serif" font-size="11.200000000000001" font-weight="400" fill="#0D47A1" text-anchor="middle" >ImageCapture</text>
+      <rect x="787.2" y="293.4" width="79.4" height="79.53" rx="4" fill="#E3F2FD" stroke="#0D47A1" stroke-width="1"/>
+<text x="790.2" y="306.9" font-family="-apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Helvetica Neue', Arial, sans-serif" font-size="14" font-weight="700" fill="#0D47A1" text-anchor="start" >O</text>
+      <rect x="880.6" y="293.4" width="79.4" height="79.53" rx="4" fill="#E3F2FD" stroke="#0D47A1" stroke-width="1"/>
+<text x="883.6" y="306.9" font-family="-apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Helvetica Neue', Arial, sans-serif" font-size="14" font-weight="700" fill="#0D47A1" text-anchor="start" >P</text>
+<g transform="translate(904.3 309.45)"><rect width="32" height="32" rx="7.2" fill="#fff" stroke="#E9EBEE"/><ellipse cx="16" cy="8.6" rx="3.5" ry="6" fill="#F5A623" opacity="0.9" transform="rotate(0 16 16)"/><ellipse cx="16" cy="8.6" rx="3.5" ry="6" fill="#F8E71C" opacity="0.9" transform="rotate(45 16 16)"/><ellipse cx="16" cy="8.6" rx="3.5" ry="6" fill="#7ED321" opacity="0.9" transform="rotate(90 16 16)"/><ellipse cx="16" cy="8.6" rx="3.5" ry="6" fill="#4CD964" opacity="0.9" transform="rotate(135 16 16)"/><ellipse cx="16" cy="8.6" rx="3.5" ry="6" fill="#50E3C2" opacity="0.9" transform="rotate(180 16 16)"/><ellipse cx="16" cy="8.6" rx="3.5" ry="6" fill="#4A90E2" opacity="0.9" transform="rotate(225 16 16)"/><ellipse cx="16" cy="8.6" rx="3.5" ry="6" fill="#9B51E0" opacity="0.9" transform="rotate(270 16 16)"/><ellipse cx="16" cy="8.6" rx="3.5" ry="6" fill="#FF4E6B" opacity="0.9" transform="rotate(315 16 16)"/><circle cx="16" cy="16" r="2.6" fill="#fff"/></g>
+<text x="920.3" y="352.18" font-family="-apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Helvetica Neue', Arial, sans-serif" font-size="11.200000000000001" font-weight="400" fill="#0D47A1" text-anchor="middle" >Photos</text>
+      <rect x="40" y="386.93" width="79.4" height="79.53" rx="4" fill="#E3F2FD" stroke="#0D47A1" stroke-width="1"/>
+<text x="43" y="400.43" font-family="-apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Helvetica Neue', Arial, sans-serif" font-size="14" font-weight="700" fill="#0D47A1" text-anchor="start" >A</text>
+<g transform="translate(63.7 402.98)"><rect width="32" height="32" rx="7.2" fill="url(#ic-as)"/><path d="M11 22.2 L16 11.8 L21 22.2" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/><path d="M13.4 18.6 H18.6" fill="none" stroke="#fff" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></g>
+<text x="79.7" y="445.72" font-family="-apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Helvetica Neue', Arial, sans-serif" font-size="11.200000000000001" font-weight="400" fill="#0D47A1" text-anchor="middle" >AppStore</text>
+      <rect x="133.4" y="386.93" width="79.4" height="79.53" rx="4" fill="#E3F2FD" stroke="#0D47A1" stroke-width="1"/>
+<text x="136.4" y="400.43" font-family="-apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Helvetica Neue', Arial, sans-serif" font-size="14" font-weight="700" fill="#0D47A1" text-anchor="start" >S</text>
+<g transform="translate(157.1 402.98)"><rect width="32" height="32" rx="7.2" fill="url(#ic-saf)"/><circle cx="16" cy="16" r="9.6" fill="#fff"/><circle cx="16" cy="16" r="9.6" fill="none" stroke="#E3E5E8" stroke-width="1"/><path d="M16 16 L23 9 L18.6 18.6 Z" fill="#FF3B30"/><path d="M16 16 L9 23 L13.4 13.4 Z" fill="#B8BCC4"/></g>
+<text x="173.1" y="445.72" font-family="-apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Helvetica Neue', Arial, sans-serif" font-size="11.200000000000001" font-weight="400" fill="#0D47A1" text-anchor="middle" >Safari</text>
+      <rect x="226.8" y="386.93" width="79.4" height="79.53" rx="4" fill="#E3F2FD" stroke="#0D47A1" stroke-width="1"/>
+<text x="229.8" y="400.43" font-family="-apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Helvetica Neue', Arial, sans-serif" font-size="14" font-weight="700" fill="#0D47A1" text-anchor="start" >D</text>
+<g transform="translate(250.5 402.98)"><rect width="32" height="32" rx="7.2" fill="url(#ic-dict)"/><rect x="7.6" y="6" width="16.8" height="20" rx="2" fill="#fff"/><path d="M16 6.8 V25.2" fill="none" stroke="#E2CDB4" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/><path d="M9.8 11 H14 M9.8 14 H14 M9.8 17 H14 M18 11 H22.2 M18 14 H22.2" fill="none" stroke="#C9B49B" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></g>
+<text x="266.5" y="445.72" font-family="-apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Helvetica Neue', Arial, sans-serif" font-size="11.200000000000001" font-weight="400" fill="#0D47A1" text-anchor="middle" >Dictionary</text>
+      <rect x="320.2" y="386.93" width="79.4" height="79.53" rx="4" fill="#E3F2FD" stroke="#0D47A1" stroke-width="1"/>
+<text x="323.2" y="400.43" font-family="-apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Helvetica Neue', Arial, sans-serif" font-size="14" font-weight="700" fill="#0D47A1" text-anchor="start" >F</text>
+<g transform="translate(343.9 402.98)"><g clip-path="url(#finderClip)"><rect width="32" height="32" fill="#fff"/><rect x="16" width="16" height="32" fill="url(#ic-finder)"/></g><path d="M11.6 11.8 V16.4" fill="none" stroke="#2C3540" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M20.4 11.8 V16.4" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M11 21.2 Q16 25.2 21 21.2" fill="none" stroke="#2C3540" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></g>
+<text x="359.9" y="445.72" font-family="-apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Helvetica Neue', Arial, sans-serif" font-size="11.200000000000001" font-weight="400" fill="#0D47A1" text-anchor="middle" >Finder</text>
+      <rect x="413.6" y="386.93" width="79.4" height="79.53" rx="4" fill="#E3F2FD" stroke="#0D47A1" stroke-width="1"/>
+<text x="416.6" y="400.43" font-family="-apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Helvetica Neue', Arial, sans-serif" font-size="14" font-weight="700" fill="#0D47A1" text-anchor="start" >G</text>
+      <rect x="507" y="386.93" width="79.4" height="79.53" rx="4" fill="#E3F2FD" stroke="#0D47A1" stroke-width="1"/>
+<text x="510" y="400.43" font-family="-apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Helvetica Neue', Arial, sans-serif" font-size="14" font-weight="700" fill="#0D47A1" text-anchor="start" >H</text>
+<g transform="translate(530.7 402.98)"><rect width="32" height="32" rx="7.2" fill="url(#ic-home)"/><path d="M16 6.6 L26.4 16.6 H23.4 V25.4 H8.6 V16.6 H5.6 Z" fill="#fff"/><path d="M13.4 25.4 V19 H18.6 V25.4 Z" fill="#E08A0B"/></g>
+<text x="546.7" y="445.72" font-family="-apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Helvetica Neue', Arial, sans-serif" font-size="11.200000000000001" font-weight="400" fill="#0D47A1" text-anchor="middle" >Home</text>
+      <rect x="600.4" y="386.93" width="79.4" height="79.53" rx="4" fill="#E3F2FD" stroke="#0D47A1" stroke-width="1"/>
+<text x="603.4" y="400.43" font-family="-apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Helvetica Neue', Arial, sans-serif" font-size="14" font-weight="700" fill="#0D47A1" text-anchor="start" >J</text>
+<g transform="translate(624.1 402.98)"><rect width="32" height="32" rx="7.2" fill="#fff" stroke="#E9EBEE"/><path d="M10 22 Q16 26 21 22 T27 18" fill="none" stroke="#FF9500" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/><circle cx="11" cy="11.4" r="3" fill="#5856D6"/><path d="M17 9 H24.4 M17 13 H22" fill="none" stroke="#C7CBD1" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></g>
+<text x="640.1" y="445.72" font-family="-apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Helvetica Neue', Arial, sans-serif" font-size="11.200000000000001" font-weight="400" fill="#0D47A1" text-anchor="middle" >Journal</text>
+      <rect x="693.8" y="386.93" width="79.4" height="79.53" rx="4" fill="#E3F2FD" stroke="#0D47A1" stroke-width="1"/>
+<text x="696.8" y="400.43" font-family="-apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Helvetica Neue', Arial, sans-serif" font-size="14" font-weight="700" fill="#0D47A1" text-anchor="start" >K</text>
+<g transform="translate(717.5 402.98)"><rect width="32" height="32" rx="7.2" fill="url(#ic-kn)"/><circle cx="16" cy="8.4" r="2.6" fill="#fff"/><path d="M10.2 12.6 H21.8 L20.2 21.6 H11.8 Z" fill="#fff"/><rect x="9.4" y="23.4" width="13.2" height="2" rx="1" fill="#fff"/></g>
+<text x="733.5" y="445.72" font-family="-apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Helvetica Neue', Arial, sans-serif" font-size="11.200000000000001" font-weight="400" fill="#0D47A1" text-anchor="middle" >Keynote</text>
+      <rect x="787.2" y="386.93" width="79.4" height="79.53" rx="4" fill="#E3F2FD" stroke="#0D47A1" stroke-width="1"/>
+<text x="790.2" y="400.43" font-family="-apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Helvetica Neue', Arial, sans-serif" font-size="14" font-weight="700" fill="#0D47A1" text-anchor="start" >L</text>
+<g transform="translate(810.9 402.98)"><rect width="32" height="32" rx="7.2" fill="url(#ic-lock)"/><rect x="4.8" y="7.4" width="22.4" height="15" rx="2.2" fill="none" stroke="#fff" stroke-width="2.2"/><path d="M12.4 26.6 H19.6" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></g>
+<text x="826.9" y="445.72" font-family="-apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Helvetica Neue', Arial, sans-serif" font-size="11.200000000000001" font-weight="400" fill="#0D47A1" text-anchor="middle" >LockScreen</text>
+      <rect x="880.6" y="386.93" width="79.4" height="79.53" rx="4" fill="#E3F2FD" stroke="#0D47A1" stroke-width="1"/>
+<text x="883.6" y="400.43" font-family="-apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Helvetica Neue', Arial, sans-serif" font-size="14" font-weight="700" fill="#0D47A1" text-anchor="start" >;</text>
+<g transform="translate(904.3 402.98)"><rect width="32" height="32" rx="7.2" fill="url(#ic-si)"/><circle cx="16" cy="9.8" r="2.2" fill="#fff"/><rect x="14.4" y="14" width="3.2" height="11.4" rx="1.6" fill="#fff"/></g>
+<text x="920.3" y="445.72" font-family="-apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Helvetica Neue', Arial, sans-serif" font-size="11.200000000000001" font-weight="400" fill="#0D47A1" text-anchor="middle" >SystemInfo</text>
+      <rect x="40" y="480.47" width="79.4" height="79.53" rx="4" fill="#E3F2FD" stroke="#0D47A1" stroke-width="1"/>
+<text x="43" y="493.97" font-family="-apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Helvetica Neue', Arial, sans-serif" font-size="14" font-weight="700" fill="#0D47A1" text-anchor="start" >Z</text>
+      <rect x="133.4" y="480.47" width="79.4" height="79.53" rx="4" fill="#E3F2FD" stroke="#0D47A1" stroke-width="1"/>
+<text x="136.4" y="493.97" font-family="-apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Helvetica Neue', Arial, sans-serif" font-size="14" font-weight="700" fill="#0D47A1" text-anchor="start" >X</text>
+      <rect x="226.8" y="480.47" width="79.4" height="79.53" rx="4" fill="#E3F2FD" stroke="#0D47A1" stroke-width="1"/>
+<text x="229.8" y="493.97" font-family="-apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Helvetica Neue', Arial, sans-serif" font-size="14" font-weight="700" fill="#0D47A1" text-anchor="start" >C</text>
+<g transform="translate(250.5 496.51)"><rect width="32" height="32" rx="7.2" fill="url(#ic-ct)"/><rect x="7.6" y="5.6" width="16.8" height="20.8" rx="2" fill="#fff"/><rect x="9.6" y="7.6" width="12.8" height="16.8" rx="1.4" fill="#F1E6D8"/><circle cx="16" cy="13.6" r="3" fill="#B08A5E"/><path d="M11.8 21.6 A4.6 4.6 0 0 1 20.2 21.6 Z" fill="#B08A5E"/></g>
+<text x="266.5" y="539.25" font-family="-apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Helvetica Neue', Arial, sans-serif" font-size="11.200000000000001" font-weight="400" fill="#0D47A1" text-anchor="middle" >Contacts</text>
+      <rect x="320.2" y="480.47" width="79.4" height="79.53" rx="4" fill="#E3F2FD" stroke="#0D47A1" stroke-width="1"/>
+<text x="323.2" y="493.97" font-family="-apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Helvetica Neue', Arial, sans-serif" font-size="14" font-weight="700" fill="#0D47A1" text-anchor="start" >V</text>
+      <rect x="413.6" y="480.47" width="79.4" height="79.53" rx="4" fill="#E3F2FD" stroke="#0D47A1" stroke-width="1"/>
+<text x="416.6" y="493.97" font-family="-apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Helvetica Neue', Arial, sans-serif" font-size="14" font-weight="700" fill="#0D47A1" text-anchor="start" >B</text>
+<g transform="translate(437.3 496.51)"><rect width="32" height="32" rx="7.2" fill="url(#ic-bk)"/><path d="M7.4 7.4 H14.6 V24.6 H7.4 Z" fill="#fff"/><path d="M17.4 7.4 H24.6 V24.6 H17.4 Z" fill="#fff" opacity="0.82"/><path d="M16 7.6 V24.4" fill="none" stroke="#E08A0B" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></g>
+<text x="453.3" y="539.25" font-family="-apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Helvetica Neue', Arial, sans-serif" font-size="11.200000000000001" font-weight="400" fill="#0D47A1" text-anchor="middle" >Books</text>
+      <rect x="507" y="480.47" width="79.4" height="79.53" rx="4" fill="#E3F2FD" stroke="#0D47A1" stroke-width="1"/>
+<text x="510" y="493.97" font-family="-apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Helvetica Neue', Arial, sans-serif" font-size="14" font-weight="700" fill="#0D47A1" text-anchor="start" >N</text>
+<g transform="translate(530.7 496.51)"><rect width="32" height="32" rx="7.2" fill="url(#ic-nt)"/><path d="M9 12 H23 M9 17 H23 M9 22 H17" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></g>
+<text x="546.7" y="539.25" font-family="-apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Helvetica Neue', Arial, sans-serif" font-size="11.200000000000001" font-weight="400" fill="#0D47A1" text-anchor="middle" >Notes</text>
+      <rect x="600.4" y="480.47" width="79.4" height="79.53" rx="4" fill="#E3F2FD" stroke="#0D47A1" stroke-width="1"/>
+<text x="603.4" y="493.97" font-family="-apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Helvetica Neue', Arial, sans-serif" font-size="14" font-weight="700" fill="#0D47A1" text-anchor="start" >M</text>
+<g transform="translate(624.1 496.51)"><rect width="32" height="32" rx="7.2" fill="url(#ic-mu)"/><path d="M20.6 6.4 L13 8.6 V21.4 A3.6 3.6 0 1 1 10.6 18.1 V9.4 L20.6 6.4 Z" fill="#fff"/></g>
+<text x="640.1" y="539.25" font-family="-apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Helvetica Neue', Arial, sans-serif" font-size="11.200000000000001" font-weight="400" fill="#0D47A1" text-anchor="middle" >Music</text>
+      <rect x="693.8" y="480.47" width="79.4" height="79.53" rx="4" fill="#E3F2FD" stroke="#0D47A1" stroke-width="1"/>
+<text x="696.8" y="493.97" font-family="-apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Helvetica Neue', Arial, sans-serif" font-size="14" font-weight="700" fill="#0D47A1" text-anchor="start" >,</text>
+<g transform="translate(717.5 496.51)"><rect width="32" height="32" rx="7.2" fill="url(#ic-msg)"/><rect x="4.6" y="7" width="22.8" height="15.6" rx="7.4" fill="#fff"/><path d="M11.4 21.4 L10 26.6 L16.6 21.8 Z" fill="#fff"/></g>
+<text x="733.5" y="539.25" font-family="-apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Helvetica Neue', Arial, sans-serif" font-size="11.200000000000001" font-weight="400" fill="#0D47A1" text-anchor="middle" >Messages</text>
+      <rect x="787.2" y="480.47" width="79.4" height="79.53" rx="4" fill="#E3F2FD" stroke="#0D47A1" stroke-width="1"/>
+<text x="790.2" y="493.97" font-family="-apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Helvetica Neue', Arial, sans-serif" font-size="14" font-weight="700" fill="#0D47A1" text-anchor="start" >.</text>
+<g transform="translate(810.9 496.51)"><g clip-path="url(#mapsClip)"><rect width="32" height="32" fill="#E4F0DA"/><path d="M-2 23 Q8 19 15 24 Q22 29 34 25" fill="none" stroke="#A6CFEE" stroke-width="4.2"/><path d="M6 0 L11 32" stroke="#fff" stroke-width="3"/><path d="M0 9 H32" stroke="#fff" stroke-width="2.2"/></g><path d="M20 6.6 A4.4 4.4 0 0 1 24.4 11 C24.4 14.4 20 19 20 19 C20 19 15.6 14.4 15.6 11 A4.4 4.4 0 0 1 20 6.6 Z" fill="#0A72E8"/><circle cx="20" cy="10.9" r="1.7" fill="#fff"/></g>
+<text x="826.9" y="539.25" font-family="-apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Helvetica Neue', Arial, sans-serif" font-size="11.200000000000001" font-weight="400" fill="#0D47A1" text-anchor="middle" >Maps</text>
+      <rect x="880.6" y="480.47" width="79.4" height="79.53" rx="4" fill="#E3F2FD" stroke="#0D47A1" stroke-width="1"/>
+<text x="883.6" y="493.97" font-family="-apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Helvetica Neue', Arial, sans-serif" font-size="14" font-weight="700" fill="#0D47A1" text-anchor="start" >/</text>
+    </g>
+
+    <!-- hairline window frame, like the one the window manager draws -->
+    <rect x="0.5" y="0.5" width="999" height="599" rx="9.5"
+      fill="none" stroke="#CDCDCD" stroke-width="1"/>
+  </g>
+</svg>

@@ -23,7 +23,7 @@ No typing, no searching, no fuzzy-match roulette.
 [FAQ](#faq) ·
 [Contributing](#development-guide-for-contributors)
 
-![MaxLaunchpad screenshot – a virtual keyboard application launcher showing app icons mapped to keyboard keys on Windows, macOS and Linux](./docs/assets/screenshot.png)
+![MaxLaunchpad screenshot on macOS – a virtual keyboard application launcher showing app icons mapped to keyboard keys](./docs/assets/screenshot-mac.svg)
 
 </div>
 
