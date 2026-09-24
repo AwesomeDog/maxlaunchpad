@@ -1,560 +1,1041 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" dir="ltr">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>MaxLaunchpad — Keyboard-Driven Desktop Launcher</title>
-<style>
-  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-  :root{--bg:#fff;--text:#111;--dim:#666;--accent:#0057ff;--accent-light:#eef4ff;--border:#e8e8e8;--dark:#0d0d0d;--dark2:#1a1a1a;--radius:14px}
-  html{scroll-behavior:smooth}
-  body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;color:var(--text);line-height:1.7;-webkit-font-smoothing:antialiased}
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 
-  /* NAV - Minimal floating */
-  nav{position:fixed;top:1rem;left:50%;transform:translateX(-50%);z-index:100;background:rgba(255,255,255,.85);backdrop-filter:blur(16px);border:1px solid var(--border);border-radius:40px;padding:.4rem .5rem .4rem 1.5rem;display:inline-flex;align-items:center;gap:1.5rem}
-  .logo{font-weight:800;font-size:.95rem}
-  .logo span{color:var(--accent)}
-  nav a{text-decoration:none;color:var(--dim);font-size:.82rem;font-weight:500;transition:color .2s}
-  nav a:hover{color:var(--text)}
-  .nav-dl{background:var(--accent);color:#fff!important;padding:.45rem 1.1rem;border-radius:20px;font-weight:600;font-size:.8rem}
-  .nav-dl:hover{background:#004ae0}
+  <!-- ============ PRIMARY SEO ============ -->
+  <title>MaxLaunchpad — Keyboard App Launcher for Windows, macOS & Linux</title>
+  <meta name="description" content="MaxLaunchpad is a free, open-source keyboard-driven app launcher. Map programs to a virtual keyboard, summon with a global hotkey, launch with one keystroke. 310 shortcuts, YAML config, Windows · macOS · Linux.">
+  <meta name="keywords" content="keyboard launcher, application launcher, app launcher Windows, app launcher macOS, Linux launcher, global hotkey launcher, quick launch tool, virtual keyboard launcher, MaxLauncher alternative, Alfred alternative, Raycast alternative, Flow Launcher alternative, productivity tool">
+  <meta name="author" content="AwesomeDog">
+  <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1">
+  <meta name="theme-color" content="#fbfbfd" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#000000" media="(prefers-color-scheme: dark)">
+  <meta name="application-name" content="MaxLaunchpad">
+  <link rel="canonical" href="https://awesomedog.github.io/maxlaunchpad/">
 
-  /* ===== HERO SPLIT ===== */
-  .hero-split{display:grid;grid-template-columns:1fr 1fr;min-height:100vh;background:linear-gradient(135deg,#f5f3ff 0%,#ede9fe 40%,#e0e7ff 70%,#dbeafe 100%)}
-  .hero-left{display:flex;flex-direction:column;justify-content:center;padding:6rem 4rem 4rem 6rem}
-  .hero-right{display:flex;align-items:center;justify-content:center;padding:2rem;position:relative;overflow:hidden}
-  .hero-right::before{content:'';position:absolute;width:400px;height:400px;border-radius:50%;background:radial-gradient(circle,rgba(0,87,255,.08),transparent 70%);top:50%;left:50%;transform:translate(-50%,-50%)}
-  .hero-left .pill{display:inline-flex;align-items:center;gap:.4rem;background:var(--accent-light);color:var(--accent);padding:.3rem .8rem;border-radius:20px;font-size:.72rem;font-weight:700;margin-bottom:1.5rem;width:fit-content;opacity:0;animation:fadeSlideUp .6s ease-out .1s both}
-  .hero-left h1{font-size:clamp(2rem,4vw,3.2rem);font-weight:900;line-height:1.1;letter-spacing:-.03em}
-  .hero-left h1 .word{display:inline-block;opacity:0;animation:wordSlideIn .5s cubic-bezier(.22,.68,.36,1.2) both}
-  .hero-left p{margin-top:1rem;font-size:1.05rem;color:var(--dim);max-width:440px;opacity:0;animation:fadeSlideUp .6s ease-out 1.1s both}
-  .hero-left .hero-note{margin-top:.75rem;font-size:.82rem;color:#10b981;font-weight:600;opacity:0;animation:fadeSlideUp .6s ease-out 1.3s both}
-  .hero-left .btns{margin-top:2rem;display:flex;gap:.75rem;opacity:0;animation:fadeSlideUp .6s ease-out 1.5s both}
-  @keyframes fadeSlideUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
-  @keyframes wordSlideIn{from{opacity:0;transform:translateX(-30px) translateY(8px)}to{opacity:1;transform:translateX(0) translateY(0)}}
-  @keyframes shimmer{0%{background-position:200% center}100%{background-position:-200% center}}
-  @keyframes glowPulse{0%,100%{text-shadow:0 0 8px rgba(0,87,255,.2)}50%{text-shadow:0 0 20px rgba(0,87,255,.45),0 0 40px rgba(0,87,255,.15)}}
-  .hero-left h1 .highlight{background:linear-gradient(120deg,var(--accent) 0%,#38bdf8 30%,var(--accent) 50%,#a78bfa 80%,var(--accent) 100%);background-size:200% auto;-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;animation:wordSlideIn .5s cubic-bezier(.22,.68,.36,1.2) both,shimmer 4s linear 1.5s infinite;position:relative;display:inline-block}
-  .hero-left h1 .highlight.ul::after{content:'';position:absolute;left:0;bottom:-.05em;width:100%;height:.08em;background:linear-gradient(120deg,var(--accent),#38bdf8,var(--accent));border-radius:4px;opacity:0;animation:fadeSlideUp .4s ease-out 1.2s both,shimmer 4s linear 1.5s infinite;background-size:200% auto}
-  .hero-left p{margin-top:1rem;font-size:1.05rem;color:var(--dim);max-width:440px}
-  .hero-left .hero-note{margin-top:.75rem;font-size:.82rem;color:#10b981;font-weight:600}
-  .hero-left .btns{margin-top:2rem;display:flex;gap:.75rem}
-  .btn{display:inline-flex;align-items:center;gap:.5rem;padding:.75rem 1.5rem;border-radius:10px;font-size:.9rem;font-weight:600;text-decoration:none;transition:all .2s}
-  .btn-fill{background:var(--accent);color:#fff}
-  .btn-fill:hover{background:#004ae0;box-shadow:0 6px 20px rgba(0,87,255,.3);transform:translateY(-1px)}
-  .btn-out{border:1.5px solid var(--border);color:var(--text)}
-  .btn-out:hover{border-color:#ccc;background:#f9f9f9}
+  <!-- ============ HREFLANG ============ -->
+  <link rel="alternate" hreflang="x-default" href="https://awesomedog.github.io/maxlaunchpad/">
+  <link rel="alternate" hreflang="en" href="https://awesomedog.github.io/maxlaunchpad/">
+  <link rel="alternate" hreflang="zh-Hans" href="https://github.com/AwesomeDog/maxlaunchpad/blob/main/docs/i18n/README.zh-CN.md">
+  <link rel="alternate" hreflang="zh-Hant" href="https://github.com/AwesomeDog/maxlaunchpad/blob/main/docs/i18n/README.zh-TW.md">
+  <link rel="alternate" hreflang="fr" href="https://github.com/AwesomeDog/maxlaunchpad/blob/main/docs/i18n/README.fr.md">
+  <link rel="alternate" hreflang="de" href="https://github.com/AwesomeDog/maxlaunchpad/blob/main/docs/i18n/README.de.md">
+  <link rel="alternate" hreflang="ja" href="https://github.com/AwesomeDog/maxlaunchpad/blob/main/docs/i18n/README.ja.md">
+  <link rel="alternate" hreflang="ru" href="https://github.com/AwesomeDog/maxlaunchpad/blob/main/docs/i18n/README.ru.md">
+  <link rel="alternate" hreflang="es" href="https://github.com/AwesomeDog/maxlaunchpad/blob/main/docs/i18n/README.es.md">
+  <link rel="alternate" hreflang="ko" href="https://github.com/AwesomeDog/maxlaunchpad/blob/main/docs/i18n/README.ko.md">
 
-  /* ===== INTERACTIVE KEYBOARD in hero right ===== */
-  .demo{width:100%;max-width:520px;position:relative;z-index:1}
-  .demo-label{text-align:center;font-size:.75rem;color:#555;margin-bottom:.75rem;font-weight:600}
-  .demo-label span{background:rgba(0,87,255,.15);color:var(--accent);padding:.15rem .5rem;border-radius:5px;font-size:.65rem;margin-left:.4rem}
-  .demo-card{background:#fff;border:1px solid var(--border);border-radius:16px;padding:1.5rem;box-shadow:0 20px 60px rgba(0,0,0,.08);position:relative;overflow:hidden}
-  .demo-titlebar{display:flex;align-items:center;gap:.4rem;padding-bottom:.8rem;margin-bottom:1rem;border-bottom:1px solid var(--border)}
-  .demo-dot{width:9px;height:9px;border-radius:50%}
-  .demo-dot:nth-child(1){background:#ff5f57}
-  .demo-dot:nth-child(2){background:#ffbd2e}
-  .demo-dot:nth-child(3){background:#27c93f}
-  .demo-titlebar span{margin-left:auto;font-size:.7rem;color:#888}
+  <!-- ============ OPEN GRAPH / TWITTER ============ -->
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="MaxLaunchpad">
+  <meta property="og:locale" content="en_US">
+  <meta property="og:title" content="MaxLaunchpad — One key. Any app.">
+  <meta property="og:description" content="A keyboard-driven application launcher for Windows, macOS and Linux. 310 shortcuts on a virtual keyboard. Free and open source.">
+  <meta property="og:url" content="https://awesomedog.github.io/maxlaunchpad/">
+  <meta property="og:image" content="https://awesomedog.github.io/maxlaunchpad/img/social-preview.png">
+  <meta property="og:image:width" content="1280">
+  <meta property="og:image:height" content="640">
+  <meta property="og:image:alt" content="MaxLaunchpad virtual keyboard launcher with app icons mapped to keys">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="MaxLaunchpad — One key. Any app.">
+  <meta name="twitter:description" content="Keyboard-driven app launcher for Windows, macOS & Linux. 310 shortcuts. Free & open source.">
+  <meta name="twitter:image" content="https://awesomedog.github.io/maxlaunchpad/img/social-preview.png">
 
-  /* Interactive keys — light variant */
-  .demo-tabs{display:flex;gap:3px;margin-bottom:8px}
-  .demo-tab{flex:1;height:26px;background:#f8fafc;border:1px solid var(--border);border-radius:5px;display:flex;align-items:center;justify-content:center;font-size:.55rem;color:#888;cursor:pointer;transition:all .2s;font-weight:500}
-  .demo-tab:hover,.demo-tab.active{background:var(--accent-light);border-color:rgba(0,87,255,.25);color:var(--accent);font-weight:600}
-  .demo-row{display:flex;gap:4px;margin-bottom:4px}
-  .demo-key{flex:1;height:44px;background:#f8fafc;border:1.5px solid var(--border);border-radius:7px;display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;transition:all .15s;position:relative;user-select:none}
-  .demo-key .letter{font-size:.7rem;font-weight:700;color:#888}
-  .demo-key .app-name{font-size:.45rem;color:#888;margin-top:1px;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;padding:0 3px}
-  .demo-key:hover{border-color:rgba(0,87,255,.4);background:var(--accent-light);transform:translateY(-1px);box-shadow:0 4px 12px rgba(0,87,255,.15)}
-  .demo-key.pressed{transform:translateY(1px) scale(.96);background:var(--accent);border-color:var(--accent);box-shadow:0 0 20px rgba(0,87,255,.4)}
-  .demo-key.pressed .letter,.demo-key.pressed .app-name{color:#fff}
-  .demo-key.has-app .letter{color:var(--accent)}
-  .demo-key.has-app{border-color:rgba(0,87,255,.2)}
-  .demo-key.has-app .app-name{color:var(--accent);opacity:.7}
+  <link rel="icon" type="image/svg+xml" href="https://raw.githubusercontent.com/AwesomeDog/maxlaunchpad/main/resources/icon.svg">
+  <link rel="mask-icon" href="https://raw.githubusercontent.com/AwesomeDog/maxlaunchpad/main/resources/icon.svg" color="#f97316">
 
-  /* Launch toast */
-  .toast{position:fixed;bottom:2rem;left:50%;transform:translateX(-50%) translateY(100px);background:var(--text);color:#fff;padding:.8rem 1.5rem;border-radius:12px;font-size:.9rem;font-weight:600;display:flex;align-items:center;gap:.5rem;opacity:0;transition:all .4s cubic-bezier(.68,-.55,.27,1.55);z-index:200;box-shadow:0 10px 30px rgba(0,0,0,.2)}
-  .toast.show{transform:translateX(-50%) translateY(0);opacity:1}
-  .toast .emoji{font-size:1.2rem}
+  <!-- ============ STRUCTURED DATA ============ -->
+  <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@graph": [
+        {
+          "@type": "SoftwareApplication",
+          "@id": "https://awesomedog.github.io/maxlaunchpad/#app",
+          "name": "MaxLaunchpad",
+          "alternateName": "MaxLaunchpad Keyboard Launcher",
+          "description": "MaxLaunchpad is a free, open-source keyboard-driven application launcher for Windows, macOS and Ubuntu/Linux. Bind programs to a virtual keyboard, summon it with a global hotkey and launch any app with a single keystroke.",
+          "url": "https://awesomedog.github.io/maxlaunchpad/",
+          "applicationCategory": "UtilitiesApplication",
+          "applicationSubCategory": "Application Launcher",
+          "operatingSystem": "Windows 10, Windows 11, macOS 11 Big Sur or later, Ubuntu 24.04",
+          "downloadUrl": "https://github.com/AwesomeDog/maxlaunchpad/releases",
+          "installUrl": "https://github.com/AwesomeDog/maxlaunchpad/releases",
+          "softwareHelp": "https://awesomedog.github.io/maxlaunchpad/",
+          "isAccessibleForFree": true,
+          "license": "https://github.com/AwesomeDog/maxlaunchpad/blob/main/LICENSE",
+          "image": "https://awesomedog.github.io/maxlaunchpad/img/social-preview.png",
+          "screenshot": "https://awesomedog.github.io/maxlaunchpad/assets/screenshot.png",
+          "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD", "availability": "https://schema.org/InStock" },
+          "author": { "@type": "Organization", "name": "AwesomeDog", "url": "https://github.com/AwesomeDog" },
+          "featureList": [
+            "Single-keystroke application launching",
+            "310 configurable shortcuts (10 tabs x 30 keys + 10 global function keys)",
+            "Configurable global hotkey (default Alt + backtick)",
+            "Drag & drop configuration from the file manager",
+            "Human-readable YAML profiles with auto-save and timestamped backups",
+            "Command-line arguments, working directory and Run as Admin per shortcut",
+            "System tray, always on top, auto-hide on blur",
+            "Light, dark and system themes plus custom CSS",
+            "Multi-monitor and macOS Spaces aware",
+            "Built-in search across all shortcuts"
+          ]
+        },
+        {
+          "@type": "WebSite",
+          "@id": "https://awesomedog.github.io/maxlaunchpad/#website",
+          "url": "https://awesomedog.github.io/maxlaunchpad/",
+          "name": "MaxLaunchpad",
+          "inLanguage": "en",
+          "publisher": { "@type": "Organization", "name": "AwesomeDog", "url": "https://github.com/AwesomeDog" }
+        },
+        {
+          "@type": "HowTo",
+          "name": "How to set up MaxLaunchpad in 60 seconds",
+          "totalTime": "PT1M",
+          "step": [
+            { "@type": "HowToStep", "name": "Launch MaxLaunchpad", "text": "Open MaxLaunchpad. The virtual keyboard appears and the app lives in your system tray." },
+            { "@type": "HowToStep", "name": "Enable Drag & Drop Mode", "text": "Turn on View > Drag & Drop Mode so the window stays visible while you configure it." },
+            { "@type": "HowToStep", "name": "Drag apps onto keys", "text": "Drag applications from Explorer, Finder or Files onto any key, or right-click a key and use Quick Select." },
+            { "@type": "HowToStep", "name": "Name your tabs", "text": "Right-click a number key 1-0 and choose Edit to label tabs such as Dev, Work, Media or Games." },
+            { "@type": "HowToStep", "name": "Launch", "text": "Disable Drag & Drop Mode, press Alt + backtick from anywhere and press your key." }
+          ]
+        },
+        {
+          "@type": "FAQPage",
+          "mainEntity": [
+            { "@type": "Question", "name": "Is MaxLaunchpad free and open source?", "acceptedAnswer": { "@type": "Answer", "text": "Yes. MaxLaunchpad is an open-source Electron, React and TypeScript desktop app, free for personal and commercial use. No account, no cloud, no telemetry." } },
+            { "@type": "Question", "name": "Does MaxLaunchpad work on Windows 11?", "acceptedAnswer": { "@type": "Answer", "text": "Yes. Windows 10 and Windows 11 are both supported and it works out of the box." } },
+            { "@type": "Question", "name": "Does it run on Apple Silicon Macs?", "acceptedAnswer": { "@type": "Answer", "text": "Yes, on macOS 11 Big Sur or later with Apple Silicon. After installing, run xattr -cr /Applications/MaxLaunchpad.app to remove the quarantine attribute." } },
+            { "@type": "Question", "name": "Does the global hotkey work on Linux and Wayland?", "acceptedAnswer": { "@type": "Answer", "text": "MaxLaunchpad targets Ubuntu 24.04 on Wayland. Because Wayland restricts global shortcut registration, you may need to bind the hotkey through the GNOME keyboard shortcut settings." } },
+            { "@type": "Question", "name": "Can I sync my launcher configuration between computers?", "acceptedAnswer": { "@type": "Answer", "text": "Yes. Everything lives in plain YAML under ~/.config/MaxLaunchpad/. Commit it to Git, sync it with Dropbox, OneDrive or Syncthing, or copy a single profile file to another machine." } },
+            { "@type": "Question", "name": "How many shortcuts can I create?", "acceptedAnswer": { "@type": "Answer", "text": "310 shortcuts: ten global function keys shared across every tab, plus ten tabs of thirty letter and symbol keys each." } },
+            { "@type": "Question", "name": "Can it launch Microsoft Store (UWP) apps, .lnk shortcuts or shell scripts?", "acceptedAnswer": { "@type": "Answer", "text": "Yes. On Windows: .exe, .lnk, .bat, .cmd, .ps1, shell: targets and Store/UWP apps. On macOS: .app bundles, Unix executables, .sh and .command. On Linux: ELF binaries, .desktop entries, .sh, .py and .rb. URLs open in your default browser." } },
+            { "@type": "Question", "name": "Can a shortcut pass command-line arguments or run as administrator?", "acceptedAnswer": { "@type": "Answer", "text": "Yes. Every shortcut supports arguments, a working directory, a custom icon, a tooltip description, and Run as Admin on Windows." } },
+            { "@type": "Question", "name": "Is MaxLaunchpad a replacement for MaxLauncher?", "acceptedAnswer": { "@type": "Answer", "text": "It is a spiritual successor to the discontinued MaxLauncher, rebuilt from scratch with modern tooling and extended from Windows to macOS and Ubuntu. Profiles use MaxLaunchpad's own YAML format." } }
+          ]
+        }
+      ]
+    }
+  </script>
 
-  /* ===== SPLIT SECTIONS (alternating) ===== */
-  .split{display:grid;grid-template-columns:1fr 1fr;min-height:480px}
-  .split.reverse .split-text{order:2}
-  .split.reverse .split-visual{order:1}
-  .split-text{display:flex;flex-direction:column;justify-content:center;padding:4rem 4rem 4rem 6rem}
-  .split.reverse .split-text{padding:4rem 6rem 4rem 4rem}
-  .split-visual{display:flex;align-items:center;justify-content:center;padding:3rem}
-  .split-visual.dark{background:linear-gradient(135deg,#fef3f2 0%,#fef9ec 50%,#fdf2f8 100%)}
-  .split-visual.light{background:linear-gradient(135deg,#f0fdf4 0%,#ecfeff 50%,#f0f9ff 100%)}
-  .split-visual.blue{background:linear-gradient(135deg,#faf5ff 0%,#fdf4ff 50%,#fff1f2 100%)}
-  .split-text .label{font-size:.7rem;text-transform:uppercase;letter-spacing:.15em;color:var(--accent);font-weight:700;margin-bottom:.75rem}
-  .split-text h2{font-size:2rem;font-weight:800;letter-spacing:-.02em;line-height:1.2}
-  .split-text p{margin-top:.75rem;color:var(--dim);font-size:1rem;max-width:420px}
+  <style>
+      /* ============ RESET & TOKENS ============ */
+      *,*::before,*::after{box-sizing:border-box}
+      html{-webkit-text-size-adjust:100%;scroll-behavior:smooth;scroll-padding-top:64px}
+      body{margin:0}
+      img,svg{max-width:100%;display:block}
+      :root{
+          --blue:#0071e3; --blue-h:#0077ed;
+          --ink:#1d1d1f; --muted:#6e6e73;
+          --paper:#ffffff; --paper-2:#f5f5f7; --paper-3:#fbfbfd;
+          --night:#000000; --night-2:#101010; --night-ink:#f5f5f7; --night-muted:#a1a1a6;
+          --hair:rgba(0,0,0,.1);
+          --r-lg:28px; --r-md:18px; --r-sm:12px;
+          --max:1024px; --wide:1240px;
+          --font:"SF Pro Display","SF Pro Text",-apple-system,BlinkMacSystemFont,"Helvetica Neue","Segoe UI",Roboto,"PingFang SC","Hiragino Sans GB","Microsoft YaHei",Arial,sans-serif;
+          --mono:ui-monospace,SFMono-Regular,"SF Mono",Menlo,Consolas,"Liberation Mono",monospace;
+      }
+      body{
+          font-family:var(--font);color:var(--ink);background:var(--paper);
+          -webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;
+          font-size:17px;line-height:1.47;letter-spacing:-.01em;
+      }
+      a{color:var(--blue);text-decoration:none}
+      a:hover{text-decoration:underline}
+      ::selection{background:#b3d7ff;color:#000}
 
-  /* Feature list inside split */
-  .feat-list{list-style:none;margin-top:1.5rem;display:flex;flex-direction:column;gap:.75rem}
-  .feat-list li{display:flex;gap:.75rem;align-items:flex-start;font-size:.92rem}
-  .feat-list .ico{flex-shrink:0;width:28px;height:28px;border-radius:6px;background:var(--accent-light);display:flex;align-items:center;justify-content:center;font-size:.85rem}
-  .feat-list strong{display:block;font-weight:600}
-  .feat-list span{color:var(--dim);font-size:.85rem}
+      /* ============ LAYOUT ============ */
+      .wrap{max-width:var(--max);margin:0 auto;padding:0 22px}
+      .wrap-wide{max-width:var(--wide);margin:0 auto;padding:0 22px}
+      section{padding:96px 0}
+      .dark{background:var(--night);color:var(--night-ink)}
+      .dark .sub,.dark .muted{color:var(--night-muted)}
+      .alt{background:var(--paper-2)}
+      .center{text-align:center}
 
-  /* Terminal Visual */
-  .term-vis{width:100%;max-width:380px;background:#1e293b;border:1px solid #334155;border-radius:10px;overflow:hidden;font-family:'SF Mono',Monaco,monospace;font-size:.78rem}
-  .term-bar{padding:.5rem .8rem;background:#0f172a;border-bottom:1px solid #334155;display:flex;gap:.4rem}
-  .term-bar div{width:8px;height:8px;border-radius:50%}
-  .term-bar div:nth-child(1){background:#ff5f57}
-  .term-bar div:nth-child(2){background:#ffbd2e}
-  .term-bar div:nth-child(3){background:#27c93f}
-  .term-body{padding:1rem;color:#888;line-height:2}
-  .term-body .g{color:#4ade80}
-  .term-body .b{color:#7db4ff}
-  .term-body .w{color:#e5e5e5}
+      /* ============ TYPE ============ */
+      h1,h2,h3,h4{margin:0;font-weight:600;letter-spacing:-.025em;line-height:1.05}
+      .hero-h1{font-size:clamp(44px,9.5vw,96px);font-weight:700;letter-spacing:-.035em}
+      .eyebrow{font-size:clamp(19px,2.4vw,24px);font-weight:600;color:var(--blue);letter-spacing:.004em;margin:0 0 10px}
+      h2{font-size:clamp(34px,5.6vw,56px)}
+      h3{font-size:clamp(22px,2.6vw,28px);letter-spacing:-.018em}
+      .sub{font-size:clamp(18px,2.1vw,23px);line-height:1.42;color:var(--muted);font-weight:400;letter-spacing:-.012em;margin:20px auto 0;max-width:680px}
+      .lede{font-size:clamp(20px,2.8vw,28px);line-height:1.3;font-weight:500;letter-spacing:-.02em}
+      p{margin:16px 0}
+      .small{font-size:14px;line-height:1.45;color:var(--muted)}
+      .grad{background:linear-gradient(92deg,#0a84ff 0%,#5e5ce6 42%,#bf5af2 78%,#ff375f 100%);-webkit-background-clip:text;background-clip:text;color:transparent}
 
-  /* Flow Visual */
-  .flow-vis{display:flex;align-items:center;gap:1rem;flex-wrap:wrap;justify-content:center}
-  .flow-step{text-align:center}
-  .flow-box{width:80px;height:80px;background:#fff;border:2px solid var(--border);border-radius:14px;display:flex;flex-direction:column;align-items:center;justify-content:center;font-weight:800;font-size:1rem;margin-bottom:.4rem}
-  .flow-box.active{border-color:var(--accent);background:var(--accent-light);color:var(--accent)}
-  .flow-box small{font-size:.6rem;font-weight:500;color:var(--dim);margin-top:2px}
-  .flow-label{font-size:.7rem;color:var(--dim)}
-  .flow-arrow{font-size:1.5rem;color:#ccc;margin-bottom:1.2rem}
+      /* ============ BUTTONS ============ */
+      .btns{display:flex;flex-wrap:wrap;gap:14px 24px;justify-content:center;align-items:center;margin-top:32px}
+      .btn{display:inline-flex;align-items:center;gap:8px;background:var(--blue);color:#fff;border:0;
+          padding:13px 26px;border-radius:980px;font-size:17px;font-weight:400;letter-spacing:-.01em;cursor:pointer;
+          transition:background .2s ease,transform .2s ease;text-decoration:none;font-family:inherit}
+      .btn:hover{background:var(--blue-h);text-decoration:none;transform:translateY(-1px)}
+      .btn.ghost{background:transparent;color:var(--blue);border:1px solid var(--blue);padding:12px 25px}
+      .btn.ghost:hover{background:rgba(0,113,227,.08)}
+      .dark .btn.ghost{color:#2997ff;border-color:#2997ff}
+      .link-arrow{font-size:19px;color:var(--blue);display:inline-flex;align-items:center;gap:5px}
+      .dark .link-arrow{color:#2997ff}
+      .link-arrow::after{content:"›";font-size:1.25em;line-height:1;transition:transform .2s}
+      .link-arrow:hover{text-decoration:none}
+      .link-arrow:hover::after{transform:translateX(3px)}
 
-  /* Stats visual */
-  .stats-grid{display:grid;grid-template-columns:1fr 1fr;gap:1rem;max-width:320px}
-  .stat-card{background:#fff;border:1px solid var(--border);border-radius:12px;padding:1.2rem;text-align:center}
-  .stat-card .num{font-size:1.8rem;font-weight:900;color:var(--accent)}
-  .stat-card .lbl{font-size:.75rem;color:var(--dim);margin-top:.2rem}
+      /* ============ NAV ============ */
+      .nav{position:sticky;top:0;z-index:100;height:48px;background:rgba(251,251,253,.72);
+          backdrop-filter:saturate(180%) blur(20px);-webkit-backdrop-filter:saturate(180%) blur(20px);
+          border-bottom:1px solid rgba(0,0,0,.08)}
+      .nav-in{max-width:var(--wide);margin:0 auto;padding:0 22px;height:100%;display:flex;align-items:center;justify-content:space-between;gap:20px}
+      .brand{display:flex;align-items:center;gap:9px;font-size:17px;font-weight:600;color:var(--ink);letter-spacing:-.02em}
+      .brand:hover{text-decoration:none}
+      .brand-mark{width:22px;height:22px;border-radius:5px;display:block}
+      .nav ul{display:flex;gap:26px;list-style:none;margin:0;padding:0}
+      .nav ul a{font-size:13px;color:var(--ink);opacity:.85;letter-spacing:-.005em}
+      .nav ul a:hover{opacity:1;text-decoration:none}
+      .nav .btn{padding:6px 15px;font-size:13px}
+      @media(max-width:820px){.nav ul{display:none}}
 
-  /* INSTALL STRIP */
-  .install-strip{background:linear-gradient(135deg,#f0fdf4 0%,#ecfeff 50%,#f0f9ff 100%);padding:4rem 2rem}
-  .install-strip .section-header{text-align:center;margin-bottom:2.5rem}
-  .install-strip .section-header h2{font-size:2rem;font-weight:800;letter-spacing:-.02em}
-  .install-strip .section-header p{color:var(--dim);margin-top:.5rem;font-size:.95rem}
-  .install-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.5rem;max-width:1100px;margin:0 auto}
-  .install-card{background:#fff;border:1px solid var(--border);border-radius:14px;padding:1.75rem;box-shadow:0 4px 20px rgba(0,0,0,.06);display:flex;flex-direction:column}
-  .install-card .os-header{display:flex;align-items:center;gap:.6rem;margin-bottom:1.25rem;padding-bottom:1rem;border-bottom:1px solid var(--border)}
-  .install-card .os-header .os-name{font-weight:700;font-size:1rem}
-  .install-card .os-header .os-icon{flex-shrink:0}
-  .install-method{margin-bottom:1rem}
-  .install-method:last-child{margin-bottom:0}
-  .install-method .method-label{font-size:.7rem;text-transform:uppercase;letter-spacing:.1em;font-weight:700;margin-bottom:.5rem;display:flex;align-items:center;gap:.4rem}
-  .install-method .method-label.pkg{color:#10b981}
-  .install-method .method-label.dl{color:var(--accent)}
-  .install-method .method-label .dot{width:6px;height:6px;border-radius:50%;display:inline-block}
-  .method-label.pkg .dot{background:#10b981}
-  .method-label.dl .dot{background:var(--accent)}
-  .install-cmd{background:#1e293b;border:1px solid #334155;border-radius:8px;padding:.75rem 1rem;font-family:'SF Mono',Monaco,monospace;font-size:.82rem;color:#e5e5e5;overflow-x:auto}
-  .install-cmd .hl{color:#7db4ff}
-  .install-cmd .gr{color:#4ade80}
-  .dl-btn{display:inline-flex;align-items:center;gap:.5rem;padding:.6rem 1.2rem;border-radius:8px;font-size:.82rem;font-weight:600;text-decoration:none;transition:all .2s;border:1.5px solid var(--accent);color:var(--accent);background:var(--accent-light)}
-  .dl-btn:hover{background:var(--accent);color:#fff;transform:translateY(-1px);box-shadow:0 4px 12px rgba(0,87,255,.25)}
-  .dl-btn svg{flex-shrink:0}
-  .install-or{text-align:center;font-size:.72rem;color:#999;margin:.6rem 0;font-weight:500}
-  .install-note{margin-top:.75rem;padding:.6rem .8rem;background:#fffbeb;border:1px solid #fde68a;border-radius:7px;font-size:.75rem;color:#92400e;line-height:1.5}
-  .install-note code{background:#fef3c7;padding:.1rem .35rem;border-radius:4px;font-family:'SF Mono',Monaco,monospace;font-size:.72rem;word-break:break-all}
-  @media(max-width:900px){
-    .install-grid{grid-template-columns:1fr}
-  }
+      /* ============ HERO ============ */
+      .hero{padding:76px 0 0;text-align:center;background:
+              radial-gradient(120% 90% at 50% -10%,#eaf3ff 0%,rgba(255,255,255,0) 58%),var(--paper)}
+      .hero .sub{max-width:720px}
+      .pill{display:inline-flex;align-items:center;gap:8px;font-size:13px;font-weight:500;color:var(--muted);
+          background:rgba(0,0,0,.05);border-radius:980px;padding:6px 14px;margin-bottom:22px}
+      .dark .pill{background:rgba(255,255,255,.1);color:var(--night-muted)}
+      kbd{font-family:var(--font);font-size:.86em;font-weight:600;background:#fff;border:1px solid rgba(0,0,0,.16);
+          border-bottom-width:2px;border-radius:6px;padding:1px 7px;color:var(--ink);display:inline-block;line-height:1.5}
+      .dark kbd{background:#1c1c1e;border-color:rgba(255,255,255,.2);color:#f5f5f7}
 
-  /* CTA SPLIT */
-  .cta-split{display:grid;grid-template-columns:1fr 1fr;min-height:380px}
-  .cta-left{background:linear-gradient(135deg,#6366f1 0%,#8b5cf6 50%,#a855f7 100%);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:3rem;color:#fff;text-align:center}
-  .cta-left h2{font-size:2.2rem;font-weight:900;letter-spacing:-.02em}
-  .cta-left p{opacity:.8;margin:1rem 0 2rem;max-width:360px}
-  .cta-left .btn-w{background:#fff;color:var(--accent);padding:.8rem 2rem;border-radius:10px;font-weight:700;text-decoration:none;display:inline-flex;align-items:center;gap:.5rem;transition:all .2s}
-  .cta-left .btn-w:hover{transform:translateY(-2px);box-shadow:0 6px 20px rgba(0,0,0,.2)}
-  .cta-right{background:linear-gradient(135deg,#fefce8 0%,#fef3c7 50%,#fff7ed 100%);display:flex;align-items:center;justify-content:center;padding:3rem}
-  .cta-right .info{text-align:center}
-  .cta-right .info h3{font-size:1.3rem;font-weight:800;margin-bottom:.5rem}
-  .cta-right .info p{color:var(--dim);font-size:.9rem;margin-bottom:1.5rem}
-  .cta-right .badges{display:flex;gap:.5rem;justify-content:center;flex-wrap:wrap}
-  .badge{padding:.3rem .8rem;border:1px solid var(--border);border-radius:20px;font-size:.75rem;color:var(--dim);font-weight:500;background:#fff}
+      /* ============ KEYBOARD MOCK ============ */
+      .device{margin:56px auto 0;max-width:940px;border-radius:26px;padding:16px;
+          background:linear-gradient(180deg,#d9dbe0,#b9bcc4);box-shadow:0 30px 70px rgba(0,0,0,.22)}
+      .screen{background:#fafafa;border-radius:16px;overflow:hidden;border:1px solid rgba(0,0,0,.07)}
+      .dark .screen{background:#121212;border-color:rgba(255,255,255,.08)}
+      .titlebar{display:flex;align-items:center;gap:8px;padding:9px 14px;border-bottom:1px solid rgba(0,0,0,.07);
+          font-size:12px;color:var(--muted);font-family:var(--mono)}
+      .dot{width:11px;height:11px;border-radius:50%}
+      .dot.r{background:#ff5f57}.dot.y{background:#febc2e}.dot.g{background:#28c840}
+      .kb{padding:18px clamp(10px,2.4vw,20px) 22px;display:grid;gap:clamp(6px,1vw,9px)}
+      .kb-row{display:grid;grid-template-columns:repeat(10,1fr);gap:clamp(6px,1vw,9px)}
+      .kb-sep{height:1px;background:rgba(0,0,0,.07);margin:4px 0}
+      .key{position:relative;aspect-ratio:1/.92;border-radius:clamp(8px,1.4vw,14px);border:1px solid rgba(0,0,0,.08);
+          background:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;
+          cursor:pointer;font-family:inherit;color:var(--ink);padding:4px;overflow:hidden;
+          box-shadow:0 1px 2px rgba(0,0,0,.05);transition:transform .16s ease,box-shadow .16s ease,background .16s ease}
+      .key:hover{transform:translateY(-3px);box-shadow:0 8px 18px rgba(0,0,0,.13)}
+      .key:active{transform:translateY(0) scale(.96)}
+      .key-id{position:absolute;top:4px;left:6px;font-size:9px;font-weight:600;color:#a1a1a6;letter-spacing:0}
+      .key-ico{font-size:clamp(15px,2.6vw,24px);line-height:1;margin-top:5px}
+      .key-lbl{font-size:clamp(7px,1.05vw,10px);color:var(--muted);max-width:100%;overflow:hidden;
+          text-overflow:ellipsis;white-space:nowrap;letter-spacing:0}
+      .key.empty{background:rgba(0,0,0,.025);border-style:dashed;box-shadow:none}
+      .key.empty .key-ico,.key.empty .key-lbl{opacity:0}
+      .key.fn{aspect-ratio:1/.52;background:linear-gradient(180deg,#fff,#f6f6f8)}
+      .key.tab{aspect-ratio:1/.56;font-weight:600}
+      .key.tab[aria-selected="true"]{background:#e3f2fd;border-color:#0071e3;color:#0071e3}
+      .key.tab .key-lbl{color:inherit;font-size:clamp(8px,1.15vw,11px);font-weight:600}
+      .zone-note{font-size:11px;color:#a1a1a6;letter-spacing:.02em;text-transform:uppercase;font-weight:600;margin:2px 0 -2px}
 
-  footer{padding:2.5rem;text-align:center;font-size:.8rem;color:var(--dim);border-top:1px solid var(--border)}
-  footer a{color:var(--accent);text-decoration:none}
+      /* ============ GRIDS ============ */
+      .grid{display:grid;gap:22px;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));margin-top:56px}
+      .card{background:var(--paper);border-radius:var(--r-lg);padding:34px 30px;border:1px solid var(--hair)}
+      .alt .card{background:#fff;border-color:transparent}
+      .dark .card{background:#161617;border-color:rgba(255,255,255,.08)}
+      .card h3{margin-bottom:10px}
+      .card p{margin:0;color:var(--muted);font-size:16px}
+      .dark .card p{color:var(--night-muted)}
+      .ico{width:44px;height:44px;border-radius:12px;display:grid;place-items:center;font-size:22px;
+          background:linear-gradient(145deg,#eef4ff,#e6eaff);margin-bottom:18px}
+      .dark .ico{background:linear-gradient(145deg,#1b2440,#241f3f)}
 
-  @media(max-width:900px){
-    .hero-split,.split,.cta-split{grid-template-columns:1fr}
-    .hero-left{padding:6rem 2rem 2rem}
-    .hero-right{min-height:420px;padding:2rem 1.5rem}
-    .split-text{padding:3rem 2rem!important}
-    .split.reverse .split-text{order:0}
-    .split.reverse .split-visual{order:0}
-    nav{position:relative;top:0;transform:none;border-radius:0;border:none;border-bottom:1px solid var(--border);width:100%;justify-content:space-between;padding:.6rem 1.5rem}
-    nav a:not(.nav-dl):not(.logo *){display:none}
-    .demo-key{height:36px}
-    .demo-key .app-name{display:none}
-  }
-</style>
+      /* ============ STATS ============ */
+      .stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:28px;margin-top:60px;text-align:center}
+      .stat b{display:block;font-size:clamp(40px,6vw,64px);font-weight:700;letter-spacing:-.04em;line-height:1}
+      .stat span{display:block;margin-top:10px;font-size:15px;color:var(--muted)}
+      .dark .stat span{color:var(--night-muted)}
+
+      /* ============ TABLE ============ */
+      .table-scroll{overflow-x:auto;margin-top:48px;-webkit-overflow-scrolling:touch}
+      table{border-collapse:collapse;width:100%;min-width:640px;font-size:15px}
+      caption{caption-side:top;text-align:left;font-size:14px;color:var(--muted);padding-bottom:12px}
+      th,td{padding:15px 16px;text-align:left;border-bottom:1px solid var(--hair);vertical-align:top}
+      .dark th,.dark td{border-color:rgba(255,255,255,.12)}
+      thead th{font-size:13px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.05em}
+      tbody th{font-weight:400;color:var(--muted)}
+      td.hi{font-weight:600;color:var(--ink)}
+      .dark td.hi{color:#fff}
+      .yes{color:#1a9e4b;font-weight:600}.no{color:#b5b5b8}
+
+      /* ============ CODE ============ */
+      pre{background:#f5f5f7;border:1px solid var(--hair);border-radius:var(--r-md);padding:22px;overflow:auto;
+          font-family:var(--mono);font-size:13.5px;line-height:1.65;margin:0;color:#1d1d1f}
+      .dark pre{background:#161617;border-color:rgba(255,255,255,.1);color:#e3e3e6}
+      code{font-family:var(--mono);font-size:.92em}
+      .code-grid{display:grid;gap:22px;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));margin-top:48px;text-align:left}
+      .code-grid figure{margin:0}
+      .code-grid figcaption{font-size:13px;color:var(--muted);font-family:var(--mono);margin-bottom:10px}
+      /* Install commands: keep the whole command visible instead of clipping it */
+      .install-grid{grid-template-columns:repeat(auto-fit,minmax(min(380px,100%),1fr));max-width:900px;margin-inline:auto}
+      .install-grid pre{padding:18px 20px;white-space:pre-wrap;overflow-wrap:break-word;overflow:visible}
+
+      /* ============ STEPS ============ */
+      ol.steps{counter-reset:s;list-style:none;padding:0;margin:56px 0 0;display:grid;gap:18px;
+          grid-template-columns:repeat(auto-fit,minmax(230px,1fr));text-align:left}
+      ol.steps li{counter-increment:s;background:#fff;border-radius:var(--r-md);padding:26px 24px;border:1px solid var(--hair)}
+      ol.steps li::before{content:counter(s);display:grid;place-items:center;width:30px;height:30px;border-radius:50%;
+          background:var(--blue);color:#fff;font-size:15px;font-weight:600;margin-bottom:14px}
+      ol.steps b{display:block;font-size:17px;margin-bottom:6px}
+      ol.steps p{margin:0;font-size:15px;color:var(--muted)}
+
+      /* ============ FAQ ============ */
+      .faq{max-width:760px;margin:48px auto 0;border-top:1px solid var(--hair)}
+      details{border-bottom:1px solid var(--hair)}
+      summary{cursor:pointer;list-style:none;padding:22px 40px 22px 0;font-size:19px;font-weight:500;position:relative;letter-spacing:-.015em}
+      summary::-webkit-details-marker{display:none}
+      summary::after{content:"+";position:absolute;right:6px;top:50%;transform:translateY(-50%);font-size:26px;
+          font-weight:300;color:var(--blue);transition:transform .25s}
+      details[open] summary::after{content:"–";transform:translateY(-50%) rotate(180deg)}
+      details p{margin:0 0 24px;color:var(--muted);font-size:16.5px;max-width:64ch}
+
+      /* ============ SPECS ============ */
+      dl.specs{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:0 44px;margin:48px 0 0;text-align:left}
+      dl.specs div{padding:20px 0;border-bottom:1px solid var(--hair)}
+      dl.specs dt{font-size:13px;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);font-weight:600}
+      dl.specs dd{margin:8px 0 0;font-size:16px}
+      .dark dl.specs div{border-color:rgba(255,255,255,.12)}
+
+      /* ============ FOOTER ============ */
+      footer{background:var(--paper-3);color:var(--muted);font-size:12px;line-height:1.5;padding:44px 0 34px;border-top:1px solid var(--hair)}
+      .foot-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:30px;padding-bottom:26px;border-bottom:1px solid var(--hair)}
+      .foot-grid h4{font-size:12px;color:var(--ink);margin-bottom:10px}
+      .foot-grid ul{list-style:none;margin:0;padding:0;display:grid;gap:9px}
+      .foot-grid a{color:var(--muted)}
+      .foot-grid a:hover{color:var(--ink)}
+      .foot-bottom{padding-top:20px;display:flex;flex-wrap:wrap;gap:10px 22px;justify-content:space-between}
+      .langs{display:flex;flex-wrap:wrap;gap:6px 14px}
+
+      /* ============ REVEAL ============ */
+      .rv{opacity:0;transform:translateY(26px);transition:opacity .7s cubic-bezier(.28,.11,.32,1),transform .7s cubic-bezier(.28,.11,.32,1)}
+      .rv.in{opacity:1;transform:none}
+      @media(prefers-reduced-motion:reduce){
+          .rv{opacity:1;transform:none;transition:none}
+          html{scroll-behavior:auto}
+          .key,.btn{transition:none}
+      }
+      .skip{position:absolute;left:-9999px}
+      .skip:focus{left:12px;top:12px;z-index:200;background:#fff;padding:10px 16px;border-radius:8px}
+      :focus-visible{outline:2px solid var(--blue);outline-offset:3px;border-radius:6px}
+      .vh{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+  </style>
 </head>
+
 <body>
+<a class="skip" href="#main">Skip to main content</a>
 
-<nav>
-  <div class="logo">Max<span>Launchpad</span></div>
-  <a href="#features">Features</a>
-  <a href="#workflow">Workflow</a>
-  <a href="#install">Install</a>
-  <a href="./guide/" target="_blank">Docs</a>
-  <a href="https://github.com/AwesomeDog/maxlaunchpad" target="_blank" class="nav-dl">★ GitHub</a>
-</nav>
-
-<!-- ===== HERO SPLIT ===== -->
-<section class="hero-split">
-  <div class="hero-left">
-    <div class="pill">⚡ Free &amp; Open Source</div>
-    <h1>
-      <span class="word" style="animation-delay:.3s">Launch</span>
-      <span class="word" style="animation-delay:.4s">apps</span>
-      <span class="word" style="animation-delay:.5s">with</span>
-      <span class="highlight ul word" style="animation-delay:.65s">muscle</span>
-      <span class="highlight ul word" style="animation-delay:.78s">memory</span><span class="word" style="animation-delay:.85s">,</span>
-      <span class="word" style="animation-delay:.9s">not</span>
-      <span class="word" style="animation-delay:1s">mental</span>
-      <span class="word" style="animation-delay:1.05s">effort.</span>
-    </h1>
-    <p>MaxLaunchpad is a keyboard-driven desktop launcher. Press a hotkey, tap a letter — your app opens instantly.</p>
-    <div class="hero-note">✨ Try clicking the keys on the right!</div>
-    <div class="btns">
-      <a href="#install" class="btn btn-fill">Download Free</a>
-      <a href="https://awesomedog.github.io/maxlaunchpad/" target="_blank" class="btn btn-out">Documentation →</a>
-    </div>
-  </div>
-  <div class="hero-right">
-    <div class="demo">
-      <div class="demo-label">Interactive Demo <span>Click any key!</span></div>
-      <div class="demo-card">
-        <div class="demo-titlebar">
-          <div class="demo-dot"></div><div class="demo-dot"></div><div class="demo-dot"></div>
-          <span>MaxLaunchpad</span>
-        </div>
-        <div class="demo-row">
-          <div class="demo-key has-app" data-app="Help" data-emoji="❓"><span class="letter">F1</span><span class="app-name">Help</span></div>
-          <div class="demo-key has-app" data-app="Google Chrome" data-emoji="🌐"><span class="letter">F2</span><span class="app-name">Google</span></div>
-          <div class="demo-key has-app" data-app="Home Folder" data-emoji="📁"><span class="letter">F3</span><span class="app-name">Home</span></div>
-          <div class="demo-key has-app" data-app="Terminal" data-emoji="💻"><span class="letter">F4</span><span class="app-name">Terminal</span></div>
-          <div class="demo-key"><span class="letter">F5</span></div>
-          <div class="demo-key"><span class="letter">F6</span></div>
-          <div class="demo-key"><span class="letter">F7</span></div>
-          <div class="demo-key"><span class="letter">F8</span></div>
-          <div class="demo-key"><span class="letter">F9</span></div>
-          <div class="demo-key has-app" data-app="System Monitor" data-emoji="📊"><span class="letter">F10</span><span class="app-name">Monitor</span></div>
-        </div>
-        <div class="demo-tabs">
-          <div class="demo-tab active">1 Fav</div>
-          <div class="demo-tab">2 Sys</div>
-          <div class="demo-tab">3 Dev</div>
-          <div class="demo-tab">4</div>
-          <div class="demo-tab">5</div>
-          <div class="demo-tab">6</div>
-          <div class="demo-tab">7</div>
-          <div class="demo-tab">8</div>
-          <div class="demo-tab">9</div>
-          <div class="demo-tab">0</div>
-        </div>
-        <div class="demo-row">
-          <div class="demo-key has-app" data-app="Calculator" data-emoji="🧮"><span class="letter">Q</span><span class="app-name">Calc</span></div>
-          <div class="demo-key has-app" data-app="LibreOffice Writer" data-emoji="📝"><span class="letter">W</span><span class="app-name">Writer</span></div>
-          <div class="demo-key has-app" data-app="Text Editor" data-emoji="✏️"><span class="letter">E</span><span class="app-name">Editor</span></div>
-          <div class="demo-key"><span class="letter">R</span></div>
-          <div class="demo-key has-app" data-app="Thunderbird" data-emoji="📧"><span class="letter">T</span><span class="app-name">Thunder</span></div>
-          <div class="demo-key"><span class="letter">Y</span></div>
-          <div class="demo-key"><span class="letter">U</span></div>
-          <div class="demo-key has-app" data-app="LibreOffice Impress" data-emoji="📊"><span class="letter">I</span><span class="app-name">Impress</span></div>
-          <div class="demo-key has-app" data-app="Clocks" data-emoji="⏰"><span class="letter">O</span><span class="app-name">Clocks</span></div>
-          <div class="demo-key has-app" data-app="Photos" data-emoji="📷"><span class="letter">P</span><span class="app-name">Photos</span></div>
-        </div>
-        <div class="demo-row">
-          <div class="demo-key has-app" data-app="App Center" data-emoji="🏪"><span class="letter">A</span><span class="app-name">Apps</span></div>
-          <div class="demo-key has-app" data-app="Settings" data-emoji="⚙️"><span class="letter">S</span><span class="app-name">Settings</span></div>
-          <div class="demo-key has-app" data-app="LibreOffice Draw" data-emoji="🎨"><span class="letter">D</span><span class="app-name">Draw</span></div>
-          <div class="demo-key has-app" data-app="Firefox" data-emoji="🦊"><span class="letter">F</span><span class="app-name">Firefox</span></div>
-          <div class="demo-key"><span class="letter">G</span></div>
-          <div class="demo-key has-app" data-app="Htop" data-emoji="📈"><span class="letter">H</span><span class="app-name">Htop</span></div>
-          <div class="demo-key"><span class="letter">J</span></div>
-          <div class="demo-key has-app" data-app="Disk Usage" data-emoji="💾"><span class="letter">K</span><span class="app-name">Disk</span></div>
-          <div class="demo-key has-app" data-app="Logs" data-emoji="📋"><span class="letter">L</span><span class="app-name">Logs</span></div>
-          <div class="demo-key has-app" data-app="Files" data-emoji="📂"><span class="letter">;</span><span class="app-name">Files</span></div>
-        </div>
-        <div class="demo-row">
-          <div class="demo-key"><span class="letter">Z</span></div>
-          <div class="demo-key"><span class="letter">X</span></div>
-          <div class="demo-key has-app" data-app="LibreOffice Calc" data-emoji="📊"><span class="letter">C</span><span class="app-name">Calc</span></div>
-          <div class="demo-key"><span class="letter">V</span></div>
-          <div class="demo-key has-app" data-app="LibreOffice Base" data-emoji="🗃️"><span class="letter">B</span><span class="app-name">Base</span></div>
-          <div class="demo-key"><span class="letter">N</span></div>
-          <div class="demo-key has-app" data-app="LibreOffice Math" data-emoji="🔢"><span class="letter">M</span><span class="app-name">Math</span></div>
-          <div class="demo-key has-app" data-app="Characters" data-emoji="🔤"><span class="letter">,</span><span class="app-name">Chars</span></div>
-          <div class="demo-key has-app" data-app="Power Stats" data-emoji="🔋"><span class="letter">.</span><span class="app-name">Power</span></div>
-          <div class="demo-key"><span class="letter">/</span></div>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- Toast notification -->
-<div class="toast" id="toast">
-  <span class="emoji" id="toast-emoji">🦊</span>
-  <span id="toast-text">Launching Firefox...</span>
-</div>
-
-<!-- ===== SPLIT: Features ===== -->
-<section class="split" id="features">
-  <div class="split-text">
-    <div class="label">Why MaxLaunchpad</div>
-    <h2>Everything you need, beautifully organized</h2>
-    <p>Built for power users who value speed and keyboard-first workflow.</p>
-    <ul class="feat-list">
-      <li><div class="ico">⚡</div><div><strong>Single Keystroke</strong><span>One key press = one app launch</span></div></li>
-      <li><div class="ico">🎹</div><div><strong>310 Slots</strong><span>10 tabs × 30 keys + 10 F-keys</span></div></li>
-      <li><div class="ico">🖱️</div><div><strong>Drag &amp; Drop</strong><span>Drop apps, files, or URLs onto keys</span></div></li>
-      <li><div class="ico">🌍</div><div><strong>Cross-Platform</strong><span>Windows, macOS, Ubuntu</span></div></li>
+<!-- ================= NAV ================= -->
+<header class="nav">
+  <nav class="nav-in" aria-label="Primary">
+    <a class="brand" href="./"><img class="brand-mark" src="https://raw.githubusercontent.com/AwesomeDog/maxlaunchpad/main/resources/icon.svg" alt="" width="22" height="22">MaxLaunchpad</a>
+    <ul>
+      <li><a href="#overview">Overview</a></li>
+      <li><a href="#layout">Keyboard</a></li>
+      <li><a href="#features">Features</a></li>
+      <li><a href="#config">Configuration</a></li>
+      <li><a href="#compare">Compare</a></li>
+      <li><a href="#specs">Tech Specs</a></li>
+      <li><a href="#faq">FAQ</a></li>
     </ul>
-  </div>
-  <div class="split-visual light">
-    <div class="stats-grid">
-      <div class="stat-card"><div class="num">310</div><div class="lbl">Shortcut Slots</div></div>
-      <div class="stat-card"><div class="num">&lt;0.5s</div><div class="lbl">Launch Time</div></div>
-      <div class="stat-card"><div class="num">3</div><div class="lbl">Platforms</div></div>
-      <div class="stat-card"><div class="num">MIT</div><div class="lbl">License</div></div>
+    <a class="btn" href="#download">Download</a>
+  </nav>
+</header>
+
+<main id="main">
+
+  <!-- ================= HERO ================= -->
+  <section class="hero" id="overview" aria-labelledby="hero-title">
+    <div class="wrap">
+      <p class="pill">Free &amp; open source · Windows · macOS · Ubuntu</p>
+      <h1 class="hero-h1" id="hero-title">MaxLaunchpad.<br><span class="grad">One key. Any app.</span></h1>
+      <p class="sub"><strong>The keyboard-driven application launcher for Windows, macOS and Linux.</strong>
+        Bind your programs to a virtual keyboard, summon it anywhere with a global hotkey, and launch with a
+        single keystroke. Muscle memory, not mental effort.</p>
+      <div class="btns">
+        <a class="btn" href="#download">Download for free</a>
+        <a class="link-arrow" href="https://awesomedog.github.io/maxlaunchpad/">Read the documentation</a>
+      </div>
+      <p class="small" style="margin-top:18px">Press <kbd>Alt</kbd> + <kbd>`</kbd> to summon. Press one key to launch. Two keystrokes, every time.</p>
+
+      <!-- Interactive virtual keyboard -->
+      <figure class="device rv" style="margin-bottom:0">
+        <div class="screen">
+          <div class="titlebar">
+            <span class="dot r" aria-hidden="true"></span><span class="dot y" aria-hidden="true"></span><span class="dot g" aria-hidden="true"></span>
+            <span style="margin-left:8px">MaxLaunchpad — ~/.config/MaxLaunchpad/keyboard.yaml</span>
+          </div>
+          <div class="kb" id="kb">
+            <p class="zone-note">F1–F10 · global function keys</p>
+            <div class="kb-row">
+              <button class="key fn" type="button"><span class="key-id">F1</span><span class="key-ico">❓</span><span class="key-lbl">Help</span></button>
+              <button class="key fn" type="button"><span class="key-id">F2</span><span class="key-ico">📁</span><span class="key-lbl">Files</span></button>
+              <button class="key fn" type="button"><span class="key-id">F3</span><span class="key-ico">🧮</span><span class="key-lbl">Calc</span></button>
+              <button class="key fn" type="button"><span class="key-id">F4</span><span class="key-ico">✉️</span><span class="key-lbl">Mail</span></button>
+              <button class="key fn" type="button"><span class="key-id">F5</span><span class="key-ico">📅</span><span class="key-lbl">Calendar</span></button>
+              <button class="key fn" type="button"><span class="key-id">F6</span><span class="key-ico">🎵</span><span class="key-lbl">Music</span></button>
+              <button class="key fn" type="button"><span class="key-id">F7</span><span class="key-ico">🗒</span><span class="key-lbl">Notes</span></button>
+              <button class="key fn" type="button"><span class="key-id">F8</span><span class="key-ico">📸</span><span class="key-lbl">Capture</span></button>
+              <button class="key fn" type="button"><span class="key-id">F9</span><span class="key-ico">⌨️</span><span class="key-lbl">Terminal</span></button>
+              <button class="key fn" type="button"><span class="key-id">F10</span><span class="key-ico">⚙️</span><span class="key-lbl">Settings</span></button>
+            </div>
+            <div class="kb-sep" aria-hidden="true"></div>
+            <p class="zone-note">1–0 · tabs</p>
+            <div class="kb-row" id="tabrow" role="tablist" aria-label="Keyboard profile tabs">
+              <button class="key tab" type="button" role="tab" data-tab="1" aria-selected="true"><span class="key-id">1</span><span class="key-lbl">Dev</span></button>
+              <button class="key tab" type="button" role="tab" data-tab="2" aria-selected="false"><span class="key-id">2</span><span class="key-lbl">Work</span></button>
+              <button class="key tab" type="button" role="tab" data-tab="3" aria-selected="false"><span class="key-id">3</span><span class="key-lbl">Media</span></button>
+              <button class="key tab" type="button" role="tab" data-tab="4" aria-selected="false"><span class="key-id">4</span><span class="key-lbl">Games</span></button>
+              <button class="key tab" type="button" role="tab" data-tab="5" aria-selected="false"><span class="key-id">5</span><span class="key-lbl">Ops</span></button>
+              <button class="key tab" type="button" role="tab" data-tab="6" aria-selected="false"><span class="key-id">6</span><span class="key-lbl">—</span></button>
+              <button class="key tab" type="button" role="tab" data-tab="7" aria-selected="false"><span class="key-id">7</span><span class="key-lbl">—</span></button>
+              <button class="key tab" type="button" role="tab" data-tab="8" aria-selected="false"><span class="key-id">8</span><span class="key-lbl">—</span></button>
+              <button class="key tab" type="button" role="tab" data-tab="9" aria-selected="false"><span class="key-id">9</span><span class="key-lbl">—</span></button>
+              <button class="key tab" type="button" role="tab" data-tab="0" aria-selected="false"><span class="key-id">0</span><span class="key-lbl">—</span></button>
+            </div>
+            <div class="kb-sep" aria-hidden="true"></div>
+            <p class="zone-note">30 keys per tab</p>
+            <div class="kb-row" id="row1">
+              <button class="key" type="button" data-k="Q"><span class="key-id">Q</span><span class="key-ico">⌨️</span><span class="key-lbl">Terminal</span></button>
+              <button class="key" type="button" data-k="W"><span class="key-id">W</span><span class="key-ico">🧩</span><span class="key-lbl">VS Code</span></button>
+              <button class="key" type="button" data-k="E"><span class="key-id">E</span><span class="key-ico">🐳</span><span class="key-lbl">Docker</span></button>
+              <button class="key" type="button" data-k="R"><span class="key-id">R</span><span class="key-ico">🚀</span><span class="key-lbl">Postman</span></button>
+              <button class="key" type="button" data-k="T"><span class="key-id">T</span><span class="key-ico">🗄</span><span class="key-lbl">DataGrip</span></button>
+              <button class="key" type="button" data-k="Y"><span class="key-id">Y</span><span class="key-ico">🐙</span><span class="key-lbl">GitHub</span></button>
+              <button class="key" type="button" data-k="U"><span class="key-id">U</span><span class="key-ico">🟩</span><span class="key-lbl">Node</span></button>
+              <button class="key" type="button" data-k="I"><span class="key-id">I</span><span class="key-ico">💡</span><span class="key-lbl">IntelliJ</span></button>
+              <button class="key" type="button" data-k="O"><span class="key-id">O</span><span class="key-ico">🟣</span><span class="key-lbl">Obsidian</span></button>
+              <button class="key" type="button" data-k="P"><span class="key-id">P</span><span class="key-ico">🐘</span><span class="key-lbl">Postgres</span></button>
+            </div>
+            <div class="kb-row" id="row2">
+              <button class="key" type="button" data-k="A"><span class="key-id">A</span><span class="key-ico">🤖</span><span class="key-lbl">Android</span></button>
+              <button class="key" type="button" data-k="S"><span class="key-id">S</span><span class="key-ico">💬</span><span class="key-lbl">Slack</span></button>
+              <button class="key" type="button" data-k="D"><span class="key-id">D</span><span class="key-ico">📘</span><span class="key-lbl">Docs</span></button>
+              <button class="key" type="button" data-k="F"><span class="key-id">F</span><span class="key-ico">🎨</span><span class="key-lbl">Figma</span></button>
+              <button class="key" type="button" data-k="G"><span class="key-id">G</span><span class="key-ico">🌿</span><span class="key-lbl">Git GUI</span></button>
+              <button class="key" type="button" data-k="H"><span class="key-id">H</span><span class="key-ico">🧪</span><span class="key-lbl">HTTP</span></button>
+              <button class="key" type="button" data-k="J"><span class="key-id">J</span><span class="key-ico">📋</span><span class="key-lbl">Jira</span></button>
+              <button class="key" type="button" data-k="K"><span class="key-id">K</span><span class="key-ico">☸️</span><span class="key-lbl">K8s</span></button>
+              <button class="key" type="button" data-k="L"><span class="key-id">L</span><span class="key-ico">📜</span><span class="key-lbl">Logs</span></button>
+              <button class="key" type="button" data-k=";"><span class="key-id">;</span><span class="key-ico">🟠</span><span class="key-lbl">Sublime</span></button>
+            </div>
+            <div class="kb-row" id="row3">
+              <button class="key" type="button" data-k="Z"><span class="key-id">Z</span><span class="key-ico">⚡</span><span class="key-lbl">Zsh</span></button>
+              <button class="key" type="button" data-k="X"><span class="key-id">X</span><span class="key-ico">🔨</span><span class="key-lbl">Xcode</span></button>
+              <button class="key" type="button" data-k="C"><span class="key-id">C</span><span class="key-ico">🌐</span><span class="key-lbl">Chrome</span></button>
+              <button class="key" type="button" data-k="V"><span class="key-id">V</span><span class="key-ico">📗</span><span class="key-lbl">Vim</span></button>
+              <button class="key empty" type="button" data-k="B"><span class="key-id">B</span><span class="key-ico">•</span><span class="key-lbl">empty</span></button>
+              <button class="key" type="button" data-k="N"><span class="key-id">N</span><span class="key-ico">📝</span><span class="key-lbl">Notion</span></button>
+              <button class="key" type="button" data-k="M"><span class="key-id">M</span><span class="key-ico">🍃</span><span class="key-lbl">MongoDB</span></button>
+              <button class="key empty" type="button" data-k=","><span class="key-id">,</span><span class="key-ico">•</span><span class="key-lbl">empty</span></button>
+              <button class="key" type="button" data-k="."><span class="key-id">.</span><span class="key-ico">📖</span><span class="key-lbl">Manual</span></button>
+              <button class="key" type="button" data-k="/"><span class="key-id">/</span><span class="key-ico">🔎</span><span class="key-lbl">Search</span></button>
+            </div>
+          </div>
+        </div>
+        <figcaption class="small center" style="margin-top:14px;color:#5a5c62">
+          The MaxLaunchpad virtual keyboard — click a number key to switch tabs. Every key is one program.
+        </figcaption>
+      </figure>
     </div>
-  </div>
-</section>
+  </section>
 
-<!-- ===== SPLIT REVERSE: Workflow ===== -->
-<section class="split reverse" id="workflow">
-  <div class="split-text">
-    <div class="label">How It Works</div>
-    <h2>Three steps. Under one second.</h2>
-    <p>MaxLaunchpad lives in your system tray. Summon it with a global hotkey, press a key, and you're done.</p>
-    <ul class="feat-list">
-      <li><div class="ico">1️⃣</div><div><strong>Summon — Alt + `</strong><span>Floating overlay appears instantly</span></div></li>
-      <li><div class="ico">2️⃣</div><div><strong>Press a key</strong><span>F for Firefox, T for Terminal...</span></div></li>
-      <li><div class="ico">3️⃣</div><div><strong>Done</strong><span>App launches, overlay hides itself</span></div></li>
-    </ul>
-  </div>
-  <div class="split-visual blue">
-    <div class="flow-vis">
-      <div class="flow-step"><div class="flow-box active">Alt+`</div><div class="flow-label">Summon</div></div>
-      <div class="flow-arrow">→</div>
-      <div class="flow-step"><div class="flow-box active">F</div><div class="flow-label">Press Key</div></div>
-      <div class="flow-arrow">→</div>
-      <div class="flow-step"><div class="flow-box active">🦊<small>Firefox</small></div><div class="flow-label">Launched!</div></div>
-    </div>
-  </div>
-</section>
-
-<!-- ===== SPLIT: Config ===== -->
-<section class="split">
-  <div class="split-text">
-    <div class="label">Configuration</div>
-    <h2>YAML profiles, themes, custom CSS</h2>
-    <p>Your config is stored in human-readable YAML. Back it up, share it, version control it. Customize the look with built-in themes or your own CSS.</p>
-    <ul class="feat-list">
-      <li><div class="ico">📄</div><div><strong>YAML Profiles</strong><span>Git-friendly, portable config</span></div></li>
-      <li><div class="ico">🎨</div><div><strong>Themes</strong><span>Light, dark, or follow system</span></div></li>
-      <li><div class="ico">🔍</div><div><strong>Search</strong><span>Ctrl+F fallback when you forget</span></div></li>
-    </ul>
-  </div>
-  <div class="split-visual dark">
-    <div class="term-vis">
-      <div class="term-bar"><div></div><div></div><div></div></div>
-      <div class="term-body">
-        <div><span class="b"># keyboard.yaml</span></div>
-        <div><span class="w">tabs:</span></div>
-        <div>&nbsp;&nbsp;<span class="g">- name:</span> <span class="w">Fav</span></div>
-        <div>&nbsp;&nbsp;&nbsp;&nbsp;<span class="g">keys:</span></div>
-        <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="g">F:</span> <span class="w">/usr/bin/firefox</span></div>
-        <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="g">T:</span> <span class="w">/usr/bin/gnome-terminal</span></div>
-        <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="g">S:</span> <span class="w">/usr/bin/gnome-settings</span></div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- ===== INSTALL ===== -->
-<div class="install-strip" id="install">
-  <div class="section-header">
-    <h2>Install MaxLaunchpad</h2>
-    <p>Choose your platform and preferred method — package manager or direct download.</p>
-  </div>
-  <div class="install-grid">
-
-    <!-- Windows -->
-    <div class="install-card">
-      <div class="os-header">
-        <svg class="os-icon" width="20" height="20" viewBox="0 0 24 24" fill="#00adef"><path d="M0 3.449L9.75 2.1v9.451H0m10.949-9.602L24 0v11.4H10.949M0 12.6h9.75v9.451L0 20.699M10.949 12.6H24V24l-12.9-1.801"/></svg>
-        <span class="os-name">Windows</span>
-      </div>
-      <div class="install-method">
-        <div class="method-label pkg"><span class="dot"></span> Package Manager</div>
-        <div class="install-cmd"><span class="hl">winget install</span> <span class="gr">AwesomeDog.MaxLaunchpad</span></div>
-      </div>
-      <div class="install-or">— or —</div>
-      <div class="install-method">
-        <div class="method-label dl"><span class="dot"></span> Direct Download</div>
-        <a id="dl-win" href="https://github.com/AwesomeDog/maxlaunchpad/releases/latest" target="_blank" class="dl-btn">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-          <span>Download .exe Installer</span>
-        </a>
-      </div>
-    </div>
-
-    <!-- macOS -->
-    <div class="install-card">
-      <div class="os-header">
-        <svg class="os-icon" width="20" height="20" viewBox="0 0 24 24" fill="#999"><path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.81-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/></svg>
-        <span class="os-name">macOS</span>
-      </div>
-      <div class="install-method">
-        <div class="method-label pkg"><span class="dot"></span> Package Manager</div>
-        <div class="install-cmd"><span class="hl">brew install --cask</span> <span class="gr">AwesomeDog/tap/maxlaunchpad</span></div>
-      </div>
-      <div class="install-or">— or —</div>
-      <div class="install-method">
-        <div class="method-label dl"><span class="dot"></span> Direct Download</div>
-        <a id="dl-mac" href="https://github.com/AwesomeDog/maxlaunchpad/releases/latest/download/MaxLaunchpad.dmg" class="dl-btn">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-          <span>Download .dmg Installer</span>
-        </a>
-        <div class="install-note">⚠️ After installing, run <code>xattr -cr /Applications/MaxLaunchpad.app</code> to remove quarantine.</div>
-      </div>
-    </div>
-
-    <!-- Linux / Ubuntu -->
-    <div class="install-card">
-      <div class="os-header">
-        <svg class="os-icon" width="20" height="20" viewBox="0 0 16 16" fill="#E95420"><path d="M2.273 9.53a2.273 2.273 0 1 0 0-4.546 2.273 2.273 0 0 0 0 4.547Zm9.467-4.984a2.273 2.273 0 1 0 0-4.546 2.273 2.273 0 0 0 0 4.546ZM7.4 13.108a5.535 5.535 0 0 1-3.775-2.88 3.273 3.273 0 0 1-1.944.24 7.4 7.4 0 0 0 5.328 4.465c.53.113 1.072.169 1.614.166a3.253 3.253 0 0 1-.666-1.9 5.639 5.639 0 0 1-.557-.091Zm3.828 2.285a2.273 2.273 0 1 0 0-4.546 2.273 2.273 0 0 0 0 4.546Zm3.163-3.108a7.436 7.436 0 0 0 .373-8.726 3.276 3.276 0 0 1-1.278 1.498 5.573 5.573 0 0 1-.183 5.535 3.26 3.26 0 0 1 1.088 1.693ZM2.098 3.998a3.28 3.28 0 0 1 1.897.486 5.544 5.544 0 0 1 4.464-2.388c.037-.67.277-1.313.69-1.843a7.472 7.472 0 0 0-7.051 3.745Z"/></svg>
-        <span class="os-name">Ubuntu / Linux</span>
-      </div>
-      <div class="install-method">
-        <div class="method-label dl"><span class="dot"></span> Direct Download</div>
-        <a id="dl-linux" href="https://github.com/AwesomeDog/maxlaunchpad/releases/latest" target="_blank" class="dl-btn">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-          <span>Download .deb Package</span>
-        </a>
-      </div>
-      <div class="install-or" style="margin-top:1.2rem">— then install with —</div>
-      <div class="install-method">
-        <div class="method-label pkg"><span class="dot"></span> Terminal</div>
-        <div class="install-cmd"><span class="hl">sudo dpkg -i</span> <span class="gr">maxlaunchpad_*_amd64.deb</span></div>
+  <!-- ================= NUMBERS ================= -->
+  <section class="dark" aria-labelledby="numbers-title">
+    <div class="wrap center">
+      <h2 id="numbers-title" class="rv">Built for the way<br>your fingers already think.</h2>
+      <p class="sub rv">Search launchers ask you to recall a name, type it, read a list and confirm. MaxLaunchpad
+        replaces all four steps with one: the key you already know.</p>
+      <div class="stats rv">
+        <div class="stat"><b class="grad">310</b><span>Configurable shortcuts per profile</span></div>
+        <div class="stat"><b class="grad">1</b><span>Keystroke to launch, after the hotkey</span></div>
+        <div class="stat"><b class="grad">3</b><span>Operating systems, one workflow</span></div>
+        <div class="stat"><b class="grad">0</b><span>Accounts, cloud services, telemetry</span></div>
       </div>
     </div>
+  </section>
 
-  </div>
-</div>
+  <!-- ================= LAYOUT ================= -->
+  <section id="layout" aria-labelledby="layout-title">
+    <div class="wrap center">
+      <p class="eyebrow rv">Virtual keyboard layout</p>
+      <h2 id="layout-title" class="rv">Ten tabs. Thirty keys each.<br>Ten function keys for everything.</h2>
+      <p class="sub rv">Tabs work like tmux sessions for your applications — one context per tab, each with a full
+        set of thirty bindings. Function keys stay global, so <kbd>F1</kbd> means the same thing everywhere.</p>
 
-<!-- ===== CTA SPLIT ===== -->
-<section class="cta-split">
-  <div class="cta-left">
-    <h2>Ready to launch smarter?</h2>
-    <p>Free, open source, and built for speed. Your keyboard already knows the way.</p>
-    <a href="https://github.com/AwesomeDog/maxlaunchpad" target="_blank" class="btn-w">
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/></svg>
-      Star on GitHub
-    </a>
-  </div>
-  <div class="cta-right">
-    <div class="info">
-      <h3>MaxLaunchpad</h3>
-      <p>Built with Electron · React · TypeScript</p>
-      <div class="badges">
-        <span class="badge">MIT License</span>
-        <span class="badge">Cross-Platform</span>
-        <span class="badge">Open Source</span>
+      <div class="grid rv">
+        <article class="card">
+          <div class="ico" aria-hidden="true">⌨️</div>
+          <h3>Function keys <span class="muted">F1–F10</span></h3>
+          <p>Global row, shared by every tab. Perfect for the ten apps you need no matter what you are doing.</p>
+        </article>
+        <article class="card">
+          <div class="ico" aria-hidden="true">🔢</div>
+          <h3>Tab selectors <span class="muted">1–0</span></h3>
+          <p>Ten named contexts — Dev, Work, Media, Games, Ops. Switch with a number key, the arrow keys, or a scroll of the wheel.</p>
+        </article>
+        <article class="card">
+          <div class="ico" aria-hidden="true">🔠</div>
+          <h3>Letter &amp; symbol keys <span class="muted">Q–/</span></h3>
+          <p>Thirty per-tab bindings across three rows: <code>Q–P</code>, <code>A–;</code> and <code>Z–/</code>. Spatial, deterministic, unforgettable.</p>
+        </article>
+      </div>
+
+      <div class="table-scroll rv">
+        <table>
+          <caption>MaxLaunchpad keyboard shortcuts reference</caption>
+          <thead><tr><th scope="col">Shortcut</th><th scope="col">Action</th></tr></thead>
+          <tbody>
+          <tr><th scope="row"><kbd>Alt</kbd> + <kbd>`</kbd> &nbsp;(<kbd>⌥</kbd> + <kbd>`</kbd> on macOS)</th><td class="hi">Show or hide MaxLaunchpad — fully configurable</td></tr>
+          <tr><th scope="row"><kbd>F1</kbd> – <kbd>F10</kbd></th><td>Launch a global shortcut from any tab</td></tr>
+          <tr><th scope="row"><kbd>Q</kbd>–<kbd>P</kbd>, <kbd>A</kbd>–<kbd>;</kbd>, <kbd>Z</kbd>–<kbd>/</kbd></th><td>Launch the shortcut on the active tab</td></tr>
+          <tr><th scope="row"><kbd>1</kbd> – <kbd>0</kbd></th><td>Jump straight to tab 1–10</td></tr>
+          <tr><th scope="row"><kbd>←</kbd> / <kbd>→</kbd> or scroll</th><td>Previous / next tab</td></tr>
+          <tr><th scope="row"><kbd>Ctrl</kbd>+<kbd>F</kbd> / <kbd>⌘</kbd>+<kbd>F</kbd></th><td>Search every shortcut by label, path, arguments, working directory, description or key ID</td></tr>
+          <tr><th scope="row"><kbd>Esc</kbd></th><td>Close the dialog, or hide the window</td></tr>
+          <tr><th scope="row">Right-click a key</th><td>Edit · Copy · Cut · Paste · Delete · Open file location</td></tr>
+          <tr><th scope="row">Drop a file on a key</th><td>Configure that key instantly</td></tr>
+          <tr><th scope="row"><kbd>Alt</kbd> (tap)</th><td>Reveal the menu bar when it is hidden</td></tr>
+          </tbody>
+        </table>
       </div>
     </div>
-  </div>
-</section>
+  </section>
 
+  <!-- ================= FEATURES ================= -->
+  <section class="alt" id="features" aria-labelledby="features-title">
+    <div class="wrap center">
+      <p class="eyebrow rv">Features</p>
+      <h2 id="features-title" class="rv">Deliberately restrained.<br>Relentlessly fast.</h2>
+      <p class="sub rv">MaxLaunchpad does one thing: it makes your most-used applications instantly reachable from
+        the keyboard. No plugin marketplace, no AI sidebar, no bloat.</p>
+
+      <div class="grid rv">
+        <article class="card">
+          <div class="ico" aria-hidden="true">⚡</div>
+          <h3>Single-keystroke launch</h3>
+          <p>The same key always launches the same app — forever. The window auto-hides the moment the program starts.</p>
+        </article>
+        <article class="card">
+          <div class="ico" aria-hidden="true">🌍</div>
+          <h3>Global hotkey</h3>
+          <p>Summon from any application with <kbd>Alt</kbd> + <kbd>`</kbd>. Modifiers and main key are re-bindable at runtime.</p>
+        </article>
+        <article class="card">
+          <div class="ico" aria-hidden="true">🖱️</div>
+          <h3>Drag &amp; drop setup</h3>
+          <p>Drag an executable, shortcut or <code>.app</code> onto a key. Windows <code>.lnk</code> files are parsed for target, arguments and working directory automatically.</p>
+        </article>
+        <article class="card">
+          <div class="ico" aria-hidden="true">🔎</div>
+          <h3>Quick Select</h3>
+          <p>Search installed applications inside the edit dialog to auto-fill label, path and description — with ↑ ↓ Enter navigation.</p>
+        </article>
+        <article class="card">
+          <div class="ico" aria-hidden="true">🛠️</div>
+          <h3>Arguments, working dir, admin</h3>
+          <p>Every shortcut can carry command-line arguments, a working directory, a custom icon, a tooltip and <em>Run as Admin</em> on Windows.</p>
+        </article>
+        <article class="card">
+          <div class="ico" aria-hidden="true">🗂️</div>
+          <h3>Multiple profiles</h3>
+          <p><code>keyboard.yaml</code>, <code>work.yaml</code>, <code>gaming.yaml</code> — switch with <em>File ▸ New / Open / Save As</em>.</p>
+        </article>
+        <article class="card">
+          <div class="ico" aria-hidden="true">💾</div>
+          <h3>Auto-save with backups</h3>
+          <p>Every change is written immediately, and the previous version is kept as a timestamped backup in <code>backups/</code>.</p>
+        </article>
+        <article class="card">
+          <div class="ico" aria-hidden="true">🖥️</div>
+          <h3>Multi-monitor &amp; Spaces</h3>
+          <p>Appears on the display under your cursor and on the current macOS Space. Always on top, auto-hides on blur, locks to center.</p>
+        </article>
+        <article class="card">
+          <div class="ico" aria-hidden="true">🌗</div>
+          <h3>Light, dark &amp; custom CSS</h3>
+          <p>Follow the system theme or force one. Drop a <code>.css</code> file into <code>styles/</code> and make it entirely yours.</p>
+        </article>
+        <article class="card">
+          <div class="ico" aria-hidden="true">🧊</div>
+          <h3>Compact mode</h3>
+          <p>Hide the menu bar, button icons, button text, empty buttons or whole keyboard rows until only what you need remains.</p>
+        </article>
+        <article class="card">
+          <div class="ico" aria-hidden="true">🎨</div>
+          <h3>Real icons, cached</h3>
+          <p>Extracts icons from Windows UWP/Store apps and macOS <code>.app</code> bundles, supports custom paths and URLs, falls back to generated DiceBear avatars.</p>
+        </article>
+        <article class="card">
+          <div class="ico" aria-hidden="true">📥</div>
+          <h3>Tray-first</h3>
+          <p>The close button minimises to tray. Optional <em>Launch on Startup</em> and <em>Start in Tray</em> keep it out of your way.</p>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= LAUNCH ANYTHING ================= -->
+  <section class="dark" aria-labelledby="launch-title">
+    <div class="wrap center">
+      <p class="eyebrow rv" style="color:#2997ff">Launch anything</p>
+      <h2 id="launch-title" class="rv">Executables. Store apps.<br>Scripts. URLs.</h2>
+      <p class="sub rv">If your operating system can run it, a MaxLaunchpad key can launch it.</p>
+      <div class="grid rv">
+        <article class="card">
+          <h3>Windows</h3>
+          <p><code>.exe</code> · <code>.lnk</code> · <code>.bat</code> · <code>.cmd</code> · <code>.ps1</code> · Microsoft Store &amp; UWP apps · <code>shell:</code> targets · elevated <em>Run as Admin</em>.</p>
+        </article>
+        <article class="card">
+          <h3>macOS</h3>
+          <p><code>.app</code> bundles launched via <code>open -a</code> with arguments · Unix executables · <code>.sh</code> · <code>.command</code>.</p>
+        </article>
+        <article class="card">
+          <h3>Ubuntu / Linux</h3>
+          <p>ELF binaries · <code>.desktop</code> entries · <code>.sh</code> · <code>.py</code> · <code>.rb</code>.</p>
+        </article>
+        <article class="card">
+          <h3>Every platform</h3>
+          <p><code>http</code> and <code>https</code> URLs open in your default browser — bookmark bar on a keyboard.</p>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= CONFIG ================= -->
+  <section id="config" aria-labelledby="config-title">
+    <div class="wrap center">
+      <p class="eyebrow rv">Configuration</p>
+      <h2 id="config-title" class="rv">Plain YAML.<br>Version it. Sync it. Share it.</h2>
+      <p class="sub rv">Everything lives in <code>~/.config/MaxLaunchpad/</code> on <strong>every</strong> platform
+        (honouring <code>XDG_CONFIG_HOME</code>). Put that folder in a Git repo and your launcher follows you to
+        every machine.</p>
+
+      <div class="code-grid rv">
+        <figure>
+          <figcaption>~/.config/MaxLaunchpad/</figcaption>
+          <pre><code>~/.config/MaxLaunchpad/
+├── settings.yaml   # App settings &amp; global hotkey
+├── keyboard.yaml   # Default keyboard profile
+├── work.yaml       # Additional profiles you create
+├── caches/         # Icon cache
+├── logs/           # Application logs
+├── styles/         # Custom CSS themes
+└── backups/        # Timestamped auto-backups</code></pre>
+        </figure>
+        <figure>
+          <figcaption>keyboard.yaml — bindings &amp; tab labels</figcaption>
+          <pre><code>tabs:
+  - id: '1'
+    label: 'Dev'
+  - id: '2'
+    label: 'Work'
+
+keys:
+  - tabId: 'F'            # global function row
+    id: F1
+    label: Help
+    filePath: 'C:\Windows\HelpPane.exe'
+
+  - tabId: '1'
+    id: Q
+    label: Calculator
+    filePath: 'C:\Windows\system32\calc.exe'
+    description: Launch Calculator</code></pre>
+        </figure>
+        <figure>
+          <figcaption>settings.yaml — hotkey, theme, window</figcaption>
+          <pre><code>hotkey:
+  modifiers: [Alt]
+  key: '`'
+activeTabOnShow: lastUsed
+lockWindowCenter: true
+launchOnStartup: true
+startInTray: true
+theme: system          # light | dark | system
+customStyle: default
+windowSize: { width: 1000, height: 600 }
+hideElements:
+  menu: false
+  buttonIcons: false
+  emptyButtons: false</code></pre>
+        </figure>
+        <figure>
+          <figcaption>Microsoft Store / UWP app example</figcaption>
+          <pre><code>  - tabId: '1'
+    id: O
+    label: OutlookStoreApp
+    filePath: explorer.exe
+    arguments: >-
+      shell:appsFolder\Microsoft.
+      OutlookForWindows_8wekyb3d8bbwe!App
+
+  - tabId: '1'
+    id: T
+    label: Terminal (admin)
+    filePath: 'C:\Windows\System32\wt.exe'
+    workingDirectory: 'C:\Projects'
+    runAsAdmin: true</code></pre>
+        </figure>
+      </div>
+      <p class="rv" style="margin-top:32px"><a class="link-arrow" href="https://awesomedog.github.io/maxlaunchpad/">See the full YAML schema in the documentation</a></p>
+    </div>
+  </section>
+
+  <!-- ================= QUICK START ================= -->
+  <section class="alt" id="quickstart" aria-labelledby="qs-title">
+    <div class="wrap center">
+      <p class="eyebrow rv">Quick start</p>
+      <h2 id="qs-title" class="rv">Set up in 60 seconds.</h2>
+      <ol class="steps rv">
+        <li><b>Launch it</b><p>The virtual keyboard appears, and MaxLaunchpad settles into your system tray.</p></li>
+        <li><b>Enable Drag &amp; Drop Mode</b><p><em>View ▸ Drag &amp; Drop Mode</em> keeps the window visible and movable while you configure.</p></li>
+        <li><b>Drag apps onto keys</b><p>From Explorer, Finder or Files — or right-click a key and use Quick Select.</p></li>
+        <li><b>Name your tabs</b><p>Right-click a number key <kbd>1</kbd>–<kbd>0</kbd> and choose Edit: Dev, Work, Media, Games.</p></li>
+        <li><b>Press and go</b><p>Turn Drag &amp; Drop Mode off, hit <kbd>Alt</kbd> + <kbd>`</kbd> anywhere, then one key. Done.</p></li>
+      </ol>
+    </div>
+  </section>
+
+  <!-- ================= COMPARE ================= -->
+  <section id="compare" aria-labelledby="cmp-title">
+    <div class="wrap-wide center">
+      <p class="eyebrow rv">Comparison</p>
+      <h2 id="cmp-title" class="rv">MaxLaunchpad vs. Spotlight, Alfred,<br>Raycast, Flow Launcher &amp; Rofi</h2>
+      <p class="sub rv">They are complementary, not mutually exclusive. Keep your search launcher for one-off files —
+        use MaxLaunchpad for the 20–50 programs you open every single day.</p>
+
+      <div class="table-scroll rv">
+        <table>
+          <caption>Keyboard launcher comparison: interaction model, platform support and configuration portability</caption>
+          <thead>
+          <tr>
+            <th scope="col">&nbsp;</th>
+            <th scope="col">MaxLaunchpad</th>
+            <th scope="col">Spotlight / Alfred / Raycast</th>
+            <th scope="col">Flow Launcher / Wox / Launchy</th>
+            <th scope="col">Rofi / dmenu</th>
+          </tr>
+          </thead>
+          <tbody>
+          <tr><th scope="row">Interaction model</th><td class="hi">Fixed key → app</td><td>Type &amp; search</td><td>Type &amp; search</td><td>Type &amp; search</td></tr>
+          <tr><th scope="row">Keystrokes to launch</th><td class="hi">1 (after hotkey)</td><td>3–8</td><td>3–8</td><td>3–8</td></tr>
+          <tr><th scope="row">Result stability</th><td class="hi">Fixed binding, always</td><td>Ranking may change</td><td>Ranking may change</td><td>Ranking may change</td></tr>
+          <tr><th scope="row">Windows</th><td class="yes">Yes</td><td class="no">Alfred / Raycast: no</td><td class="yes">Yes</td><td class="no">No</td></tr>
+          <tr><th scope="row">macOS</th><td class="yes">Yes</td><td class="yes">Yes</td><td class="no">No</td><td class="no">No</td></tr>
+          <tr><th scope="row">Linux</th><td class="yes">Yes (Ubuntu / Wayland)</td><td class="no">No</td><td class="no">No</td><td class="yes">Yes</td></tr>
+          <tr><th scope="row">Visual, spatial layout</th><td class="yes">Virtual keyboard</td><td class="no">No</td><td class="no">No</td><td class="no">No</td></tr>
+          <tr><th scope="row">Plain-text portable config</th><td class="yes">YAML</td><td class="no">No</td><td>Partial</td><td class="yes">Yes</td></tr>
+          <tr><th scope="row">Per-shortcut args / admin</th><td class="yes">Yes</td><td>Limited</td><td>Limited</td><td>Limited</td></tr>
+          <tr><th scope="row">Open source</th><td class="yes">Yes</td><td class="no">Mostly no</td><td class="yes">Yes</td><td class="yes">Yes</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="small rv" style="margin-top:22px">If you loved the discontinued Windows-only
+        <a href="https://maxlauncher.sourceforge.io/" rel="nofollow noopener">MaxLauncher</a>, MaxLaunchpad is the
+        modern, cross-platform continuation of that idea.</p>
+    </div>
+  </section>
+
+  <!-- ================= USE CASES ================= -->
+  <section class="alt" aria-labelledby="uc-title">
+    <div class="wrap center">
+      <p class="eyebrow rv">Use cases</p>
+      <h2 id="uc-title" class="rv">One tab per context.</h2>
+      <div class="grid rv">
+        <article class="card"><div class="ico" aria-hidden="true">👩‍💻</div><h3>Developers</h3><p>IDE, terminal, DB client, API client, log viewer and local docs — one tab per stack.</p></article>
+        <article class="card"><div class="ico" aria-hidden="true">🛡️</div><h3>Sysadmins &amp; DevOps</h3><p>RDP and SSH sessions, admin consoles and PowerShell scripts with pre-baked arguments and <em>Run as Admin</em>.</p></article>
+        <article class="card"><div class="ico" aria-hidden="true">🎮</div><h3>Gamers</h3><p>A Games tab of launchers, mod managers, overlays and voice chat.</p></article>
+        <article class="card"><div class="ico" aria-hidden="true">🎬</div><h3>Creators</h3><p>Photoshop, DaVinci, OBS and stream-deck-style shortcuts — without buying a stream deck.</p></article>
+        <article class="card"><div class="ico" aria-hidden="true">⌨️</div><h3>Keyboard purists</h3><p>Never touch the mouse, the Dock, the Start menu or the taskbar again.</p></article>
+        <article class="card"><div class="ico" aria-hidden="true">💻</div><h3>Multi-machine users</h3><p>Commit your YAML profile to Git and reproduce your exact workflow on a new laptop in seconds.</p></article>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= DOWNLOAD ================= -->
+  <section class="dark" id="download" aria-labelledby="dl-title">
+    <div class="wrap center">
+      <p class="eyebrow rv" style="color:#2997ff">Download</p>
+      <h2 id="dl-title" class="rv">Install MaxLaunchpad on<br>Windows, macOS and Linux.</h2>
+      <p class="sub rv">Free, open source, no account required. Pick a package manager or grab the installer.</p>
+
+      <div class="code-grid install-grid rv">
+        <figure>
+          <figcaption>Windows · winget</figcaption>
+          <pre><code>winget install AwesomeDog.MaxLaunchpad</code></pre>
+        </figure>
+        <figure>
+          <figcaption>macOS · Homebrew Cask</figcaption>
+          <pre><code>brew install --cask AwesomeDog/tap/maxlaunchpad</code></pre>
+        </figure>
+      </div>
+
+      <div class="btns rv">
+        <a class="btn" href="https://github.com/AwesomeDog/maxlaunchpad/releases" rel="noopener">Download from GitHub Releases</a>
+        <a class="link-arrow" href="https://github.com/AwesomeDog/maxlaunchpad" rel="noopener">Star the project on GitHub</a>
+      </div>
+
+      <div class="table-scroll rv">
+        <table>
+          <caption style="color:#a1a1a6">System requirements and installation notes by platform</caption>
+          <thead><tr><th scope="col">Platform</th><th scope="col">Requirement</th><th scope="col">Notes</th></tr></thead>
+          <tbody>
+          <tr><th scope="row" style="color:#f5f5f7">Windows</th><td>Windows 10 or later (incl. Windows 11)</td><td>Works out of the box.</td></tr>
+          <tr><th scope="row" style="color:#f5f5f7">macOS</th><td>macOS 11 Big Sur or later (Apple Silicon)</td><td>Run <code>xattr -cr /Applications/MaxLaunchpad.app</code> to clear the quarantine flag, then add it to Login Items for auto-start.</td></tr>
+          <tr><th scope="row" style="color:#f5f5f7">Linux</th><td>Ubuntu 24.04 or equivalent (Wayland)</td><td>Under Wayland the global hotkey may need manual setup in GNOME keyboard settings.</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= SPECS ================= -->
+  <section id="specs" aria-labelledby="specs-title">
+    <div class="wrap">
+      <div class="center">
+        <p class="eyebrow rv">Tech specs</p>
+        <h2 id="specs-title" class="rv">Everything, on the record.</h2>
+      </div>
+      <dl class="specs rv">
+        <div><dt>Product type</dt><dd>Desktop application launcher</dd></div>
+        <div><dt>Platforms</dt><dd>Windows 10/11 · macOS 11+ (Apple Silicon) · Ubuntu 24.04</dd></div>
+        <div><dt>Shortcut capacity</dt><dd>310 per profile — 10 global function keys + 10 tabs × 30 keys</dd></div>
+        <div><dt>Default global hotkey</dt><dd><kbd>Alt</kbd> + <kbd>`</kbd> · <kbd>⌥</kbd> + <kbd>`</kbd> on macOS · fully re-bindable</dd></div>
+        <div><dt>Window</dt><dd>1000 × 600 px default, resizable and persisted, always on top, auto-hide on blur, lock to center</dd></div>
+        <div><dt>Configuration format</dt><dd>YAML, validated at runtime, auto-saved with timestamped backups</dd></div>
+        <div><dt>Config location</dt><dd><code>~/.config/MaxLaunchpad/</code> on all platforms (respects <code>XDG_CONFIG_HOME</code>)</dd></div>
+        <div><dt>Themes</dt><dd>Light · Dark · System, plus user CSS via <code>styles/*.css</code></dd></div>
+        <div><dt>Search</dt><dd><kbd>Ctrl</kbd>+<kbd>F</kbd> / <kbd>⌘</kbd>+<kbd>F</kbd> across label, path, arguments, working directory, description and key ID</dd></div>
+        <div><dt>Icon system</dt><dd>Native extraction for UWP/Store and <code>.app</code>, file + memory cache, DiceBear fallback avatars</dd></div>
+        <div><dt>Tech stack</dt><dd>Electron · React (functional components + hooks) · TypeScript · Context + useReducer · js-yaml · zod</dd></div>
+        <div><dt>Privacy</dt><dd>Single instance, fully local. No account, no cloud sync, no telemetry.</dd></div>
+        <div><dt>License</dt><dd>Open source — free for personal and commercial use</dd></div>
+        <div><dt>Repository</dt><dd><a href="https://github.com/AwesomeDog/maxlaunchpad" rel="noopener">github.com/AwesomeDog/maxlaunchpad</a></dd></div>
+      </dl>
+    </div>
+  </section>
+
+  <!-- ================= FAQ ================= -->
+  <section class="alt" id="faq" aria-labelledby="faq-title">
+    <div class="wrap">
+      <div class="center">
+        <p class="eyebrow rv">FAQ</p>
+        <h2 id="faq-title" class="rv">Frequently asked questions</h2>
+      </div>
+      <div class="faq rv">
+        <details open>
+          <summary>Is MaxLaunchpad free and open source?</summary>
+          <p>Yes. MaxLaunchpad is an open-source Electron, React and TypeScript desktop app, free for personal and
+            commercial use. There is no account, no cloud service and no telemetry.</p>
+        </details>
+        <details>
+          <summary>Does it work on Windows 11?</summary>
+          <p>Yes — Windows 10 and Windows 11 are both fully supported, and it works out of the box.</p>
+        </details>
+        <details>
+          <summary>Does it run on Apple Silicon Macs?</summary>
+          <p>Yes, on macOS 11 Big Sur or later with Apple Silicon. After installing, run
+            <code>xattr -cr /Applications/MaxLaunchpad.app</code> to remove the quarantine attribute.</p>
+        </details>
+        <details>
+          <summary>Does the global hotkey work on Linux / Wayland?</summary>
+          <p>MaxLaunchpad targets Ubuntu 24.04 on Wayland. Because Wayland restricts global shortcut registration,
+            you may need to bind the hotkey through GNOME’s own keyboard-shortcut settings.</p>
+        </details>
+        <details>
+          <summary>Can I sync my launcher configuration between computers?</summary>
+          <p>Yes. Everything lives in plain YAML under <code>~/.config/MaxLaunchpad/</code>. Commit it to Git, sync it
+            with Dropbox, OneDrive or Syncthing, or simply copy a single profile file to another machine.</p>
+        </details>
+        <details>
+          <summary>How many shortcuts can I create?</summary>
+          <p>310 per profile: ten function keys shared globally, plus ten tabs of thirty letter and symbol keys each.
+            Create as many profiles as you like.</p>
+        </details>
+        <details>
+          <summary>Can it launch Microsoft Store (UWP) apps, <code>.lnk</code> shortcuts or shell scripts?</summary>
+          <p>Yes — <code>.exe</code>, <code>.lnk</code>, <code>.bat</code>, <code>.cmd</code>, <code>.ps1</code>,
+            <code>shell:</code> targets and Store/UWP apps on Windows; <code>.app</code> bundles and shell scripts on
+            macOS; ELF binaries, <code>.desktop</code> files, <code>.sh</code>, <code>.py</code> and <code>.rb</code>
+            on Linux. URLs open in your default browser.</p>
+        </details>
+        <details>
+          <summary>Can a shortcut pass command-line arguments or run as administrator?</summary>
+          <p>Yes. Every shortcut supports arguments, a working directory, a custom icon, a tooltip description, and
+            <em>Run as Admin</em> on Windows.</p>
+        </details>
+        <details>
+          <summary>Is it a replacement for MaxLauncher?</summary>
+          <p>It is a spiritual successor to the discontinued
+            <a href="https://maxlauncher.sourceforge.io/" rel="nofollow noopener">MaxLauncher</a>, rebuilt from scratch
+            with modern tooling and extended from Windows to macOS and Ubuntu. Profiles use MaxLaunchpad’s own YAML format.</p>
+        </details>
+        <details>
+          <summary>Where are logs and backups stored?</summary>
+          <p><code>~/.config/MaxLaunchpad/logs/</code> and <code>~/.config/MaxLaunchpad/backups/</code>. A backup is
+            written before each save whenever the profile content has changed.</p>
+        </details>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= FINAL CTA ================= -->
+  <section class="center" aria-labelledby="cta-title">
+    <div class="wrap">
+      <h2 id="cta-title" class="rv">Stop searching.<br><span class="grad">Start pressing.</span></h2>
+      <p class="sub rv">Two keystrokes to any application on your machine. Install MaxLaunchpad and let your muscle
+        memory do the work.</p>
+      <div class="btns rv">
+        <a class="btn" href="https://github.com/AwesomeDog/maxlaunchpad/releases" rel="noopener">Download for free</a>
+        <a class="btn ghost" href="https://awesomedog.github.io/maxlaunchpad/">Documentation</a>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<!-- ================= FOOTER ================= -->
 <footer>
-  <p>MaxLaunchpad · MIT License · Made by <a href="https://github.com/AwesomeDog" target="_blank">AwesomeDog</a> · <a href="./guide/">Docs</a> · <a href="https://github.com/AwesomeDog/maxlaunchpad" target="_blank">GitHub</a></p>
+  <div class="wrap-wide">
+    <nav class="foot-grid" aria-label="Footer">
+      <div>
+        <h4>Product</h4>
+        <ul>
+          <li><a href="#overview">Overview</a></li>
+          <li><a href="#features">Features</a></li>
+          <li><a href="#layout">Keyboard layout</a></li>
+          <li><a href="#specs">Tech specs</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Get started</h4>
+        <ul>
+          <li><a href="#download">Download</a></li>
+          <li><a href="#quickstart">Quick start</a></li>
+          <li><a href="#config">YAML configuration</a></li>
+          <li><a href="#faq">FAQ</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Documentation</h4>
+        <ul>
+          <li><a href="https://awesomedog.github.io/maxlaunchpad/">Online manual</a></li>
+          <li><a href="https://github.com/AwesomeDog/maxlaunchpad/blob/main/docs/product/product-specification.md" rel="noopener">Product specification</a></li>
+          <li><a href="https://github.com/AwesomeDog/maxlaunchpad/blob/main/docs/tech/technical-architecture.md" rel="noopener">Technical architecture</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Open source</h4>
+        <ul>
+          <li><a href="https://github.com/AwesomeDog/maxlaunchpad" rel="noopener">GitHub repository</a></li>
+          <li><a href="https://github.com/AwesomeDog/maxlaunchpad/issues" rel="noopener">Report an issue</a></li>
+          <li><a href="https://github.com/AwesomeDog/maxlaunchpad/releases" rel="noopener">Release notes</a></li>
+          <li><a href="https://github.com/AwesomeDog/maxlaunchpad/blob/main/LICENSE" rel="noopener">License</a></li>
+        </ul>
+      </div>
+    </nav>
+
+    <div class="foot-bottom">
+      <p style="margin:0">Copyright © <span id="yr">2025</span> MaxLaunchpad. A spiritual successor to
+        <a href="https://maxlauncher.sourceforge.io/" rel="nofollow noopener">MaxLauncher</a>. All trademarks are the property of their respective owners.</p>
+      <nav class="langs" aria-label="Language">
+        <a href="https://github.com/AwesomeDog/maxlaunchpad/blob/main/README.md" hreflang="en" lang="en" rel="noopener">English</a>
+        <a href="https://github.com/AwesomeDog/maxlaunchpad/blob/main/docs/i18n/README.zh-CN.md" hreflang="zh-Hans" lang="zh-Hans" rel="noopener">简体中文</a>
+        <a href="https://github.com/AwesomeDog/maxlaunchpad/blob/main/docs/i18n/README.zh-TW.md" hreflang="zh-Hant" lang="zh-Hant" rel="noopener">繁體中文</a>
+        <a href="https://github.com/AwesomeDog/maxlaunchpad/blob/main/docs/i18n/README.fr.md" hreflang="fr" lang="fr" rel="noopener">Français</a>
+        <a href="https://github.com/AwesomeDog/maxlaunchpad/blob/main/docs/i18n/README.de.md" hreflang="de" lang="de" rel="noopener">Deutsch</a>
+        <a href="https://github.com/AwesomeDog/maxlaunchpad/blob/main/docs/i18n/README.ja.md" hreflang="ja" lang="ja" rel="noopener">日本語</a>
+        <a href="https://github.com/AwesomeDog/maxlaunchpad/blob/main/docs/i18n/README.ru.md" hreflang="ru" lang="ru" rel="noopener">Русский</a>
+        <a href="https://github.com/AwesomeDog/maxlaunchpad/blob/main/docs/i18n/README.es.md" hreflang="es" lang="es" rel="noopener">Español</a>
+        <a href="https://github.com/AwesomeDog/maxlaunchpad/blob/main/docs/i18n/README.ko.md" hreflang="ko" lang="ko" rel="noopener">한국어</a>
+      </nav>
+    </div>
+
+    <p class="small" style="margin-top:20px;font-size:11px;max-width:100%">
+      <strong>Keywords:</strong> keyboard launcher · application launcher · app launcher for Windows, macOS and Linux ·
+      quick launch tool · global hotkey launcher · keyboard shortcuts manager · program launcher ·
+      virtual keyboard launcher · MaxLauncher alternative · Launchy, Alfred, Raycast and Flow Launcher alternative ·
+      Electron desktop app · productivity tool.
+    </p>
+  </div>
 </footer>
 
 <script>
-  // Interactive keyboard demo
-  const toast = document.getElementById('toast');
-  const toastText = document.getElementById('toast-text');
-  const toastEmoji = document.getElementById('toast-emoji');
-  let toastTimeout;
+  (function () {
+    /* ---- Scroll reveal ---- */
+    var items = document.querySelectorAll('.rv');
+    if ('IntersectionObserver' in window) {
+      var io = new IntersectionObserver(function (entries) {
+        entries.forEach(function (e) {
+          if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); }
+        });
+      }, { rootMargin: '0px 0px -8% 0px', threshold: 0.08 });
+      items.forEach(function (el) { io.observe(el); });
+    } else {
+      items.forEach(function (el) { el.classList.add('in'); });
+    }
 
-  document.querySelectorAll('.demo-key').forEach(key => {
-    key.addEventListener('click', function() {
-      const app = this.dataset.app;
-      const emoji = this.dataset.emoji;
-
-      // Press animation
-      this.classList.add('pressed');
-      setTimeout(() => this.classList.remove('pressed'), 200);
-
-      if (app) {
-        // Show toast
-        toastEmoji.textContent = emoji;
-        toastText.textContent = `Launching ${app}...`;
-        toast.classList.add('show');
-        clearTimeout(toastTimeout);
-        toastTimeout = setTimeout(() => toast.classList.remove('show'), 2000);
-      }
-    });
-  });
-
-  // Tab switching
-  document.querySelectorAll('.demo-tab').forEach(tab => {
-    tab.addEventListener('click', function() {
-      document.querySelectorAll('.demo-tab').forEach(t => t.classList.remove('active'));
-      this.classList.add('active');
-    });
-  });
-
-  // Fetch latest release and set download links
-  (function() {
-    const API = 'https://api.github.com/repos/AwesomeDog/maxlaunchpad/releases/latest';
-    const fallback = 'https://github.com/AwesomeDog/maxlaunchpad/releases/latest';
-    fetch(API).then(r => r.json()).then(data => {
-      const assets = data.assets || [];
-      const win = assets.find(a => a.name.endsWith('.exe'));
-      const deb = assets.find(a => a.name.endsWith('.deb'));
-      const dmg = assets.find(a => a.name.endsWith('.dmg'));
-      const ver = (data.tag_name || '').replace(/^v/, '');
-      const dlWin = document.getElementById('dl-win');
-      const dlMac = document.getElementById('dl-mac');
-      const dlLinux = document.getElementById('dl-linux');
-      if (win && dlWin) {
-        dlWin.href = win.browser_download_url;
-        dlWin.querySelector('span').textContent = 'Download .exe (' + ver + ')';
-      }
-      if (dmg && dlMac) {
-        dlMac.href = dmg.browser_download_url;
-        dlMac.querySelector('span').textContent = 'Download .dmg (' + ver + ')';
-      }
-      if (deb && dlLinux) {
-        dlLinux.href = deb.browser_download_url;
-        dlLinux.querySelector('span').textContent = 'Download .deb (' + ver + ')';
-      }
-    }).catch(function() {
-      // On error, links already fallback to releases/latest page
-    });
-  })();
-
-  // Keyboard input support
-  document.addEventListener('keydown', function(e) {
-    const keyMap = {
-      'q':'Q','w':'W','e':'E','r':'R','t':'T','y':'Y','u':'U','i':'I','o':'O','p':'P',
-      'a':'A','s':'S','d':'D','f':'F','g':'G','h':'H','j':'J','k':'K','l':'L',
-      'z':'Z','x':'X','c':'C','v':'V','b':'B','n':'N','m':'M',
-      ',':',','.':'.','/':'/',';':';'
+    /* ---- Demo keyboard: tab switching ---- */
+    var E = ['•', ''];
+    var TABS = {
+      '1': { Q:['⌨️','Terminal'],W:['🧩','VS Code'],E:['🐳','Docker'],R:['🚀','Postman'],T:['🗄','DataGrip'],Y:['🐙','GitHub'],U:['🟩','Node'],I:['💡','IntelliJ'],O:['🟣','Obsidian'],P:['🐘','Postgres'],
+        A:['🤖','Android'],S:['💬','Slack'],D:['📘','Docs'],F:['🎨','Figma'],G:['🌿','Git GUI'],H:['🧪','HTTP'],J:['📋','Jira'],K:['☸️','K8s'],L:['📜','Logs'],';':['🟠','Sublime'],
+        Z:['⚡','Zsh'],X:['🔨','Xcode'],C:['🌐','Chrome'],V:['📗','Vim'],B:E,N:['📝','Notion'],M:['🍃','MongoDB'],',':E,'.':['📖','Manual'],'/':['🔎','Search'] },
+      '2': { Q:['📧','Outlook'],W:['📄','Word'],E:['📊','Excel'],R:['👥','Teams'],T:['📌','Trello'],Y:E,U:E,I:['🖊','OneNote'],O:['📁','Drive'],P:['📽','PowerPoint'],
+        A:['📆','Calendar'],S:['💬','Slack'],D:['🗂','Dropbox'],F:['🔒','1Password'],G:['🌐','Browser'],H:E,J:E,K:E,L:['🔗','Linear'],';':E,
+        Z:['🧾','Invoices'],X:E,C:['🧮','Calc'],V:['📹','Zoom'],B:E,N:['📝','Notes'],M:['✉️','Mail'],',':E,'.':E,'/':['❓','Help'] },
+      '3': { Q:['🎧','Spotify'],W:['🎬','VLC'],E:['🔴','OBS'],R:['🎞','DaVinci'],T:['🎙','Audacity'],Y:['📺','YouTube'],U:E,I:['🖼','Photoshop'],O:['🧊','Blender'],P:['🎨','Procreate'],
+        A:['📷','Lightroom'],S:['🎚','Ableton'],D:['🎛','Mixer'],F:['🖌','Affinity'],G:['🌈','GIMP'],H:E,J:E,K:E,L:['💡','Lights'],';':E,
+        Z:['🗜','Handbrake'],X:['✂️','Clipper'],C:['🎤','Podcast'],V:['📼','Archive'],B:E,N:E,M:['🎵','Music'],',':E,'.':E,'/':['❓','Help'] },
+      '4': { Q:['🎮','Steam'],W:['🕹','Epic'],E:['🎧','Discord'],R:['🛡','GOG'],T:['🐉','Battle.net'],Y:E,U:E,I:E,O:['📈','Overlay'],P:['🔧','Mod Mgr'],
+        A:['🖥','GeForce'],S:['🎯','Aim Lab'],D:['🗺','Maps'],F:['📻','TeamSpeak discussion'],G:['🎲','itch.io'],H:E,J:E,K:E,L:E,';':E,
+        Z:['💾','Saves'],X:['⚙️','Config'],C:['📊','MSI AB'],V:['🎥','ShadowPlay'],B:E,N:E,M:E,',':E,'.':E,'/':['❓','Help'] },
+      '5': { Q:['🖧','SSH'],W:['🪟','RDP'],E:['☸️','kubectl'],R:['📦','Registry'],T:['🔭','Grafana'],Y:E,U:E,I:['🧰','Ansible'],O:['🗃','S3'],P:['🛠','Terraform'],
+        A:['🔐','Vault'],S:['🖥','Servers'],D:['🧯','Incidents'],F:['🔥','Firewall'],G:['📡','Nagios'],H:E,J:E,K:E,L:['📜','Syslog'],';':E,
+        Z:['⚡','PowerShell'],X:['🧪','Staging'],C:['☁️','Console'],V:['🧭','VPN'],B:E,N:E,M:E,',':E,'.':E,'/':['❓','Help'] }
     };
-    const letter = keyMap[e.key.toLowerCase()] || keyMap[e.key];
-    if (letter) {
-      document.querySelectorAll('.demo-key').forEach(k => {
-        const l = k.querySelector('.letter');
-        if (l && l.textContent === letter) {
-          k.click();
-        }
+
+    var tabRow = document.getElementById('tabrow');
+    var keys = document.querySelectorAll('.key[data-k]');
+    if (!tabRow || !keys.length) return;
+
+    function render(tabId) {
+      var map = TABS[tabId] || {};
+      keys.forEach(function (btn) {
+        var k = btn.getAttribute('data-k');
+        var v = map[k] || E;
+        var ico = btn.querySelector('.key-ico');
+        var lbl = btn.querySelector('.key-lbl');
+        var isEmpty = !v[1];
+        btn.classList.toggle('empty', isEmpty);
+        ico.textContent = isEmpty ? '•' : v[0];
+        lbl.textContent = isEmpty ? 'empty' : v[1];
+        btn.setAttribute('aria-label', isEmpty ? ('Key ' + k + ', not configured') : ('Key ' + k + ', launches ' + v[1]));
       });
     }
-  });
-</script>
 
+    tabRow.addEventListener('click', function (ev) {
+      var t = ev.target.closest('.key.tab');
+      if (!t) return;
+      tabRow.querySelectorAll('.key.tab').forEach(function (b) { b.setAttribute('aria-selected', 'false'); });
+      t.setAttribute('aria-selected', 'true');
+      render(t.getAttribute('data-tab'));
+    });
+
+    /* ---- Footer year ---- */
+    var y = document.getElementById('yr');
+    if (y) y.textContent = new Date().getFullYear();
+  })();
+</script>
 </body>
 </html>
