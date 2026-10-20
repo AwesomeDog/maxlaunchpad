@@ -89,14 +89,31 @@ export function isUrl(str: string): boolean {
 }
 
 /**
+ * Parse AppUserModelId from shell:AppsFolder path
+ * @returns AppUserModelId or null
+ */
+export function parseAppUserModelId(path: string | undefined | null): string | null {
+  if (!path) return null;
+  const match = path.match(/shell:AppsFolder\\(.+)$/i);
+  return match ? match[1] : null;
+}
+
+/**
+ * Check if an AppUserModelId represents a UWP (packaged) app
+ * UWP apps have format: PackageFamilyName!AppId (e.g., Microsoft.WindowsCalculator_8wekyb3d8bbwe!App)
+ * Win32 apps have format: CompanyName.AppName or {CLSID}\xxx.exe
+ */
+export function isUwpAppId(appUserModelId: string): boolean {
+  return appUserModelId.includes('!');
+}
+
+/**
  * Check if a file path represents a Windows UWP (packaged) app via shell:AppsFolder
  * UWP apps have format: shell:AppsFolder\PackageFamilyName!AppId
  */
 export function isWindowsUwpApp(filePath: string): boolean {
-  const match = filePath.match(/shell:AppsFolder\\(.+)$/i);
-  if (!match) return false;
-  // UWP apps contain '!' in their AppUserModelId
-  return match[1].includes('!');
+  const appId = parseAppUserModelId(filePath);
+  return appId ? isUwpAppId(appId) : false;
 }
 
 const VALID_MODIFIER_IDS = MODIFIER_KEYS.map((modifier) => modifier.id);

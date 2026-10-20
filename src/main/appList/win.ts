@@ -1,6 +1,6 @@
 import type { InstalledApp } from '../../shared/types';
+import { isUwpAppId } from '../../shared/utils';
 import { runPowerShell } from '../utils/powershell';
-import { isUwpAppId } from '../utils/winAppId';
 
 export async function listWindowsApps(): Promise<InstalledApp[]> {
   try {

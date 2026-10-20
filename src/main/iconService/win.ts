@@ -1,8 +1,8 @@
 import { app, NativeImage, nativeImage } from 'electron';
 
 import type { KeyConfig } from '../../shared/types';
+import { isUwpAppId, parseAppUserModelId } from '../../shared/utils';
 import { escapePS, runPowerShell } from '../utils/powershell';
-import { isUwpAppId, parseAppUserModelId } from '../utils/winAppId';
 
 export async function extractIcon(keyConfig: KeyConfig): Promise<NativeImage | null> {
   const strategies = getExtractionStrategies(keyConfig);
