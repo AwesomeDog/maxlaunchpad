@@ -54,7 +54,7 @@ Descarga el instalador de tu sistema desde la [página de versiones](https://git
 
 1. **Inicia MaxLaunchpad.** Aparece el teclado virtual y la aplicación también queda en la bandeja del sistema.
 2. **Activa `View > Drag & Drop Mode`** para que la ventana permanezca visible mientras la configuras.
-3. **Arrastra aplicaciones hasta las teclas** desde el Explorador / Finder / Archivos, o haz clic derecho en una tecla → **Edit** y usa **Quick Select** para buscar aplicaciones instaladas.
+3. **Arrastra aplicaciones hasta las teclas** desde el Explorador / Finder / Archivos, o haz clic derecho en una tecla → **Edit** y usa **Quick Select** para buscar aplicaciones instaladas. Para reordenar, arrastra una tecla sobre otra en el modo de arrastrar y soltar.
 4. **Asigna un nombre a tus pestañas** (clic derecho en una tecla numérica `1`–`0` → Edit), por ejemplo `Dev`, `Work`, `Games`.
 5. **Desactiva el modo arrastrar y soltar**, pulsa `Alt` + `` ` `` desde cualquier lugar y después la tecla que quieras. Listo.
 

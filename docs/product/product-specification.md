@@ -438,12 +438,13 @@ that only dismisses the dialog and does not gate whether changes are stored.
 
 ### 12.4 Summary of Key Interactions
 
-| Action               | Result            |
-|----------------------|-------------------|
-| Left-click key       | Launch program    |
-| Right-click key      | Open context menu |
-| Drop file on key     | Configure key     |
-| Scroll over keyboard | Switch tabs       |
+| Action                           | Result                                      |
+|----------------------------------|---------------------------------------------|
+| Left-click key                   | Launch program                              |
+| Right-click key                  | Open context menu                           |
+| Drop file on key                 | Configure key                               |
+| Drag configured key onto another | Move or swap the key (Drag & Drop Mode)     |
+| Scroll over keyboard             | Switch tabs                                 |
 
 ---
 
@@ -484,6 +485,24 @@ Menu: `View > Drag & Drop Mode`
 - **Runtime-only state**: Not persisted to settings; resets to disabled on app restart
 - Must be manually disabled after use
 - Tooltip on hover: When enabled, the window stays visible and movable in this session
+
+### 14.3 Rearranging Keys by Dragging
+
+Available only while Drag & Drop Mode is enabled.
+
+1. Press and hold a key that already has a program configured, then drag it to another key
+2. The dragged key dims, and the key under the cursor is highlighted with a dashed border
+3. On drop:
+    - **Target key is empty** → the program is moved there, the source key becomes empty
+    - **Target key already has a program** → the two keys swap programs, so nothing is lost
+    - **Ctrl (Windows/Linux) or Cmd (macOS) held while dropping** → the program is copied, the source key stays unchanged (an existing program on the target key is replaced)
+4. To reach a key on another tab, rest the dragged key on that tab's number key (`1`–`0`) for about 0.6 s: the tab switches and the drag continues in one gesture. The number key is highlighted with a dashed border while waiting; moving away before the delay cancels the switch
+5. Dropping a key back onto itself does nothing; dropping outside the keyboard cancels the drag
+6. Releasing the mouse over a tab number only cancels the drag, it does not move the key
+7. The function key row (`F1`–`F10`) takes drops like any other key, which changes the scope of the program: dropping a tab key on the function row makes it global (visible on every tab), and dropping a global key onto a tab slot makes it specific to that tab
+8. Changes are auto-saved like any other key edit
+
+Arrangement can also be changed with the key context menu (**Copy** / **Cut** then **Paste** on the target key).
 
 ---
 

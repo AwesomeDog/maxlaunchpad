@@ -81,8 +81,19 @@ export function VirtualKeyboard(): ReactElement {
       );
     });
 
+  // While a key is dragged the browser keeps :hover on the element the drag started from
+  // and that element is reused for the same position on every other tab, so the whole
+  // keyboard is marked to suppress that stuck hover look (see global.css)
+  const zoneClassName = [
+    'keyboard-zone',
+    hideElements.rowF ? 'f-row-hidden' : '',
+    state.ui.dragKey ? 'key-drag-active' : '',
+  ]
+    .filter(Boolean)
+    .join(' ');
+
   return (
-    <div className={`keyboard-zone${hideElements.rowF ? ' f-row-hidden' : ''}`}>
+    <div className={zoneClassName}>
       {/* F1-F10 function keys (global) */}
       {!hideElements.rowF && (
         <div className="keyboard-row f-keys-row">

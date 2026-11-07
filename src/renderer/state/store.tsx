@@ -4,6 +4,16 @@ import type { AppSettings, KeyboardProfile, KeyConfig } from '../../shared/types
 
 // ============ State Types ============
 
+/** Position of a key on the keyboard: which tab, which key ID */
+export interface KeyLocation {
+  tabId: string;
+  keyId: string;
+}
+
+function isSameLocation(a: KeyLocation, b: KeyLocation): boolean {
+  return a.tabId === b.tabId && a.keyId === b.keyId;
+}
+
 // Discriminated union for modal state - ensures type safety and prevents invalid states
 type ModalState =
   | { type: 'none' }
@@ -29,6 +39,7 @@ export interface AppState {
     error: string | null;
     modal: ModalState; // Discriminated union for modal state
     clipboardKey: KeyConfig | null; // Internal clipboard for Copy/Cut/Paste (not system clipboard)
+    dragKey: KeyLocation | null; // Key currently being dragged in drag & drop mode
   };
 }
 
@@ -40,6 +51,7 @@ export type Action =
   | { type: 'UPDATE_SETTINGS'; settings: Partial<AppSettings> }
   | { type: 'UPDATE_KEY'; key: KeyConfig }
   | { type: 'DELETE_KEY'; tabId: string; keyId: string }
+  | { type: 'MOVE_KEY'; from: KeyLocation; to: KeyLocation; copy?: boolean }
   | { type: 'UPDATE_TAB'; tabId: string; label: string }
   // UI actions
   | { type: 'SET_ACTIVE_TAB'; tabId: string }
@@ -55,11 +67,13 @@ export type Action =
   | { type: 'OPEN_ABOUT_MODAL' }
   | { type: 'CLOSE_MODAL' }
   // Internal clipboard actions (Copy/Cut/Paste - does NOT use system clipboard)
-  | { type: 'SET_CLIPBOARD'; key: KeyConfig | null };
+  | { type: 'SET_CLIPBOARD'; key: KeyConfig | null }
+  // Drag & drop rearrangement (runtime only)
+  | { type: 'SET_KEY_DRAG'; key: KeyLocation | null };
 
 // ============ Initial State ============
 
-const initialState: AppState = {
+export const initialState: AppState = {
   settings: null,
   profile: null,
   ui: {
@@ -72,12 +86,14 @@ const initialState: AppState = {
     error: null,
     modal: { type: 'none' },
     clipboardKey: null,
+    dragKey: null,
   },
 };
 
 // ============ Reducer ============
 
-function reducer(state: AppState, action: Action): AppState {
+// Exported for unit tests; UI code must go through the provider
+export function reducer(state: AppState, action: Action): AppState {
   switch (action.type) {
     case 'SET_CONFIG':
       return {
@@ -119,6 +135,60 @@ function reducer(state: AppState, action: Action): AppState {
       return {
         ...state,
         profile: { ...state.profile, keys },
+        ui: { ...state.ui, isConfigDirty: true },
+      };
+    }
+
+    // Drag & drop rearrangement: move a key to another slot.
+    // - Target slot is empty          -> the key is moved there
+    // - Target slot holds another key -> the two keys are swapped (nothing is lost)
+    // - copy: true (Ctrl/Cmd held)    -> the source key stays, a copy lands on the target
+    case 'MOVE_KEY': {
+      if (!state.profile) return state;
+      if (isSameLocation(action.from, action.to)) return state;
+
+      const keys = state.profile.keys;
+      const fromIndex = keys.findIndex(
+        (keyConfig) => keyConfig.tabId === action.from.tabId && keyConfig.id === action.from.keyId,
+      );
+      // Nothing to move: the dragged key has no configuration
+      if (fromIndex < 0) return state;
+
+      const source = keys[fromIndex];
+      const toIndex = keys.findIndex(
+        (keyConfig) => keyConfig.tabId === action.to.tabId && keyConfig.id === action.to.keyId,
+      );
+      const target = toIndex >= 0 ? keys[toIndex] : undefined;
+
+      const movedKey: KeyConfig = {
+        ...source,
+        tabId: action.to.tabId,
+        id: action.to.keyId,
+      };
+
+      const newKeys = [...keys];
+
+      if (action.copy) {
+        if (toIndex >= 0) {
+          newKeys[toIndex] = movedKey;
+        } else {
+          newKeys.push(movedKey);
+        }
+      } else if (target) {
+        newKeys[toIndex] = movedKey;
+        newKeys[fromIndex] = {
+          ...target,
+          tabId: action.from.tabId,
+          id: action.from.keyId,
+        };
+      } else {
+        newKeys.splice(fromIndex, 1);
+        newKeys.push(movedKey);
+      }
+
+      return {
+        ...state,
+        profile: { ...state.profile, keys: newKeys },
         ui: { ...state.ui, isConfigDirty: true },
       };
     }
@@ -194,6 +264,20 @@ function reducer(state: AppState, action: Action): AppState {
         ...state,
         ui: { ...state.ui, clipboardKey: action.key },
       };
+
+    case 'SET_KEY_DRAG': {
+      const current = state.ui.dragKey;
+      const next = action.key;
+      // Both empty, or the same slot reported twice (a drop clears the drag, then
+      // `dragend` clears it again): skip the extra re-render
+      const isSameDrag =
+        current === next || (current !== null && next !== null && isSameLocation(current, next));
+      if (isSameDrag) return state;
+      return {
+        ...state,
+        ui: { ...state.ui, dragKey: next },
+      };
+    }
 
     default:
       return state;

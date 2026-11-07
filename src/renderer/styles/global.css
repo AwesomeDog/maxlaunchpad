@@ -336,6 +336,30 @@ body,
   transform: scale(1.05);
 }
 
+/* Draggable keys (only when Drag & Drop Mode is enabled) */
+.key-btn[draggable='true'] {
+  cursor: grab;
+}
+
+.key-btn.dragging {
+  cursor: grabbing;
+  opacity: 0.4;
+}
+
+/* For the whole duration of a key drag the browser keeps :hover on the element the drag
+   started from, and React reuses that element for the same key position when the tab
+   switches mid-drag - so the dragged key used to show the hovered (white) look on every
+   other tab. Inside a key drag only the key under the cursor (`.drag-over`) is highlighted. */
+.keyboard-zone.key-drag-active .key-btn:hover:not(.drag-over) {
+  background: var(--background-color);
+  color: var(--text-color);
+}
+
+.keyboard-zone.key-drag-active .key-btn:hover:not(.drag-over) .key-btn-key,
+.keyboard-zone.key-drag-active .key-btn:hover:not(.drag-over) .key-btn-text {
+  color: var(--text-color);
+}
+
 .key-btn.hidden {
   visibility: hidden;
 }
@@ -389,6 +413,21 @@ body,
 .num-key-btn.selected {
   background: var(--selected-background-color);
   border-bottom: none;
+}
+
+/* A dragged key is resting on this tab number: the tab is about to switch */
+.num-key-btn.drag-target {
+  border-style: dashed;
+  /* Pin the width: `.num-key-btn` resets `border-left` to `none`, which leaves the
+     width at `medium`, so a bare `border-style` would grow the left edge to 3px */
+  border-width: 1px;
+  border-bottom-style: solid;
+  background: var(--selected-background-color);
+}
+
+/* Keep the original geometry: only the first tab number draws a left border */
+.num-key-btn.drag-target:not(:first-child) {
+  border-left-style: none;
 }
 
 /* ============================================

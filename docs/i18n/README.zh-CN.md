@@ -54,7 +54,7 @@ brew install --cask AwesomeDog/tap/maxlaunchpad
 
 1. 启动 MaxLaunchpad。虚拟键盘会显示在屏幕上，应用也会出现在系统托盘中。
 2. 打开 `View > Drag & Drop Mode`，让窗口在配置时保持可见。
-3. 从文件管理器把应用拖到任意按键上，或右键按键选择 **Edit**，使用 **Quick Select** 搜索应用。
+3. 从文件管理器把应用拖到任意按键上，或右键按键选择 **Edit**，使用 **Quick Select** 搜索应用。要调整位置，在拖放模式下把按键拖到另一个按键上即可。
 4. 右键数字键 `1`–`0`，为标签页命名，例如 `Dev`、`Work`、`Games`。
 5. 关闭拖放模式，在任意应用中按默认全局快捷键，再按目标按键即可启动。
 

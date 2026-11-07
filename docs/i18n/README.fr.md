@@ -54,7 +54,7 @@ Récupérez le programme d'installation de votre système sur la [page des versi
 
 1. **Lancez MaxLaunchpad.** Le clavier virtuel s'affiche ; l'application se trouve aussi dans la barre système.
 2. **Activez `View > Drag & Drop Mode`** pour que la fenêtre reste visible pendant la configuration.
-3. **Faites glisser des applications sur les touches** depuis l'Explorateur / le Finder / Fichiers — ou faites un clic droit sur une touche → **Edit** et utilisez **Quick Select** pour chercher une application installée.
+3. **Faites glisser des applications sur les touches** depuis l'Explorateur / le Finder / Fichiers — ou faites un clic droit sur une touche → **Edit** et utilisez **Quick Select** pour chercher une application installée. Pour réorganiser, en mode glisser-déposer, faites glisser une touche sur une autre.
 4. **Nommez vos onglets** (clic droit sur une touche numérique `1`–`0` → Edit) : par exemple `Dev`, `Work`, `Games`.
 5. **Désactivez le mode glisser-déposer**, appuyez sur `Alt` + `` ` `` n'importe où, puis sur la touche voulue. C'est terminé.
 

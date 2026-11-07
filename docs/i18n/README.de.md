@@ -54,7 +54,7 @@ Laden Sie das Installationsprogramm für Ihr System von der [Releases-Seite](htt
 
 1. **Starten Sie MaxLaunchpad.** Das virtuelle Tastenfeld erscheint; das Programm befindet sich außerdem im Infobereich.
 2. **Aktivieren Sie `View > Drag & Drop Mode`**, damit das Fenster während der Konfiguration sichtbar bleibt.
-3. **Ziehen Sie Anwendungen auf die Tasten** aus Explorer / Finder / Dateien — oder klicken Sie mit der rechten Maustaste auf eine Taste → **Edit** und nutzen Sie **Quick Select**, um installierte Anwendungen zu suchen.
+3. **Ziehen Sie Anwendungen auf die Tasten** aus Explorer / Finder / Dateien — oder klicken Sie mit der rechten Maustaste auf eine Taste → **Edit** und nutzen Sie **Quick Select**, um installierte Anwendungen zu suchen. Um die Anordnung zu ändern, ziehen Sie im Drag & Drop-Modus eine Taste auf eine andere.
 4. **Benennen Sie Ihre Registerkarten** (rechte Maustaste auf eine Zifferntaste `1`–`0` → Edit), z. B. `Dev`, `Work`, `Games`.
 5. **Deaktivieren Sie den Drag & Drop-Modus**, drücken Sie überall `Alt` + `` ` `` und dann die gewünschte Taste. Fertig.
 
