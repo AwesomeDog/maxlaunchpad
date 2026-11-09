@@ -47,7 +47,7 @@ Download the installer from [Releases](https://github.com/AwesomeDog/maxlaunchpa
 
 ### How to Configure
 
-- **Drag & Drop**: Enable `View > Drag & Drop Mode`, then drag executables onto keys
+- **Drag & Drop**: Enable `View > Drag & Drop Mode`, then drag executables onto keys. In the same mode you can drag a key onto another key to move or swap it
 - **Right-click**: Edit label, path, arguments, working directory, and icon. Or autofill with "Quick Select"
 
 ## Key Features
@@ -66,6 +66,7 @@ Download the installer from [Releases](https://github.com/AwesomeDog/maxlaunchpa
 
 - **Drag & Drop Mode** — Keeps window visible while dragging from file manager
 - **Drag & drop setup** — Drag executables onto keys, done
+- **Drag to rearrange** — move or swap keys in Drag & Drop Mode
 - **Quick Select** — Search installed apps and autofill key settings
 - **Smart shortcut parsing** — Windows `.lnk` files auto-extract target, arguments, and working directory
 - **Right-click to edit** — Full control over label, path, arguments, working directory, and icon

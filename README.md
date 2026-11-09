@@ -100,6 +100,7 @@ use MaxLaunchpad for the 20–50 programs you open every day.
 
 ### Configuration
 - **Drag & drop setup** — drag an executable, shortcut or `.app` from your file manager onto a key. Windows `.lnk` files are parsed for target, arguments and working directory automatically.
+- **Drag keys to rearrange** — in Drag & Drop Mode, drop a configured key onto another key to move or swap it (hold `Ctrl`/`Cmd` to copy); rest it on a tab number to switch tabs.
 - **Quick Select** — search installed applications inside the edit dialog to auto-fill label, path and description (with ↑/↓/Enter keyboard navigation).
 - **Multiple profiles** — `keyboard.yaml`, `work.yaml`, `gaming.yaml`… switch via `File > New / Open / Save As`.
 - **Human-readable YAML** — version it with Git, sync it with Dropbox/Syncthing, share it with your team.
@@ -140,7 +141,7 @@ Grab the installer for your OS from the [**Releases page**](https://github.com/A
 
 1. **Launch MaxLaunchpad.** The virtual keyboard appears; it also lives in your system tray.
 2. **Enable `View > Drag & Drop Mode`** so the window stays visible while you configure it.
-3. **Drag apps onto keys** from Explorer / Finder / Files — or right-click a key → **Edit** and use **Quick Select** to search installed apps.
+3. **Drag apps onto keys** from Explorer / Finder / Files — or right-click a key → **Edit** and use **Quick Select** to search installed apps. To rearrange, drag a key onto another key in Drag & Drop Mode.
 4. **Name your tabs** (right-click a number key `1`–`0` → Edit): e.g. `Dev`, `Work`, `Media`, `Games`.
 5. **Turn off Drag & Drop Mode**, press `Alt` + `` ` `` from anywhere, then press your key. Done.
 
